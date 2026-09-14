@@ -1,46 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<link rel="icon" type="image/png" href="../assets/logo-restup-wordmark.png">
-<title>Espace client — RestUp</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace client — RESTUP</title>
+<meta name="theme-color" content="#0B0D0C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230B0D0C'/%3E%3Ctext x='8' y='29' font-family='Arial' font-size='29' font-weight='bold' fill='%239B4DFF'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../style.css">
 <style>
-body{display:flex;flex-direction:column;min-height:100vh;position:relative;overflow-x:hidden;}
-.login-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1;}
-.login-card{width:100%;max-width:400px;}
-.tabs{position:relative;display:flex;gap:0;margin-bottom:24px;background:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px;}
-.tab-indicator{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:var(--lime);border-radius:999px;transition:transform .3s cubic-bezier(.2,.9,.2,1);z-index:0;}
-.tab{position:relative;z-index:1;flex:1;text-align:center;padding:10px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;color:var(--muted);transition:color .25s;}
-.tab.active{color:var(--ink);}
-.logo-center{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:22px;margin-bottom:28px;text-decoration:none;color:#fff;}
-.pw-field{position:relative;}
-.pw-toggle{position:absolute;right:6px;top:29px;background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;font-size:12px;font-weight:700;}
-.pw-toggle:hover{color:#fff;}
-.form-swap{transition:opacity .25s ease;}
-.oauth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:#1a1a1a;font-weight:700;font-size:14px;padding:12px 16px;border-radius:999px;border:none;cursor:pointer;margin-bottom:18px;transition:transform .18s,box-shadow .18s;}
-.oauth-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px rgba(255,255,255,.25);}
-.oauth-btn svg{width:18px;height:18px;flex:0 0 auto;}
-.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--muted-dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
-.pac-container{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow);font-family:'Urbanist',sans-serif;overflow:hidden;margin-top:4px;}
-.pac-item{color:var(--muted);border-color:var(--line);padding:9px 12px;font-size:13.5px;}
-.pac-item:hover{background:rgba(255,255,255,.05);}
-.pac-item-query{color:#fff;}
-.pac-icon{filter:invert(1) grayscale(1) brightness(1.6);}
+.portal-hero{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:radial-gradient(120% 130% at 22% 18%,#4a2482 0%,#1c0e33 45%,var(--ink) 78%)}
+.portal-topbar{display:flex;justify-content:space-between;align-items:center;padding:32px 56px}
+.portal-back{color:#fff;font-size:14px;font-weight:600;opacity:.75;transition:opacity .2s}
+.portal-back:hover{opacity:1}
+.portal-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+.portal-main h1{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:clamp(44px,7.5vw,100px);line-height:1.02;letter-spacing:-1px;color:#fff;margin:0}
+.portal-main h1 span{display:block;color:var(--lime)}
+.portal-cta{margin-top:48px;padding:22px 40px;font-size:17px;border-radius:12px}
+.coach-link{position:fixed;right:28px;bottom:26px;color:#fff;opacity:.55;font-size:13px;font-weight:700;letter-spacing:.3px;z-index:5;text-transform:uppercase}
+.coach-link:hover{opacity:1}
+
+.portal-overlay{position:fixed;inset:0;background:rgba(11,13,12,.88);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}
+.portal-overlay.is-open{display:flex}
+.login-card{width:100%;max-width:400px;background:#fff;border-top:6px solid var(--lime);border-radius:var(--radius);padding:40px 32px 32px;position:relative}
+.login-card .close-btn{position:absolute;top:14px;right:14px;background:none;border:0;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);padding:6px}
+.login-card .close-btn:hover{color:var(--ink)}
+.portal-mode-label{font-size:11px;font-weight:700;letter-spacing:1.7px;color:var(--lime);margin:0 0 8px}
+.login-card h2{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:26px;letter-spacing:-.5px;margin:0 0 22px}
+
+.tabs{position:relative;display:flex;gap:0;margin-bottom:22px;background:var(--ink);border-radius:999px;padding:5px}
+.tab-indicator{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:var(--lime);border-radius:999px;transition:transform .3s cubic-bezier(.2,.9,.2,1);z-index:0}
+.tab{position:relative;z-index:1;flex:1;text-align:center;padding:10px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;color:#B7BDB4;transition:color .25s}
+.tab.active{color:#fff}
+
+.field{margin-bottom:16px;text-align:left}
+.field label{display:block;font-size:12px;font-weight:650;margin-bottom:6px;color:var(--ink)}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;font-size:15px}
+.field input:focus-visible{outline:2px solid var(--lime);outline-offset:1px}
+.pw-field{position:relative}
+.pw-toggle{position:absolute;right:6px;top:29px;background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;font-size:11px;font-weight:700}
+.pw-toggle:hover{color:var(--ink)}
+.form-swap{transition:opacity .25s ease}
+
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:var(--ink);font-weight:700;font-size:14px;padding:12px 16px;border-radius:999px;border:1px solid var(--line);cursor:pointer;margin-bottom:18px;transition:transform .18s,box-shadow .18s}
+.oauth-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(0,0,0,.35)}
+.oauth-btn svg{width:18px;height:18px;flex:0 0 auto}
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.msg{font-size:13px;margin:0 0 14px;min-height:1px}
+.msg.error{color:#c0392b}
+.msg.ok{color:#1f8a4c}
+.pac-container{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 14px 35px rgba(11,13,12,.15);font-family:'DM Sans',Arial,sans-serif;overflow:hidden;margin-top:4px}
+.pac-item{color:var(--muted);border-color:var(--line);padding:9px 12px;font-size:13.5px}
+.pac-item:hover{background:#F0F1EC}
+.pac-item-query{color:var(--ink)}
+
+@media(max-width:760px){
+  .portal-topbar{padding:22px 20px}
+  .login-card{padding:32px 24px 26px}
+}
 </style>
 </head>
 <body>
 
-<span class="glow glow-a" style="width:480px;height:480px;background:radial-gradient(circle,rgba(34,197,94,.14),transparent 70%);top:-160px;right:-140px;position:fixed;"></span>
-<span class="glow glow-b" style="width:420px;height:420px;background:radial-gradient(circle,rgba(22,163,74,.10),transparent 70%);bottom:-160px;left:-120px;position:fixed;"></span>
+<div class="portal-hero">
+  <div class="portal-topbar">
+    <a class="wordmark" href="../index.html" aria-label="RESTUP, accueil">REST<span class="up">UP</span></a>
+    <a class="portal-back" href="../index.html">← Retour au site</a>
+  </div>
+  <div class="portal-main">
+    <h1>Tu vas enfin<span>pouvoir respirer.</span></h1>
+    <button class="button lime portal-cta" id="openClientLogin" type="button">Accès client <span>↗</span></button>
+  </div>
+</div>
+<a class="coach-link" id="openCoachLogin" href="#">Espace coach</a>
 
-<div class="login-wrap">
-  <div class="login-card card glow-card tilt reveal in-view">
-    <a href="../index.html" class="logo-center"><img src="../assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+<div class="portal-overlay" id="formOverlay">
+  <div class="login-card">
+    <button class="close-btn" id="closeOverlay" type="button" aria-label="Fermer">×</button>
+    <p class="portal-mode-label" id="modeLabel">ESPACE CLIENT</p>
+    <h2 id="modeTitle">Connexion</h2>
 
     <div class="tabs">
       <div class="tab-indicator" id="tabIndicator"></div>
@@ -59,7 +96,7 @@ body{display:flex;flex-direction:column;min-height:100vh;position:relative;overf
     <form id="loginForm" class="form-swap">
       <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" required autocomplete="email"></div>
       <div class="field pw-field"><label for="loginPass">Mot de passe</label><input id="loginPass" type="password" required autocomplete="current-password"><button type="button" class="pw-toggle" data-target="loginPass">Afficher</button></div>
-      <button class="btn-primary magnetic" type="submit" id="loginBtn" style="width:100%;">Se connecter</button>
+      <button class="button lime" type="submit" id="loginBtn" style="width:100%;">Se connecter</button>
     </form>
 
     <form id="signupForm" class="form-swap" style="display:none;">
@@ -67,18 +104,28 @@ body{display:flex;flex-direction:column;min-height:100vh;position:relative;overf
       <div class="field"><label for="signupBusiness">Établissement (adresse)</label><input id="signupBusiness" placeholder="Commencez à taper une adresse..." autocomplete="off"></div>
       <div class="field"><label for="signupEmail">Email</label><input id="signupEmail" type="email" required autocomplete="email"></div>
       <div class="field pw-field"><label for="signupPass">Mot de passe (min. 6 caractères)</label><input id="signupPass" type="password" required minlength="6" autocomplete="new-password"><button type="button" class="pw-toggle" data-target="signupPass">Afficher</button></div>
-      <button class="btn-primary magnetic" type="submit" id="signupBtn" style="width:100%;">Créer mon compte</button>
+      <button class="button lime" type="submit" id="signupBtn" style="width:100%;">Créer mon compte</button>
     </form>
-
-    <p style="text-align:center;margin-top:20px;font-size:13px;"><a href="../index.html" style="color:var(--muted);text-decoration:none;">← Retour au site</a></p>
   </div>
 </div>
 
-<script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
 <script src="supabase-client.js"></script>
 <script>
+// ---- Overlay : deux points d'entrée (client / coach), même formulaire ----
+const formOverlay = document.getElementById('formOverlay');
+const modeLabel = document.getElementById('modeLabel');
+
+function openOverlay(mode) {
+  modeLabel.textContent = mode === 'coach' ? 'ESPACE COACH' : 'ESPACE CLIENT';
+  formOverlay.classList.add('is-open');
+}
+document.getElementById('openClientLogin').addEventListener('click', () => openOverlay('client'));
+document.getElementById('openCoachLogin').addEventListener('click', (e) => { e.preventDefault(); openOverlay('coach'); });
+document.getElementById('closeOverlay').addEventListener('click', () => formOverlay.classList.remove('is-open'));
+formOverlay.addEventListener('click', (e) => { if (e.target === formOverlay) formOverlay.classList.remove('is-open'); });
+
 // ---- Redirection selon le rôle : coach (admin) ou client ----
 async function redirectAfterAuth() {
   try {
@@ -126,6 +173,7 @@ document.getElementById('googleBtn').addEventListener('click', async () => {
 
 // Bascule connexion / inscription (avec indicateur glissant)
 const tabIndicator = document.getElementById('tabIndicator');
+const modeTitle = document.getElementById('modeTitle');
 document.querySelectorAll('.tab').forEach((t, i) => {
   t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -134,6 +182,7 @@ document.querySelectorAll('.tab').forEach((t, i) => {
     const isLogin = t.dataset.tab === 'login';
     document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
     document.getElementById('signupForm').style.display = isLogin ? 'none' : 'block';
+    modeTitle.textContent = isLogin ? 'Connexion' : 'Créer un compte';
     document.getElementById('formMsg').className = 'msg';
   });
 });
@@ -152,7 +201,6 @@ function showMsg(text, type) {
   const el = document.getElementById('formMsg');
   el.textContent = text;
   el.className = 'msg ' + type;
-  if (window.toast) toast(text, type === 'ok' ? 'ok' : 'error');
 }
 
 // Si déjà connecté, direction le bon espace (coach ou client)
