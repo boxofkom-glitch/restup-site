@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="../../assets/logo-restup-wordmark.png">
+<title>Plans — Espace coach RestUp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+body{overflow-x:hidden;}
+.icon-btn{background:transparent;border:1px solid var(--line);color:var(--muted);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s,border-color .2s;}
+.icon-btn:hover{color:#fff;border-color:var(--muted);}
+.icon-btn svg{width:16px;height:16px;}
+
+/* ---- Sidebar shell (espace coach) ---- */
+.app-shell{display:flex;min-height:100vh;}
+.sidebar{width:240px;flex:0 0 auto;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;}
+.sidebar .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;text-decoration:none;color:#fff;padding:0 6px;margin-bottom:18px;}
+.side-section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-dim);padding:14px 14px 6px;}
+.side-nav{display:flex;flex-direction:column;gap:3px;flex:1;overflow-y:auto;}
+.side-link{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r-md);color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;cursor:pointer;transition:background .2s,color .2s;background:transparent;border:none;text-align:left;width:100%;font-family:inherit;}
+.side-link svg{width:17px;height:17px;stroke:currentColor;flex:0 0 auto;}
+.side-link:hover{background:rgba(255,255,255,.04);color:#fff;}
+.side-link.active{background:var(--lime-dim);color:var(--lime);}
+.side-foot{border-top:1px solid var(--line);padding-top:16px;display:flex;align-items:center;gap:10px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--lime),var(--lime-2));color:var(--ink);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.side-foot-info{flex:1;min-width:0;}
+.side-foot-info b{display:block;font-size:13px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.side-foot-info span{font-size:11px;color:var(--muted-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.mobile-topbar{display:none;position:sticky;top:0;z-index:50;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(20,20,20,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.mobile-topbar .logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:17px;color:#fff;text-decoration:none;}
+.mobile-nav-toggle{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+@media (max-width:900px){
+  .sidebar{position:fixed;left:0;top:0;height:100vh;transform:translateX(-105%);transition:transform .3s ease;z-index:80;box-shadow:0 0 60px rgba(0,0,0,.5);}
+  body.nav-open .sidebar{transform:translateX(0);}
+  body.nav-open::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;}
+  .mobile-topbar{display:flex;}
+}
+.main{flex:1;min-width:0;}
+
+.admin-main{max-width:1080px;margin:0 auto;padding:30px 24px 70px;}
+.page-title-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+.page-title-row h1{font-size:clamp(22px,3vw,30px);}
+.page-title-row p{margin-top:4px;font-size:14px;color:var(--muted);}
+.empty-state{font-size:13.5px;color:var(--muted-dim);text-align:center;padding:40px 0;}
+.table-scroll{overflow-x:auto;}
+.client-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.client-table th{text-align:left;padding:10px 14px;color:var(--muted-dim);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);}
+.client-table td{padding:14px;border-bottom:1px solid var(--line);color:#EDE4D6;vertical-align:middle;}
+.client-table tr:last-child td{border-bottom:none;}
+.client-table tr.client-row{cursor:pointer;transition:background .15s;}
+.client-table tr.client-row:hover{background:rgba(255,255,255,.03);}
+.client-name{font-weight:700;color:#fff;}
+.mini-bar{width:100px;height:6px;border-radius:999px;background:var(--ink);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px;}
+.mini-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--lime-2));}
+</style>
+</head>
+<body>
+
+<div id="authGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);">
+  <span style="width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--lime);border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span>
+  Chargement…
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+
+<div id="adminPage" style="display:none;">
+
+  <div class="mobile-topbar">
+    <a href="index.html" class="logo"><img src="../../assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><img src="../../assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+      <nav class="side-nav">
+        <div class="side-section-label">Coaching</div>
+        <a href="index.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Mes clients
+        </a>
+        <a href="suivi.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Suivi
+        </a>
+        <a href="agenda.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Agenda
+        </a>
+        <a href="kpi.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          KPI
+        </a>
+        <a href="plans.html" class="side-link active">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Plans
+        </a>
+        <a href="audits.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></svg>
+          Audits
+        </a>
+        <a href="messages.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Messages
+        </a>
+        <div class="side-section-label">Paramètres</div>
+        <a href="settings.html" class="side-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Paramètres
+        </a>
+      </nav>
+      <div class="side-foot">
+        <div class="avatar" id="coachAvatar">–</div>
+        <div class="side-foot-info">
+          <b>Espace coach</b>
+          <span id="coachEmail">—</span>
+        </div>
+        <button class="icon-btn" id="logoutBtn" title="Déconnexion" aria-label="Déconnexion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="admin-main">
+        <div class="page-title-row">
+          <div><h1>Plans</h1><p>Progression du plan d'action de chaque client.</p></div>
+        </div>
+
+        <div class="card glow-card reveal in-view">
+          <div class="table-scroll">
+            <table class="client-table">
+              <thead><tr><th>Établissement</th><th>Cycle en cours</th><th>Contrat</th><th>Progression</th></tr></thead>
+              <tbody id="plansBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="plansEmpty" style="display:none;">Aucun plan pour l'instant.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../../script.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script src="../supabase-client.js"></script>
+<script>
+(async function () {
+  const { data: sessData } = await supabaseClient.auth.getSession();
+  if (!sessData.session) { window.location.href = '../login.html'; return; }
+  const me = sessData.session.user;
+
+  const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', me.id).maybeSingle();
+  if (!adminRow) { window.location.href = '../dashboard.html'; return; }
+
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('adminPage').style.display = 'block';
+
+  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  document.getElementById('coachEmail').textContent = me.email || '—';
+  document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = '../login.html';
+  });
+  const mobileToggle = document.getElementById('mobileNavToggle');
+  if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
+
+  function flatTasks(plan) {
+    const out = [];
+    (plan.vision_12m?.items || []).forEach(t => out.push(t));
+    (plan.priorities_4m?.items || []).forEach(t => out.push(t));
+    (plan.cycles || []).forEach(cy => (cy.months || []).forEach(m => (m.weeks || []).forEach(w => (w.tasks || []).forEach(t => out.push(t)))));
+    return out;
+  }
+
+  const [{ data: plans }, { data: profiles }] = await Promise.all([
+    supabaseClient.from('plans').select('user_id, data'),
+    supabaseClient.from('profiles').select('id, company_name, email'),
+  ]);
+
+  const profileById = {};
+  (profiles || []).forEach(p => { profileById[p.id] = p; });
+
+  const body = document.getElementById('plansBody');
+  const empty = document.getElementById('plansEmpty');
+  if (!plans || !plans.length) {
+    empty.style.display = 'block';
+  } else {
+    body.innerHTML = plans.map(pl => {
+      const p = profileById[pl.user_id];
+      const name = p?.company_name || p?.email || 'Client';
+      const plan = pl.data || {};
+      const activeCycle = (plan.cycles || []).find(c => c.active);
+      const tasks = flatTasks(plan);
+      const done = tasks.filter(t => t.done).length;
+      const pct = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+      return `<tr class="client-row" data-id="${esc(pl.user_id)}">
+        <td><div class="client-name">${esc(name)}</div></td>
+        <td>${esc(activeCycle?.name || '—')}</td>
+        <td>${plan.contract_months ?? '—'} mois</td>
+        <td><span class="mini-bar"><span class="mini-bar-fill" style="width:${pct}%;"></span></span>${pct}%</td>
+      </tr>`;
+    }).join('');
+    body.querySelectorAll('.client-row').forEach(row => {
+      row.addEventListener('click', () => { window.location.href = 'client.html?id=' + row.dataset.id; });
+    });
+  }
+})();
+</script>
+</body>
+</html>
