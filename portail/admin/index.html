@@ -179,6 +179,7 @@ body{overflow-x:hidden;}
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
+<script src="mock-clients.js"></script>
 <script>
 (async function () {
   const { data: sessData } = await supabaseClient.auth.getSession();
@@ -216,15 +217,21 @@ body{overflow-x:hidden;}
       supabaseClient.from('calls').select('user_id, status'),
     ]);
 
+    // TEMP — données de démonstration si aucun client réel n'existe encore.
+    const useMock = !profiles || !profiles.length;
+    const profileRows = useMock ? (window.MOCK_CLIENTS || []) : profiles;
+    const planRows = useMock ? Object.entries(window.MOCK_PLANS || {}).map(([user_id, data]) => ({ user_id, data })) : (plans || []);
+    const callRows = useMock ? Object.entries(window.MOCK_CALLS || {}).flatMap(([user_id, list]) => list.map(c => ({ user_id, status: c.status }))) : (calls || []);
+
     const planByUser = {};
-    (plans || []).forEach(p => { planByUser[p.user_id] = p.data; });
+    planRows.forEach(p => { planByUser[p.user_id] = p.data; });
     const doneCallsByUser = {};
-    (calls || []).forEach(c => {
+    callRows.forEach(c => {
       if (c.status !== 'done') return;
       doneCallsByUser[c.user_id] = (doneCallsByUser[c.user_id] || 0) + 1;
     });
 
-    clients = (profiles || []).map(p => {
+    clients = profileRows.map(p => {
       const plan = planByUser[p.id];
       const cycle = plan ? (plan.cycles || []).find(c => c.active) : null;
       const months = cycle ? (cycle.months || []) : [];
