@@ -379,6 +379,7 @@ body{overflow-x:hidden;}
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
+<script src="mock-clients.js"></script>
 <script>
 (async function () {
   const params = new URLSearchParams(window.location.search);
@@ -423,7 +424,9 @@ body{overflow-x:hidden;}
   });
 
   // ---- Profile header ----
-  const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', clientId).maybeSingle();
+  const { data: profileRow } = await supabaseClient.from('profiles').select('*').eq('id', clientId).maybeSingle();
+  // TEMP — bascule sur un client de démonstration si l'id ne correspond à aucune ligne réelle.
+  const profile = profileRow || (window.MOCK_CLIENTS || []).find(c => c.id === clientId) || null;
   let displayName = profile?.company_name || '(sans nom)';
   document.getElementById('clientTitle').textContent = displayName;
   document.getElementById('clientEmail').textContent = profile?.email || '';
@@ -516,7 +519,9 @@ body{overflow-x:hidden;}
   let auditRow = null;
   async function loadAudit() {
     const { data } = await supabaseClient.from('audits').select('*').eq('user_id', clientId).maybeSingle();
-    auditRow = data || null;
+    // TEMP — bascule sur un audit de démonstration si aucune ligne réelle n'existe.
+    const mockAudit = (window.MOCK_AUDITS || {})[clientId];
+    auditRow = data || (mockAudit ? { user_id: clientId, data: mockAudit } : null);
   }
 
   function renderAuditTab() {
@@ -744,7 +749,8 @@ body{overflow-x:hidden;}
 
   async function loadPlan() {
     const { data } = await supabaseClient.from('plans').select('*').eq('user_id', clientId).maybeSingle();
-    planData = data ? data.data : null;
+    // TEMP — bascule sur un plan de démonstration si aucune ligne réelle n'existe.
+    planData = data ? data.data : ((window.MOCK_PLANS || {})[clientId] || null);
   }
 
   async function savePlan(silent) {
@@ -984,7 +990,9 @@ body{overflow-x:hidden;}
   // =========================================================
   async function loadMessages() {
     const { data } = await supabaseClient.from('messages').select('*').eq('user_id', clientId).order('created_at', { ascending: true });
-    return data || [];
+    // TEMP — bascule sur des messages de démonstration si aucune ligne réelle n'existe.
+    if (data && data.length) return data;
+    return (window.MOCK_MESSAGES || {})[clientId] || [];
   }
   function renderMessages(list) {
     const box = document.getElementById('msgList');
@@ -1009,7 +1017,9 @@ body{overflow-x:hidden;}
   // =========================================================
   async function loadCalls() {
     const { data } = await supabaseClient.from('calls').select('*').eq('user_id', clientId).order('created_at', { ascending: false });
-    return data || [];
+    // TEMP — bascule sur des calls de démonstration si aucune ligne réelle n'existe.
+    if (data && data.length) return data;
+    return (window.MOCK_CALLS || {})[clientId] || [];
   }
   function toLocalInputValue(iso) {
     if (!iso) return '';
