@@ -121,8 +121,11 @@ function openOverlay(mode) {
   modeLabel.textContent = mode === 'coach' ? 'ESPACE COACH' : 'ESPACE CLIENT';
   formOverlay.classList.add('is-open');
 }
-document.getElementById('openClientLogin').addEventListener('click', () => openOverlay('client'));
-document.getElementById('openCoachLogin').addEventListener('click', (e) => { e.preventDefault(); openOverlay('coach'); });
+// TEMP — connexion désactivée pour accès facile pendant les modifs : les deux
+// boutons mènent directement aux espaces au lieu d'ouvrir le formulaire.
+// Pour réactiver le login : remettre "openOverlay('client')" / "openOverlay('coach')".
+document.getElementById('openClientLogin').addEventListener('click', () => window.location.href = 'dashboard.html');
+document.getElementById('openCoachLogin').addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'admin/index.html'; });
 document.getElementById('closeOverlay').addEventListener('click', () => formOverlay.classList.remove('is-open'));
 formOverlay.addEventListener('click', (e) => { if (e.target === formOverlay) formOverlay.classList.remove('is-open'); });
 
