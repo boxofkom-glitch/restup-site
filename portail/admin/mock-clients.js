@@ -3,11 +3,16 @@
 // Pour retirer : supprimer ce fichier et les <script src="mock-clients.js"> qui le chargent.
 (function () {
   window.MOCK_CLIENTS = [
-    { id: 'mock-1', company_name: 'Le Petit Bouchon', email: 'contact@lepetitbouchon.fr', active: true, created_at: '2026-04-12T09:00:00Z' },
-    { id: 'mock-2', company_name: 'Sushi Sakura', email: 'hello@sushisakura.fr', active: true, created_at: '2026-06-03T09:00:00Z' },
-    { id: 'mock-3', company_name: 'Pizzeria Bella Napoli', email: 'bella.napoli@gmail.com', active: true, created_at: '2026-08-30T09:00:00Z' },
-    { id: 'mock-4', company_name: 'Burger House Deluxe', email: 'contact@burgerhousedeluxe.fr', active: false, created_at: '2026-02-01T09:00:00Z' },
-    { id: 'mock-5', company_name: 'Le Jardin Provençal', email: 'contact@jardinprovencal.fr', active: true, created_at: '2026-08-28T09:00:00Z' },
+    { id: 'mock-1', company_name: 'Le Petit Bouchon', email: 'contact@lepetitbouchon.fr', phone: '06 12 34 56 78', address: '14 rue des Tanneurs, 69005 Lyon', active: true, created_at: '2026-04-12T09:00:00Z',
+      coach: 'Sarah Meunier', closer: 'Julien Farge', paid: true, amount_paid: 3000, months_paid: 6, calls_used: 5, calls_total: 12 },
+    { id: 'mock-2', company_name: 'Sushi Sakura', email: 'hello@sushisakura.fr', phone: '07 65 43 21 09', address: '8 rue de la Roquette, 75011 Paris', active: true, created_at: '2026-06-03T09:00:00Z',
+      coach: 'Sarah Meunier', closer: 'Camille Roy', paid: true, amount_paid: 2000, months_paid: 4, calls_used: 3, calls_total: 12 },
+    { id: 'mock-3', company_name: 'Pizzeria Bella Napoli', email: 'bella.napoli@gmail.com', phone: '06 98 76 54 32', address: '22 cours Julien, 13006 Marseille', active: true, created_at: '2026-08-30T09:00:00Z',
+      coach: 'Marc Antoine', closer: 'Julien Farge', paid: false, amount_paid: 0, months_paid: 0, calls_used: 0, calls_total: 12 },
+    { id: 'mock-4', company_name: 'Burger House Deluxe', email: 'contact@burgerhousedeluxe.fr', phone: '06 11 22 33 44', address: '5 quai des Chartrons, 33000 Bordeaux', active: false, created_at: '2026-02-01T09:00:00Z',
+      coach: 'Marc Antoine', closer: 'Camille Roy', paid: true, amount_paid: 3000, months_paid: 3, calls_used: 12, calls_total: 12 },
+    { id: 'mock-5', company_name: 'Le Jardin Provençal', email: 'contact@jardinprovencal.fr', phone: '06 55 44 33 22', address: '3 place Richelme, 13100 Aix-en-Provence', active: true, created_at: '2026-08-28T09:00:00Z',
+      coach: 'Sarah Meunier', closer: 'Julien Farge', paid: true, amount_paid: 1000, months_paid: 2, calls_used: 1, calls_total: 12 },
   ];
 
   window.MOCK_AUDITS = {
@@ -16,6 +21,12 @@
       contact_name: 'Marc Lefèvre',
       company_description: "Bistrot gastronomique de 34 couverts à Lyon, cuisine de saison, ouvert depuis 6 ans. Équipe de 7 personnes dont 3 en cuisine.",
       overview: { revenue: 612000, employees: 7, fixed_costs: 21400, avg_sale: 42, margin_pct: 64, cash: 18500 },
+      financials: {
+        day:   { ca: 1700, ca_prev: 1550, food_cost_pct: 29, food_cost_pct_prev: 31, payroll: 540, payroll_prev: 560, charges: 700, charges_prev: 710, net_profit: 134, net_profit_prev: 98 },
+        week:  { ca: 11800, ca_prev: 10900, food_cost_pct: 29, food_cost_pct_prev: 31, payroll: 3760, payroll_prev: 3900, charges: 4950, charges_prev: 4970, net_profit: 940, net_profit_prev: 690 },
+        month: { ca: 51000, ca_prev: 47500, food_cost_pct: 28, food_cost_pct_prev: 30, payroll: 16300, payroll_prev: 16800, charges: 21400, charges_prev: 21600, net_profit: 4080, net_profit_prev: 3000 },
+        year:  { ca: 612000, ca_prev: 574000, food_cost_pct: 28, food_cost_pct_prev: 30, payroll: 195840, payroll_prev: 202000, charges: 256800, charges_prev: 259000, net_profit: 48960, net_profit_prev: 40200 },
+      },
       main_product: { name: 'Menu du marché (3 plats)', tag: 'Offre phare du soir', price_ht: 39, direct_cost: 13, gross_margin_pct: 67, net_margin_pct: 22 },
       financial_history: [
         { year: 2024, revenue: 528000, gross_margin_pct: 62, net_result_pct: 6, net_debt: 45000, cash: 9200 },
@@ -57,6 +68,12 @@
       contact_name: 'Yuki Tanaka',
       company_description: "Restaurant japonais de 28 couverts + vente à emporter, ouvert il y a 2 ans dans le 11e arrondissement de Paris.",
       overview: { revenue: 385000, employees: 5, fixed_costs: 15800, avg_sale: 27, margin_pct: 58, cash: 9400 },
+      financials: {
+        day:   { ca: 1050, ca_prev: 970, food_cost_pct: 32, food_cost_pct_prev: 34, payroll: 340, payroll_prev: 350, charges: 430, charges_prev: 435, net_profit: 70, net_profit_prev: 45 },
+        week:  { ca: 7400, ca_prev: 6800, food_cost_pct: 32, food_cost_pct_prev: 34, payroll: 2380, payroll_prev: 2450, charges: 3020, charges_prev: 3040, net_profit: 490, net_profit_prev: 310 },
+        month: { ca: 32000, ca_prev: 28500, food_cost_pct: 31, food_cost_pct_prev: 33, payroll: 10300, payroll_prev: 10500, charges: 15800, charges_prev: 15900, net_profit: 2100, net_profit_prev: 1250 },
+        year:  { ca: 385000, ca_prev: 298000, food_cost_pct: 31, food_cost_pct_prev: 33, payroll: 123800, payroll_prev: 118000, charges: 189600, charges_prev: 175000, net_profit: 25300, net_profit_prev: 13400 },
+      },
       main_product: { name: 'Plateau Sakura (assortiment 20 pièces)', tag: 'Best-seller livraison', price_ht: 24, direct_cost: 9.5, gross_margin_pct: 60, net_margin_pct: 16 },
       financial_history: [
         { year: 2025, revenue: 298000, gross_margin_pct: 54, net_result_pct: 4, net_debt: 52000, cash: 4100 },
@@ -149,7 +166,9 @@
     var tasks = [];
     for (var i = 0; i < 7; i++) {
       var text = TASK_POOL[(poolOffset + weekIdx * 7 + i) % TASK_POOL.length];
-      tasks.push({ text: text, done: i < doneCount });
+      var task = { text: text, done: i < doneCount };
+      if (i === 0) task.quickWin = true;
+      tasks.push(task);
     }
     var week = { label: label, tasks: tasks };
     if (locked) week.locked = true;
@@ -168,15 +187,23 @@
   window.MOCK_PLANS = {
     'mock-1': {
       contract_months: 6,
-      vision_12m: { title: 'Vision 12 mois', items: [
-        { text: 'Stabiliser la marge nette au-dessus de 10%', done: true },
-        { text: 'Ouvrir le service du dimanche midi', done: false },
-        { text: 'Réduire la dépendance au chef sur les achats', done: false },
+      vision_12m: { title: 'Vision 12 mois — cap vers la duplication', items: [
+        { text: 'Stabiliser la marge nette au-dessus de 12%', done: true },
+        { text: 'Structurer entièrement les process de cuisine (fiches techniques, stocks, HACCP)', done: false },
+        { text: 'Construire une équipe autonome capable de tourner sans le dirigeant au quotidien', done: false },
+        { text: 'Développer une identité de marque reconnaissable (visuelle, ton, positionnement)', done: false },
+        { text: 'Documenter un manuel opérationnel complet (recettes, procédures, standards de service)', done: false },
+        { text: 'Valider un modèle économique rentable et réplicable sur un second établissement', done: false },
+        { text: 'Poser les bases juridiques et financières d\'une franchise (contrat type, business plan structuré)', done: false },
       ] },
       priorities_4m: { title: 'Priorités 4 mois', items: [
         { text: 'Formaliser 15 fiches techniques prioritaires', done: true },
+        { text: 'Mettre en place un tableau de bord hebdomadaire (CA, foodcost, masse salariale)', done: true },
         { text: 'Augmenter le ticket moyen à 48€', done: false },
-        { text: 'Mettre en place un tableau de bord hebdomadaire', done: true },
+        { text: 'Réduire la dépendance au chef sur les achats', done: false },
+        { text: 'Recruter et former un second de cuisine autonome', done: false },
+        { text: 'Lancer une carte de fidélité et une présence en ligne active', done: false },
+        { text: 'Cadrer le concept sur papier (positionnement, offre, structure de coûts) en vue d\'une duplication', done: false },
       ] },
       axes: [
         { name: 'Structure & opérations', subtitle: 'Fiabiliser la cuisine', situation: 'Fiches techniques incomplètes, dépendance au chef.', actions: ['Rédiger les fiches techniques manquantes', 'Former le second de cuisine aux achats'] },
@@ -194,14 +221,23 @@
     },
     'mock-2': {
       contract_months: 4,
-      vision_12m: { title: 'Vision 12 mois', items: [
+      vision_12m: { title: 'Vision 12 mois — cap vers la duplication', items: [
         { text: 'Doubler la capacité de production livraison', done: false },
-        { text: 'Recruter un second chef formé', done: false },
+        { text: 'Recruter et former un second chef autonome', done: false },
+        { text: 'Standardiser 100% des recettes signatures', done: false },
+        { text: 'Construire une marque livraison reconnaissable sur les plateformes', done: false },
+        { text: 'Documenter un manuel de production complet', done: false },
+        { text: 'Valider la rentabilité d\'un second point de vente ou dark kitchen', done: false },
+        { text: 'Préparer un business plan structuré pour une franchise', done: false },
       ] },
       priorities_4m: { title: 'Priorités 4 mois', items: [
         { text: 'Documenter les recettes signatures', done: true },
         { text: 'Lancer le recrutement du second chef', done: true },
         { text: 'Optimiser le temps de préparation livraison', done: false },
+        { text: 'Mettre en place un tableau de bord hebdomadaire (CA, foodcost, masse salariale)', done: false },
+        { text: 'Former le second chef aux standards qualité', done: false },
+        { text: 'Analyser la rentabilité par plateforme de livraison', done: false },
+        { text: 'Cadrer le concept sur papier en vue d\'une duplication', done: false },
       ] },
       axes: [
         { name: 'Structure & opérations', subtitle: 'Sécuriser la production', situation: 'Toute la qualité repose sur une seule personne.', actions: ['Documenter 20 recettes clés', 'Mettre en place une période de doublage'] },

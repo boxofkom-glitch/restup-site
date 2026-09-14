@@ -49,3 +49,10 @@ p{margin:0 0 10px;color:var(--muted);}
 .msg.ok{display:block;background:var(--lime-dim);border:1px solid rgba(155,77,255,.3);color:var(--lime-hover);}
 
 .empty-state{font-size:13.5px;color:var(--muted-dim);text-align:center;padding:40px 0;}
+
+*{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.55) transparent;}
+*::-webkit-scrollbar{width:7px;height:7px;}
+*::-webkit-scrollbar-track{background:transparent;}
+*::-webkit-scrollbar-thumb{background:rgba(0,0,0,.55);border-radius:999px;}
+*::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.75);}
+*::-webkit-scrollbar-corner{background:transparent;}

@@ -45,7 +45,7 @@ body{overflow-x:hidden;}
 .page-title-row h1{font-size:clamp(22px,3vw,30px);}
 .page-title-row p{margin-top:4px;font-size:14px;color:var(--muted);}
 .empty-state{font-size:13.5px;color:var(--muted-dim);text-align:center;padding:40px 0;}
-.table-scroll{overflow-x:auto;}
+.table-scroll{overflow-x:auto;overflow-y:hidden;}
 
 .call-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 4px;border-bottom:1px solid var(--line);}
 .call-item:last-child{border-bottom:none;}
@@ -56,6 +56,26 @@ body{overflow-x:hidden;}
 .call-badge.confirmed{background:var(--lime-dim);color:var(--lime);}
 .call-badge.requested{background:rgba(255,190,60,.12);color:#ffc94d;}
 .call-badge.done{background:rgba(255,255,255,.06);color:var(--muted);}
+
+/* ---- Agenda hebdomadaire plein écran, sans scroll ---- */
+.agenda-page{height:100vh;display:flex;flex-direction:column;padding-bottom:20px;}
+.week-nav{display:flex;align-items:center;gap:12px;font-size:13.5px;font-weight:700;color:#fff;}
+.agenda-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.agenda-day{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;overflow:hidden;}
+.agenda-day.today{border-color:rgba(155,77,255,.5);}
+.agenda-day-head{text-align:center;padding-bottom:8px;border-bottom:1px solid var(--line);}
+.agenda-day-head b{display:block;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:#fff;}
+.agenda-day-head span{font-size:11px;color:var(--muted-dim);}
+.agenda-day-body{flex:1;display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding-bottom:12px;}
+.agenda-call{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;}
+.agenda-call .time{font-weight:800;color:var(--lime);display:block;}
+.agenda-call .name{color:#fff;font-weight:700;display:block;margin-top:2px;text-decoration:none;}
+.agenda-call .name:hover{text-decoration:underline;}
+.agenda-empty{font-size:11.5px;color:var(--muted-dim);text-align:center;margin-top:auto;margin-bottom:auto;}
+@media(max-width:900px){
+  .agenda-page{height:auto;}
+  .agenda-grid{grid-template-columns:1fr 1fr;grid-auto-rows:minmax(160px,auto);}
+}
 </style>
 </head>
 <body>
@@ -127,15 +147,21 @@ body{overflow-x:hidden;}
     </aside>
 
     <main class="main">
-      <div class="admin-main">
-        <div class="page-title-row">
-          <div><h1>Agenda</h1><p>Tous les calls, tous clients confondus, du plus récent au plus ancien.</p></div>
+      <div class="admin-main agenda-page">
+        <div class="page-title-row" style="margin-bottom:14px;">
+          <div><h1>Agenda</h1><p>Tous les calls, tous clients confondus.</p></div>
+          <div class="week-nav">
+            <button class="icon-btn" id="prevWeek" aria-label="Semaine précédente">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span id="weekLabel">—</span>
+            <button class="icon-btn" id="nextWeek" aria-label="Semaine suivante">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
         </div>
 
-        <div class="card glow-card reveal in-view">
-          <div id="callsList"></div>
-          <div class="empty-state" id="callsEmpty" style="display:none;">Aucun call pour l'instant.</div>
-        </div>
+        <div class="agenda-grid" id="agendaGrid"></div>
       </div>
     </main>
   </div>
@@ -144,6 +170,7 @@ body{overflow-x:hidden;}
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
+<script src="mock-clients.js"></script>
 <script>
 (async function () {
   const { data: sessData } = await supabaseClient.auth.getSession();
@@ -170,41 +197,83 @@ body{overflow-x:hidden;}
   const mobileToggle = document.getElementById('mobileNavToggle');
   if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 
-  const statusLabels = { requested: 'Demandé', confirmed: 'Confirmé', done: 'Terminé' };
-
-  function formatWhen(iso) {
-    if (!iso) return 'Créneau à confirmer';
-    const d = new Date(iso);
-    const s = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(d);
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
-
-  const [{ data: calls }, { data: profiles }] = await Promise.all([
-    supabaseClient.from('calls').select('*').order('scheduled_at', { ascending: false, nullsFirst: false }),
+  const [{ data: realCalls }, { data: realProfiles }] = await Promise.all([
+    supabaseClient.from('calls').select('*').order('scheduled_at', { ascending: true, nullsFirst: false }),
     supabaseClient.from('profiles').select('id, company_name, email'),
   ]);
 
-  const profileById = {};
-  (profiles || []).forEach(p => { profileById[p.id] = p; });
+  // TEMP — calls/clients de démonstration si la base réelle est vide (voir mock-clients.js).
+  const profiles = (realProfiles && realProfiles.length) ? realProfiles : (window.MOCK_CLIENTS || []);
+  let calls = (realCalls && realCalls.length) ? realCalls : [];
+  if (!calls.length) {
+    Object.entries(window.MOCK_CALLS || {}).forEach(([user_id, list]) => {
+      list.forEach(c => calls.push(Object.assign({ user_id }, c)));
+    });
+  }
 
-  const listEl = document.getElementById('callsList');
-  const emptyEl = document.getElementById('callsEmpty');
-  if (!calls || !calls.length) {
-    emptyEl.style.display = 'block';
-  } else {
-    listEl.innerHTML = calls.map(c => {
-      const p = profileById[c.user_id];
-      const name = p?.company_name || p?.email || 'Client';
-      return `<div class="call-item">
-        <div>
-          <a href="client.html?id=${esc(c.user_id)}" class="client-name">${esc(name)}</a>
-          <div class="call-when">${esc(formatWhen(c.scheduled_at))}</div>
-          ${c.notes ? `<div class="call-notes">${esc(c.notes)}</div>` : ''}
-        </div>
-        <span class="call-badge ${c.status || 'requested'}">${statusLabels[c.status] || c.status}</span>
+  const profileById = {};
+  profiles.forEach(p => { profileById[p.id] = p; });
+
+  const DAY_NAMES = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+  function startOfWeek(d) {
+    const date = new Date(d);
+    const day = (date.getDay() + 6) % 7; // 0 = lundi
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - day);
+    return date;
+  }
+
+  let weekStart = startOfWeek(new Date());
+
+  function renderWeek() {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      days.push(d);
+    }
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    document.getElementById('weekLabel').textContent =
+      `Semaine du ${days[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} au ${days[6].toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`;
+
+    const grid = document.getElementById('agendaGrid');
+    grid.innerHTML = days.map((d, i) => {
+      const dayCalls = calls.filter(c => {
+        if (!c.scheduled_at) return false;
+        const cd = new Date(c.scheduled_at);
+        return cd.toDateString() === d.toDateString();
+      }).sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+
+      const isToday = d.getTime() === today.getTime();
+      const body = dayCalls.length
+        ? dayCalls.map(c => {
+            const p = profileById[c.user_id];
+            const name = p?.company_name || p?.email || 'Client';
+            const time = new Date(c.scheduled_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            return `<div class="agenda-call">
+              <span class="time">${esc(time)}</span>
+              <a class="name" href="client.html?id=${esc(c.user_id)}">${esc(name)}</a>
+            </div>`;
+          }).join('')
+        : '<div class="agenda-empty">—</div>';
+
+      return `<div class="agenda-day${isToday ? ' today' : ''}">
+        <div class="agenda-day-head"><b>${DAY_NAMES[i]}</b><span>${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span></div>
+        <div class="agenda-day-body">${body}</div>
       </div>`;
     }).join('');
   }
+
+  document.getElementById('prevWeek').addEventListener('click', () => {
+    weekStart.setDate(weekStart.getDate() - 7); renderWeek();
+  });
+  document.getElementById('nextWeek').addEventListener('click', () => {
+    weekStart.setDate(weekStart.getDate() + 7); renderWeek();
+  });
+
+  renderWeek();
 })();
 </script>
 </body>

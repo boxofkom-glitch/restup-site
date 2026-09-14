@@ -155,7 +155,7 @@ p{margin:0 0 10px;color:var(--muted);}
 .kpi-mini b.lime{color:var(--lime);}
 .kpi-mini span{font-size:11px;color:var(--muted-dim);text-transform:uppercase;font-weight:700;}
 
-.msg-list{display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto;margin-bottom:14px;padding-right:2px;}
+.msg-list{display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto;margin-bottom:14px;padding-right:2px;padding-bottom:8px;}
 .msg-item{background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;font-size:13.5px;animation:msgIn .3s ease both;}
 .msg-item.me{background:var(--lime-dim);border-color:rgba(155,77,255,.25);}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
@@ -194,6 +194,17 @@ p{margin:0 0 10px;color:var(--muted);}
 
 .chart-box-lg{height:180px;}
 .chart-box-lg svg{width:100%;height:100%;}
+
+.period-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.period-tab{background:var(--surface-2);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;font-family:inherit;}
+.period-tab.active{background:var(--lime-dim);border-color:rgba(155,77,255,.4);color:var(--lime);}
+.fin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:12px;}
+.fin-card{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;}
+.fin-card .label{font-size:10.5px;color:var(--muted-dim);text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px;}
+.fin-card b{display:block;font-size:19px;font-weight:900;color:#fff;}
+.fin-delta{font-size:12px;font-weight:700;margin-top:6px;display:inline-flex;align-items:center;gap:3px;}
+.fin-delta.up{color:var(--lime);}
+.fin-delta.down{color:#ff8a8a;}
 
 /* checkable task rows (used by objectifs + weeks) */
 .task-item{display:flex;align-items:flex-start;gap:12px;padding:11px 4px;border-bottom:1px solid var(--line);}
@@ -368,6 +379,13 @@ p{margin:0 0 10px;color:var(--muted);}
 .danger-zone p{font-size:13px;margin-bottom:12px;}
 .btn-danger{background:transparent;border:1px solid rgba(255,80,80,.4);color:#ff8a8a;font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;}
 .btn-danger:hover{background:rgba(255,60,60,.1);}
+
+*{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.55) transparent;}
+*::-webkit-scrollbar{width:7px;height:7px;}
+*::-webkit-scrollbar-track{background:transparent;}
+*::-webkit-scrollbar-thumb{background:rgba(0,0,0,.55);border-radius:999px;}
+*::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.75);}
+*::-webkit-scrollbar-corner{background:transparent;}
 </style>
 </head>
 <body>
@@ -478,24 +496,39 @@ p{margin:0 0 10px;color:var(--muted);}
               </div>
 
               <div class="card glow-card reveal">
-                <h3>Croissance MRR — 6 derniers mois</h3>
-                <div class="chart-box-lg">
-                  <svg viewBox="0 0 400 150" preserveAspectRatio="none">
-                    <defs><linearGradient id="areaFill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9B4DFF" stop-opacity="0.3"/><stop offset="100%" stop-color="#9B4DFF" stop-opacity="0"/></linearGradient></defs>
-                    <path d="M0,125 C50,120 70,98 110,93 C150,89 170,107 210,89 C250,71 270,49 310,43 C340,38 370,22 400,10 L400,150 L0,150 Z" fill="url(#areaFill2)"/>
-                    <path class="draw-path" d="M0,125 C50,120 70,98 110,93 C150,89 170,107 210,89 C250,71 270,49 310,43 C340,38 370,22 400,10" fill="none" stroke="#9B4DFF" stroke-width="3" stroke-linecap="round"/>
-                    <circle cx="400" cy="10" r="5" fill="#9B4DFF"/>
-                  </svg>
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                  <h3 style="margin:0;">Vos chiffres</h3>
+                  <div class="period-tabs" id="periodTabs">
+                    <button class="period-tab" data-period="day">Jour</button>
+                    <button class="period-tab active" data-period="week">Semaine</button>
+                    <button class="period-tab" data-period="month">Mois</button>
+                    <button class="period-tab" data-period="year">Année</button>
+                  </div>
                 </div>
+                <div class="fin-grid" id="finGrid"></div>
               </div>
 
               <div class="card glow-card reveal">
-                <h3>Vos indicateurs</h3>
+                <h3>Vos actions</h3>
                 <div class="kpi-mini">
-                  <div><b class="lime cnt" data-target="18">0</b><span>% MRR ce mois</span></div>
-                  <div id="tasksKpi"><b class="cnt" data-target="3">0</b><span>/ 5 actions faites</span></div>
-                  <div><b id="nextCallKpi">Jeu. 14h</b><span>prochain point</span></div>
+                  <div><b id="tasksDoneKpi" class="lime">0</b><span>tâches réussies</span></div>
+                  <div><b id="tasksPendingKpi">0</b><span>tâches en attente</span></div>
+                  <div><b id="nextCallKpi">—</b><span>prochain point</span></div>
                 </div>
+              </div>
+
+              <div class="card glow-card reveal" id="weekCompleteBanner" style="display:none;background:var(--lime-dim);border-color:rgba(155,77,255,.4);text-align:center;">
+                <strong style="color:var(--lime);font-size:14.5px;">Bravo, toutes les actions de cette semaine sont faites !</strong>
+              </div>
+
+              <div class="card glow-card reveal" id="quickWinCard" style="display:none;">
+                <div class="section-tag" style="margin-bottom:8px;">Quick win de la semaine</div>
+                <p id="quickWinText" style="color:#fff;font-size:15px;margin:0;">—</p>
+              </div>
+
+              <div class="card glow-card reveal" id="myKpisCard" style="display:none;">
+                <h3>Vos KPI à renseigner</h3>
+                <div id="myKpisList" style="display:flex;flex-direction:column;gap:10px;"></div>
               </div>
             </div>
 
@@ -626,6 +659,89 @@ p{margin:0 0 10px;color:var(--muted);}
 
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmtEuro = (n) => n == null ? '—' : Number(n).toLocaleString('fr-FR') + ' €';
+
+  // ---- Chiffres clés (CA, foodcost, masse salariale, charges, profit net) ----
+  const periodLabels = { day: 'hier', week: 'sem. dernière', month: 'mois dernier', year: 'année dernière' };
+  let currentFinancials = null, currentPeriod = 'week';
+
+  function deltaTag(value, prev, invert) {
+    if (value == null || prev == null || !prev) return '';
+    const pct = Math.round(((value - prev) / Math.abs(prev)) * 100);
+    const good = invert ? pct <= 0 : pct >= 0;
+    const arrow = pct >= 0 ? '↗' : '↘';
+    const cls = good ? 'up' : 'down';
+    return `<span class="fin-delta ${cls}">${arrow} ${pct > 0 ? '+' : ''}${pct}% vs ${periodLabels[currentPeriod]}</span>`;
+  }
+
+  function renderFinGrid(period) {
+    currentPeriod = period;
+    const grid = document.getElementById('finGrid');
+    if (!currentFinancials) { grid.innerHTML = '<div class="empty-state">Pas encore de données financières.</div>'; return; }
+    const f = currentFinancials[period];
+    if (!f) { grid.innerHTML = '<div class="empty-state">Pas encore de données pour cette période.</div>'; return; }
+    const cards = [
+      { label: 'Chiffre d\'affaires', value: fmtEuro(f.ca), delta: deltaTag(f.ca, f.ca_prev, false) },
+      { label: 'Food cost', value: (f.food_cost_pct ?? '—') + '%', delta: deltaTag(f.food_cost_pct, f.food_cost_pct_prev, true) },
+      { label: 'Masse salariale', value: fmtEuro(f.payroll), delta: deltaTag(f.payroll, f.payroll_prev, true) },
+      { label: 'Charges', value: fmtEuro(f.charges), delta: deltaTag(f.charges, f.charges_prev, true) },
+      { label: 'Profit net', value: fmtEuro(f.net_profit), delta: deltaTag(f.net_profit, f.net_profit_prev, false) },
+    ];
+    grid.innerHTML = cards.map(c => `<div class="fin-card"><span class="label">${esc(c.label)}</span><b>${c.value}</b>${c.delta}</div>`).join('');
+  }
+
+  document.querySelectorAll('.period-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.period-tab').forEach(b => b.classList.toggle('active', b === btn));
+      renderFinGrid(btn.dataset.period);
+    });
+  });
+
+  // ---- KPI assignés par le coach (démo locale, voir admin/kpi.html) ----
+  function renderMyKpis() {
+    const lib = JSON.parse(localStorage.getItem('restup_kpi_templates') || '[]');
+    const assignments = JSON.parse(localStorage.getItem('restup_kpi_assignments') || '[]').filter(a => a.clientId === user.id);
+    const card = document.getElementById('myKpisCard');
+    if (!assignments.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    document.getElementById('myKpisList').innerHTML = assignments.map(a => {
+      const kpi = lib.find(k => k.id === a.kpiId);
+      if (!kpi) return '';
+      return `<div class="field" style="margin-bottom:0;">
+        <label>${esc(kpi.name)}${kpi.unit ? ` (${esc(kpi.unit)})` : ''}</label>
+        <input type="text" data-kpi="${esc(a.kpiId)}" value="${esc(a.value || '')}" placeholder="Votre valeur">
+      </div>`;
+    }).join('');
+    document.getElementById('myKpisList').querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', () => {
+        const all = JSON.parse(localStorage.getItem('restup_kpi_assignments') || '[]');
+        const row = all.find(a => a.kpiId === input.dataset.kpi && a.clientId === user.id);
+        if (row) { row.value = input.value; localStorage.setItem('restup_kpi_assignments', JSON.stringify(all)); }
+      });
+    });
+  }
+
+  // ---- Quick win de la semaine + bandeau semaine terminée ----
+  function renderQuickWinAndBanner(plan) {
+    const banner = document.getElementById('weekCompleteBanner');
+    const card = document.getElementById('quickWinCard');
+    banner.style.display = 'none';
+    card.style.display = 'none';
+    const cycle = (plan.cycles || []).find(c => c.active);
+    if (!cycle) return;
+    const month = (cycle.months || []).find(m => m.current) || (cycle.months || [])[0];
+    if (!month) return;
+    const week = (month.weeks || []).find(w => !w.locked && (w.tasks || []).some(t => !t.done))
+      || (month.weeks || []).find(w => !w.locked);
+    if (!week) return;
+    const tasks = week.tasks || [];
+    const allDone = tasks.length && tasks.every(t => t.done);
+    if (allDone) banner.style.display = 'block';
+    const quickWin = tasks.find(t => t.quickWin);
+    if (quickWin) {
+      card.style.display = 'block';
+      document.getElementById('quickWinText').textContent = quickWin.text + (quickWin.done ? ' (déjà fait !)' : '');
+    }
+  }
 
   function setRing(el, pct, circumference) {
     circumference = circumference || 377;
@@ -864,7 +980,7 @@ p{margin:0 0 10px;color:var(--muted);}
     return item;
   }
 
-  let currentCycleIdx = 0, currentMonthIdx = 0, detailedRowsLimit = 20;
+  let currentCycleIdx = 0, currentMonthIdx = 0, detailedRowsLimit = 10;
 
   function renderPlan(plan) {
     const all = allTasksFlat(plan);
@@ -931,7 +1047,7 @@ p{margin:0 0 10px;color:var(--muted);}
         <div class="table-toolbar">
           <span>Lignes affichées</span>
           <select id="detailedRowsLimit">
-            ${[20, 40, 100, 200].map(n => `<option value="${n}"${n === detailedRowsLimit ? ' selected' : ''}>${n}</option>`).join('')}
+            ${[5, 10, 20, 40].map(n => `<option value="${n}"${n === detailedRowsLimit ? ' selected' : ''}>${n}</option>`).join('')}
           </select>
           <span>sur ${detailedRows.length}</span>
         </div>
@@ -1211,6 +1327,8 @@ p{margin:0 0 10px;color:var(--muted);}
     const audit = await loadAudit();
     if (audit) {
       renderAudit(audit);
+      currentFinancials = audit.financials || null;
+      renderFinGrid(currentPeriod);
       if ((audit.pillars || []).length) {
         const rows = document.getElementById('overviewRows');
         rows.innerHTML = audit.pillars.map((p, i) => {
@@ -1229,11 +1347,11 @@ p{margin:0 0 10px;color:var(--muted);}
       const done = all.filter(t => t.done).length;
       setRing(document.getElementById('ringFill'), all.length ? done / all.length * 100 : 0);
       document.getElementById('ringPct').textContent = (all.length ? Math.round(done / all.length * 100) : 0) + '%';
-      const kpi = document.getElementById('tasksKpi');
-      kpi.querySelector('b').classList.remove('cnt');
-      kpi.querySelector('b').textContent = done;
-      kpi.querySelector('span').textContent = '/ ' + all.length + ' actions faites';
+      document.getElementById('tasksDoneKpi').textContent = done;
+      document.getElementById('tasksPendingKpi').textContent = all.length - done;
+      renderQuickWinAndBanner(planRow.data);
     }
+    renderMyKpis();
 
     const calls = await loadCalls();
     renderCalls(calls);

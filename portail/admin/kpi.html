@@ -48,6 +48,16 @@ body{overflow-x:hidden;}
 .stat-card span{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-dim);display:block;margin-bottom:8px;}
 .stat-card b{font-size:26px;font-weight:900;color:#fff;}
 .stat-card b .unit{font-size:14px;font-weight:700;color:var(--muted);margin-left:2px;}
+
+.kpi-lib-form{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.kpi-lib-form input{flex:1 1 180px;}
+.kpi-lib-list{display:flex;flex-direction:column;gap:10px;}
+.kpi-lib-item{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.kpi-lib-item b{color:#fff;font-size:14px;flex:1 1 160px;}
+.kpi-lib-item select{background:var(--surface);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:7px 10px;font-family:inherit;font-size:13px;}
+.kpi-assign-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+.kpi-assign-table th{text-align:left;padding:8px 10px;color:var(--muted-dim);font-size:10.5px;text-transform:uppercase;border-bottom:1px solid var(--line);}
+.kpi-assign-table td{padding:8px 10px;border-bottom:1px solid var(--line);color:#EDE4D6;}
 </style>
 </head>
 <body>
@@ -125,6 +135,31 @@ body{overflow-x:hidden;}
         </div>
 
         <div class="stat-grid" id="kpiGrid"></div>
+
+        <div class="section-block" style="margin-top:34px;">
+          <div class="section-tag">Bibliothèque de KPI</div>
+          <h2>Créer et assigner des KPI</h2>
+          <p class="sub" style="color:var(--muted);margin-top:4px;">Créez un KPI une seule fois, puis assignez-le à un ou plusieurs clients — il apparaît ensuite dans leur espace pour qu'ils le remplissent. <em style="color:var(--muted-dim);">(Démo locale à ce stade : à brancher sur une vraie table Supabase pour une synchronisation entre appareils.)</em></p>
+          <div class="card glow-card" style="margin-top:16px;">
+            <form class="kpi-lib-form" id="kpiCreateForm">
+              <input type="text" id="kpiNameInput" placeholder="Nom du KPI (ex : Taux de remplissage terrasse)" required>
+              <input type="text" id="kpiUnitInput" placeholder="Unité (optionnel, ex : %)" style="flex:0 1 140px;">
+              <button class="btn-primary" type="submit">Créer le KPI</button>
+            </form>
+            <div class="kpi-lib-list" id="kpiLibList"></div>
+          </div>
+
+          <div class="card glow-card" style="margin-top:18px;">
+            <h3>KPI assignés</h3>
+            <div class="table-scroll">
+              <table class="kpi-assign-table">
+                <thead><tr><th>KPI</th><th>Client</th><th>Valeur renseignée</th></tr></thead>
+                <tbody id="kpiAssignBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="kpiAssignEmpty" style="display:none;">Aucun KPI assigné pour l'instant.</div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -133,6 +168,7 @@ body{overflow-x:hidden;}
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
+<script src="mock-clients.js"></script>
 <script>
 (async function () {
   const { data: sessData } = await supabaseClient.auth.getSession();
@@ -199,6 +235,92 @@ body{overflow-x:hidden;}
   document.getElementById('kpiGrid').innerHTML = cards.map(c => `
     <div class="stat-card"><span>${c.label}</span><b>${c.value}${c.unit ? `<span class="unit">${c.unit}</span>` : ''}</b></div>
   `).join('');
+
+  // =========================================================
+  // BIBLIOTHÈQUE DE KPI — démo locale (localStorage).
+  // TEMP : à remplacer par des tables Supabase "kpi_templates"
+  // (id, name, unit) et "kpi_assignments" (kpi_id, user_id, value)
+  // pour une vraie synchronisation entre le coach et le client.
+  // =========================================================
+  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const LIB_KEY = 'restup_kpi_templates';
+  const ASSIGN_KEY = 'restup_kpi_assignments';
+  const loadLib = () => JSON.parse(localStorage.getItem(LIB_KEY) || '[]');
+  const saveLib = (list) => localStorage.setItem(LIB_KEY, JSON.stringify(list));
+  const loadAssignments = () => JSON.parse(localStorage.getItem(ASSIGN_KEY) || '[]');
+  const saveAssignments = (list) => localStorage.setItem(ASSIGN_KEY, JSON.stringify(list));
+
+  const allClients = (profiles && profiles.length)
+    ? profiles.map(p => ({ id: p.id, company_name: p.company_name || p.email || 'Client' }))
+    : (window.MOCK_CLIENTS || []);
+
+  function renderKpiLib() {
+    const lib = loadLib();
+    const list = document.getElementById('kpiLibList');
+    list.innerHTML = lib.length ? lib.map(k => `
+      <div class="kpi-lib-item">
+        <b>${esc(k.name)}${k.unit ? ` <span style="color:var(--muted-dim);font-weight:400;">(${esc(k.unit)})</span>` : ''}</b>
+        <select data-kpi="${esc(k.id)}" class="kpi-assign-select">
+          <option value="">Assigner à…</option>
+          ${allClients.map(c => `<option value="${esc(c.id)}">${esc(c.company_name)}</option>`).join('')}
+        </select>
+        <button type="button" class="btn-secondary kpi-assign-btn" data-kpi="${esc(k.id)}">Assigner</button>
+        <button type="button" class="icon-btn kpi-delete-btn" data-kpi="${esc(k.id)}" title="Supprimer" aria-label="Supprimer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+        </button>
+      </div>
+    `).join('') : '<div class="empty-state">Aucun KPI créé pour l\'instant.</div>';
+
+    list.querySelectorAll('.kpi-assign-btn').forEach(btn => btn.addEventListener('click', () => {
+      const kpiId = btn.dataset.kpi;
+      const select = list.querySelector(`.kpi-assign-select[data-kpi="${kpiId}"]`);
+      const clientId = select.value;
+      if (!clientId) return;
+      const assignments = loadAssignments();
+      if (!assignments.some(a => a.kpiId === kpiId && a.clientId === clientId)) {
+        assignments.push({ kpiId, clientId, value: '' });
+        saveAssignments(assignments);
+        renderAssignments();
+        if (window.toast) toast('KPI assigné.', 'ok');
+      }
+      select.value = '';
+    }));
+    list.querySelectorAll('.kpi-delete-btn').forEach(btn => btn.addEventListener('click', () => {
+      saveLib(loadLib().filter(k => k.id !== btn.dataset.kpi));
+      saveAssignments(loadAssignments().filter(a => a.kpiId !== btn.dataset.kpi));
+      renderKpiLib(); renderAssignments();
+    }));
+  }
+
+  function renderAssignments() {
+    const lib = loadLib();
+    const assignments = loadAssignments();
+    const body = document.getElementById('kpiAssignBody');
+    const empty = document.getElementById('kpiAssignEmpty');
+    if (!assignments.length) { body.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    body.innerHTML = assignments.map(a => {
+      const kpi = lib.find(k => k.id === a.kpiId);
+      const client = allClients.find(c => c.id === a.clientId);
+      return `<tr><td>${esc(kpi ? kpi.name : '—')}</td><td>${esc(client ? client.company_name : '—')}</td><td>${a.value ? esc(a.value) + (kpi && kpi.unit ? ' ' + esc(kpi.unit) : '') : '<span style="color:var(--muted-dim);">— pas encore renseigné</span>'}</td></tr>`;
+    }).join('');
+  }
+
+  document.getElementById('kpiCreateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('kpiNameInput');
+    const unitInput = document.getElementById('kpiUnitInput');
+    const name = nameInput.value.trim();
+    if (!name) return;
+    const lib = loadLib();
+    lib.push({ id: 'kpi_' + Date.now(), name, unit: unitInput.value.trim() });
+    saveLib(lib);
+    nameInput.value = ''; unitInput.value = '';
+    renderKpiLib();
+  });
+
+  renderKpiLib();
+  renderAssignments();
 })();
 </script>
 </body>

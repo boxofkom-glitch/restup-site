@@ -56,8 +56,10 @@ body{overflow-x:hidden;}
 .legend-row span{display:inline-flex;align-items:center;gap:6px;}
 .legend-row i{width:8px;height:8px;border-radius:50%;display:inline-block;}
 
-.kanban-board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;align-items:flex-start;}
-.kanban-col{flex:0 0 260px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;}
+.suivi-page{height:100vh;display:flex;flex-direction:column;padding-bottom:20px;}
+.kanban-board{flex:1;min-height:0;display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;align-items:stretch;}
+.kanban-col{flex:0 0 260px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;min-height:0;}
+.kanban-col-cards{flex:1;overflow-y:auto;min-height:0;padding-bottom:12px;}
 .kanban-col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 2px;}
 .kanban-col-head h3{font-size:13px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.03em;}
 .kanban-count{font-size:11px;font-weight:800;color:var(--muted-dim);background:var(--ink);border-radius:999px;padding:2px 9px;}
@@ -140,9 +142,9 @@ body{overflow-x:hidden;}
     </aside>
 
     <main class="main">
-      <div class="admin-main">
+      <div class="admin-main suivi-page">
         <div class="page-title-row">
-          <div><h1>Suivi hebdo</h1><p>Vos clients répartis par semaine en cours (cycle actif).</p></div>
+          <div><h1>Suivi hebdo</h1><p>Vos clients répartis par semaine en cours (cycle actif, jusqu'à la semaine 8 — renouvelé ensuite).</p></div>
         </div>
 
         <div class="suivi-toolbar">
@@ -174,6 +176,7 @@ body{overflow-x:hidden;}
 </div>
 
 <script src="../../script.js"></script>
+<script src="mock-clients.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
 <script>
@@ -202,10 +205,14 @@ body{overflow-x:hidden;}
   const mobileToggle = document.getElementById('mobileNavToggle');
   if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 
-  const [{ data: plans }, { data: profiles }] = await Promise.all([
+  const [{ data: realPlans }, { data: realProfiles }] = await Promise.all([
     supabaseClient.from('plans').select('user_id, data'),
     supabaseClient.from('profiles').select('id, company_name, email, active'),
   ]);
+
+  // TEMP — plans/clients de démonstration si la base réelle est vide (voir mock-clients.js).
+  const profiles = (realProfiles && realProfiles.length) ? realProfiles : (window.MOCK_CLIENTS || []);
+  const plans = (realPlans && realPlans.length) ? realPlans : Object.entries(window.MOCK_PLANS || {}).map(([user_id, data]) => ({ user_id, data }));
 
   const profileById = {};
   (profiles || []).forEach(p => { profileById[p.id] = p; });
@@ -225,7 +232,8 @@ body{overflow-x:hidden;}
     const name = p?.company_name || p?.email || 'Client';
     if (!cycle) { planningCount++; return; }
     const months = cycle.months || [];
-    const month = months.find(m => m.current) || months[0];
+    const monthIdx = Math.max(0, months.findIndex(m => m.current));
+    const month = months[monthIdx] || months[0];
     if (!month) { planningCount++; return; }
     const weeks = month.weeks || [];
     let weekIdx = weeks.findIndex(w => !w.locked);
@@ -235,7 +243,8 @@ body{overflow-x:hidden;}
     const total = (week.tasks || []).length;
     const done = (week.tasks || []).filter(t => t.done).length;
     const late = !week.locked && total > 0 && done < total;
-    items.push({ name, id: pl.user_id, monthName: month.name, week, weekIdx, done, total, late });
+    const globalWeekIdx = Math.min(7, monthIdx * 4 + weekIdx); // colonnes fixes semaine 1 à 8
+    items.push({ name, id: pl.user_id, monthName: month.name, week, weekIdx: globalWeekIdx, done, total, late });
   });
   (profiles || []).forEach(p => {
     if (p.active === false) return;
@@ -246,7 +255,7 @@ body{overflow-x:hidden;}
   document.getElementById('statTotal').textContent = items.length;
   document.getElementById('statLate').textContent = items.filter(i => i.late).length;
 
-  const maxWeeks = Math.max(4, ...items.map(i => i.weekIdx + 1));
+  const maxWeeks = 8; // Cycle affiché jusqu'à la semaine 8 ; au-delà, le contrat est renouvelé sur un nouveau cycle.
 
   function buildColumns(list) {
     const cols = [];
@@ -277,6 +286,7 @@ body{overflow-x:hidden;}
     boardEl.innerHTML = cols.map(col => `
       <div class="kanban-col">
         <div class="kanban-col-head"><h3>${esc(col.label)}</h3><span class="kanban-count">${col.items.length}</span></div>
+        <div class="kanban-col-cards">
         ${col.items.length ? col.items.map(it => {
           const pct = it.total ? Math.round(it.done / it.total * 100) : 0;
           return `<a href="client.html?id=${esc(it.id)}" class="kanban-card">
@@ -285,6 +295,7 @@ body{overflow-x:hidden;}
             <div class="kanban-progress"><div class="kanban-progress-fill" style="width:${pct}%;"></div></div>
           </a>`;
         }).join('') : '<div class="kanban-empty">Aucun client</div>'}
+        </div>
       </div>
     `).join('');
   }
