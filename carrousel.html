@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/logo-restup-wordmark.png">
+<title>Générateur de carrousels — RestUp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+body{overflow-x:hidden;}
+.gen-wrap{max-width:1280px;margin:0 auto;padding:32px 20px 80px;}
+.gen-head{text-align:center;max-width:640px;margin:0 auto 30px;}
+.gen-head h1{font-size:clamp(24px,3.4vw,34px);color:#fff;margin-bottom:10px;}
+.gen-head p{font-size:14.5px;}
+
+.gen-controls{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:24px;margin-bottom:30px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;box-shadow:var(--shadow);}
+.gen-field{flex:1 1 220px;}
+.gen-field label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-dim);margin-bottom:7px;}
+.gen-field select{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:14px;}
+.gen-field select:focus{outline:none;border-color:var(--lime);}
+.gen-btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+.gen-btn{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:13px;padding:11px 18px;border-radius:999px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:color .2s,border-color .2s;}
+.gen-btn:hover{color:#fff;border-color:var(--lime);}
+.gen-btn.primary{background:var(--lime);color:var(--ink);border-color:transparent;}
+.gen-btn.primary:hover{color:var(--ink);opacity:.9;}
+.day-badge{display:inline-flex;align-items:center;gap:7px;background:var(--lime-dim);border:1px solid rgba(34,197,94,.35);color:var(--lime);font-size:11.5px;font-weight:800;padding:6px 14px;border-radius:999px;margin-bottom:18px;}
+.day-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);}
+
+.slides-scroller{display:flex;gap:18px;overflow-x:auto;padding:6px 4px 20px;scroll-snap-type:x proximity;}
+.slide-frame{flex:0 0 auto;scroll-snap-align:start;text-align:center;}
+.slide-frame .slide-label{font-size:11px;color:var(--muted-dim);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.slide-scale{width:220px;height:275px;overflow:hidden;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);}
+.slide{width:1080px;height:1350px;transform:scale(0.2037);transform-origin:top left;position:relative;background:var(--ink);font-family:'Urbanist',sans-serif;overflow:hidden;}
+
+/* ==== Slide inner styling (applies at native 1080x1350) ==== */
+.slide-glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.slide .brand-row{position:absolute;top:56px;left:64px;right:64px;display:flex;align-items:center;gap:16px;z-index:2;}
+.slide .brand-row img{width:56px;height:56px;border-radius:50%;}
+.slide .brand-row span{font-weight:900;font-size:32px;color:#fff;}
+.slide .brand-row span b{color:#22C55E;font-weight:900;}
+.slide .cat-pill{position:absolute;top:150px;left:64px;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.5);color:#C99BFF;font-weight:800;font-size:26px;padding:14px 32px;border-radius:999px;z-index:2;}
+.slide .step-pill{position:absolute;top:150px;left:64px;background:#22C55E;color:#0D0D0D;font-weight:900;font-size:26px;padding:14px 34px;border-radius:999px;z-index:2;letter-spacing:.02em;}
+.slide h2.cover-title{position:absolute;top:280px;left:64px;right:64px;font-size:74px;font-weight:900;color:#fff;line-height:1.12;z-index:2;}
+.slide .cover-sub{position:absolute;bottom:220px;left:64px;right:64px;font-size:30px;color:#B8B8B8;line-height:1.5;z-index:2;}
+.slide .swipe-cta{position:absolute;bottom:64px;left:64px;right:64px;display:flex;align-items:center;justify-content:center;gap:14px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15);border-radius:999px;padding:24px;font-weight:800;font-size:30px;color:#fff;z-index:2;}
+.slide .body-text{position:absolute;top:340px;left:64px;right:64px;bottom:180px;font-size:46px;line-height:1.5;color:#F2ECFF;font-weight:600;z-index:2;overflow:hidden;}
+.slide .foot-row{position:absolute;bottom:64px;left:64px;right:64px;display:flex;align-items:center;justify-content:space-between;z-index:2;}
+.slide .foot-logo{display:flex;align-items:center;gap:12px;}
+.slide .foot-logo img{width:40px;height:40px;border-radius:50%;}
+.slide .foot-logo span{font-weight:900;font-size:24px;color:#fff;}
+.slide .dots{display:flex;gap:10px;}
+.slide .dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2);}
+.slide .dots span.on{background:#22C55E;}
+.slide .kpi-box{position:absolute;left:64px;right:64px;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.4);border-radius:24px;padding:32px;z-index:2;}
+.slide .kpi-box b{display:block;color:#22C55E;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+.slide .kpi-box p{font-size:32px;color:#fff;line-height:1.45;font-weight:600;}
+.slide .cta-title{position:absolute;top:300px;left:64px;right:64px;font-size:60px;font-weight:900;color:#fff;text-align:center;line-height:1.2;z-index:2;}
+.slide .cta-sub{position:absolute;top:520px;left:64px;right:64px;font-size:32px;color:#C9BEEA;text-align:center;line-height:1.5;z-index:2;}
+.slide .cta-button{position:absolute;bottom:200px;left:120px;right:120px;background:#22C55E;color:#0D0D0D;text-align:center;font-weight:900;font-size:34px;padding:26px;border-radius:999px;z-index:2;}
+.slide .cta-handle{position:absolute;bottom:120px;left:64px;right:64px;text-align:center;font-size:26px;color:#888;z-index:2;}
+.slide .big-num{position:absolute;top:64px;right:64px;font-size:160px;font-weight:900;color:rgba(255,255,255,.06);z-index:1;line-height:1;}
+
+.export-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin-top:10px;font-size:13.5px;color:var(--muted);}
+.export-box b{color:#fff;}
+.export-box ol{margin:10px 0 0 20px;}
+.export-box li{margin-bottom:6px;}
+
+.caption-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin-top:20px;}
+.caption-box h3{font-size:15px;color:#fff;margin-bottom:12px;}
+.caption-box textarea{width:100%;min-height:180px;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;color:#EDE4D6;font-family:inherit;font-size:13.5px;line-height:1.6;resize:vertical;}
+
+@media print{
+  .nav-outer,.gen-head,.gen-controls,.export-box,.caption-box,footer{display:none !important;}
+  body{background:#000;}
+  .slides-scroller{overflow:visible;display:block;padding:0;}
+  .slide-frame{page-break-after:always;display:block;}
+  .slide-frame .slide-label{display:none;}
+  .slide-scale{width:auto;height:auto;overflow:visible;border:none;border-radius:0;box-shadow:none;}
+  .slide{transform:none;width:100%;height:100vh;}
+}
+</style>
+</head>
+<body class="immersive">
+
+<div class="nav-outer">
+  <nav class="nav">
+    <a href="index.html" class="nav-logo"><img src="assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+    </div>
+    <a class="nav-cta" href="portail/login.html">Espace client</a>
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu"><span></span></button>
+    <div class="nav-menu" id="navMenu">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+      <a href="portail/login.html" class="menu-cta">Espace client</a>
+    </div>
+  </nav>
+</div>
+
+<div class="gen-wrap">
+  <div class="gen-head">
+    <div class="eyebrow" style="justify-content:center;">Outil interne</div>
+    <h1>Générateur de carrousels</h1>
+    <p>Transforme n'importe quelle situation du Livre du Restaurateur en carrousel prêt pour Instagram et TikTok — 6 slides, légende incluse.</p>
+  </div>
+
+  <div style="text-align:center;">
+    <span class="day-badge" id="dayBadge">Suggestion du jour</span>
+  </div>
+
+  <div class="gen-controls">
+    <div class="gen-field">
+      <label for="chapterSelect">Thème</label>
+      <select id="chapterSelect"></select>
+    </div>
+    <div class="gen-field">
+      <label for="situationSelect">Situation</label>
+      <select id="situationSelect"></select>
+    </div>
+    <div class="gen-btn-row">
+      <button class="gen-btn" id="randomBtn" type="button">🎲 Aléatoire</button>
+      <button class="gen-btn primary" id="printBtn" type="button">🖨️ Exporter en PDF</button>
+    </div>
+  </div>
+
+  <div class="slides-scroller" id="slidesScroller"></div>
+
+  <div class="export-box">
+    <b>Comment récupérer les images :</b>
+    <ol>
+      <li><b>Option rapide :</b> capture d'écran de chaque slide ci-dessus (Windows : touche <b>Win + Maj + S</b>, découpe rectangulaire).</li>
+      <li><b>Option propre (recommandée) :</b> clique sur <b>« Exporter en PDF »</b> — chaque slide sort sur sa propre page en pleine résolution. Ouvre ensuite le PDF et exporte chaque page en image (ou dépose directement le PDF dans Canva/Metricool qui découpent les pages automatiquement).</li>
+      <li>Poste les 6 images dans l'ordre comme un carrousel Instagram, ou en post photo TikTok.</li>
+    </ol>
+  </div>
+
+  <div class="caption-box">
+    <h3>Légende prête à copier</h3>
+    <textarea id="captionText" readonly></textarea>
+    <div style="margin-top:12px;">
+      <button class="gen-btn primary" id="copyBtn" type="button">📋 Copier la légende</button>
+    </div>
+  </div>
+</div>
+
+<footer>RestUp — Pilotez. Optimisez. Développez. · Outil interne, non indexé</footer>
+
+<script src="assets/data/livre-data.js"></script>
+<script>
+const chapterSelect = document.getElementById('chapterSelect');
+const situationSelect = document.getElementById('situationSelect');
+const scroller = document.getElementById('slidesScroller');
+const captionText = document.getElementById('captionText');
+const dayBadge = document.getElementById('dayBadge');
+
+// Flatten for "today's pick" rotation
+const ALL = [];
+LIVRE_DATA.forEach((ch, ci) => ch.situations.forEach((s, si) => ALL.push({ chapterIdx: ci, sitIdx: si, chapterName: ch.name, chapterTags: ch.tags, ...s })));
+
+function populateChapters() {
+  chapterSelect.innerHTML = LIVRE_DATA.map((c, i) => `<option value="${i}">${c.num}. ${c.name}</option>`).join('');
+}
+function populateSituations(chapterIdx) {
+  const ch = LIVRE_DATA[chapterIdx];
+  situationSelect.innerHTML = ch.situations.map((s, i) => `<option value="${i}">${s.title}</option>`).join('');
+}
+populateChapters();
+populateSituations(0);
+
+function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function buildSlides(data) {
+  const tag = data.chapterTags[0] || data.chapterName;
+  scroller.innerHTML = `
+    <div class="slide-frame"><div class="slide-label">Slide 1 — Accroche</div><div class="slide-scale"><div class="slide">
+      <span class="slide-glow" style="width:500px;height:500px;background:rgba(34,197,94,.35);top:-160px;right:-160px;"></span>
+      <div class="brand-row"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <span class="cat-pill">${esc(tag)}</span>
+      <h2 class="cover-title">${esc(data.title)}</h2>
+      <p class="cover-sub">${esc(data.teaser)}</p>
+      <div class="swipe-cta">👉 Swipe pour le plan d'action</div>
+    </div></div></div>
+
+    <div class="slide-frame"><div class="slide-label">Slide 2 — La situation</div><div class="slide-scale"><div class="slide">
+      <span class="big-num">01</span>
+      <div class="brand-row"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <span class="step-pill">LA SITUATION</span>
+      <p class="body-text">${esc(data.situation)}</p>
+      <div class="foot-row"><div class="dots"><span class="on"></span><span></span><span></span><span></span></div></div>
+    </div></div></div>
+
+    <div class="slide-frame"><div class="slide-label">Slide 3 — Diagnostic</div><div class="slide-scale"><div class="slide">
+      <span class="big-num">02</span>
+      <div class="brand-row"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <span class="step-pill">LE DIAGNOSTIC</span>
+      <p class="body-text">${esc(data.diagnostic)}</p>
+      <div class="foot-row"><div class="dots"><span></span><span class="on"></span><span></span><span></span></div></div>
+    </div></div></div>
+
+    <div class="slide-frame"><div class="slide-label">Slide 4 — Action</div><div class="slide-scale"><div class="slide">
+      <span class="big-num">03</span>
+      <div class="brand-row"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <span class="step-pill">L'ACTION</span>
+      <p class="body-text">${esc(data.action)}</p>
+      <div class="foot-row"><div class="dots"><span></span><span></span><span class="on"></span><span></span></div></div>
+    </div></div></div>
+
+    <div class="slide-frame"><div class="slide-label">Slide 5 — Prévention & KPI</div><div class="slide-scale"><div class="slide">
+      <span class="big-num">04</span>
+      <div class="brand-row"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <span class="step-pill" style="position:relative;top:0;left:0;display:inline-block;margin-top:150px;margin-left:64px;">PRÉVENTION &amp; KPI</span>
+      <div class="kpi-box" style="top:420px;"><b>À suivre</b><p>${esc(data.prevention)}</p></div>
+      <div class="foot-row"><div class="dots"><span></span><span></span><span></span><span class="on"></span></div></div>
+    </div></div></div>
+
+    <div class="slide-frame"><div class="slide-label">Slide 6 — CTA</div><div class="slide-scale"><div class="slide">
+      <span class="slide-glow" style="width:460px;height:460px;background:rgba(34,197,94,.3);bottom:-140px;left:-140px;"></span>
+      <div class="brand-row" style="justify-content:center;left:0;right:0;top:110px;"><img src="assets/logo-restup.png"><span>Rest<b>Up</b></span></div>
+      <p class="cta-title">Cette situation vous parle ?</p>
+      <p class="cta-sub">On regarde ensemble où votre marge s'échappe — avec vos vrais chiffres, pas des généralités.</p>
+      <div class="cta-button">Audit gratuit — lien en bio</div>
+      <p class="cta-handle">restup-accompagnement.fr</p>
+    </div></div></div>
+  `;
+}
+
+function buildCaption(data) {
+  const hooks = [
+    `${data.title} 👇`,
+    `Vous reconnaissez cette situation dans votre restaurant ?`,
+    `On voit ça dans énormément de restaurants qu'on audite.`
+  ];
+  const hook = hooks[Math.floor(Math.random() * hooks.length)];
+  captionText.value =
+`${hook}
+
+${data.situation}
+
+Le diagnostic : ${data.diagnostic}
+
+Ce qu'on fait concrètement : ${data.action}
+
+💡 À surveiller ensuite : ${data.prevention}
+
+—
+Chaque semaine, une situation réelle tirée du Livre du Restaurateur — 12 ans de terrain, sans blabla.
+Votre restaurant a sa propre version de ce problème ? Audit gratuit, lien en bio.
+
+#restaurant #restaurateur #foodcost #gestionrestaurant #restaurantowner #horecafrance #rentabiliterestaurant #coachrestaurant`;
+}
+
+function render() {
+  const ci = parseInt(chapterSelect.value, 10);
+  const si = parseInt(situationSelect.value, 10);
+  const ch = LIVRE_DATA[ci];
+  const s = ch.situations[si];
+  const data = { chapterName: ch.name, chapterTags: ch.tags, ...s };
+  buildSlides(data);
+  buildCaption(data);
+}
+
+chapterSelect.addEventListener('change', () => { populateSituations(parseInt(chapterSelect.value, 10)); render(); });
+situationSelect.addEventListener('change', render);
+
+document.getElementById('randomBtn').addEventListener('click', () => {
+  const pick = ALL[Math.floor(Math.random() * ALL.length)];
+  chapterSelect.value = pick.chapterIdx;
+  populateSituations(pick.chapterIdx);
+  situationSelect.value = pick.sitIdx;
+  render();
+});
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  captionText.select();
+  navigator.clipboard.writeText(captionText.value).then(() => {
+    if (window.toast) toast('Légende copiée !', 'ok');
+  }).catch(() => {
+    document.execCommand('copy');
+  });
+});
+
+// Suggestion du jour : rotation stable basée sur le jour de l'année
+const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+const todayIdx = dayOfYear % ALL.length;
+const todayPick = ALL[todayIdx];
+dayBadge.textContent = `Suggestion du jour : ${todayPick.title}`;
+chapterSelect.value = todayPick.chapterIdx;
+populateSituations(todayPick.chapterIdx);
+situationSelect.value = todayPick.sitIdx;
+render();
+</script>
+<script src="script.js"></script>
+</body>
+</html>
