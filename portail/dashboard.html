@@ -578,12 +578,17 @@ p{margin:0 0 10px;color:var(--muted);}
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
 <script src="supabase-client.js"></script>
+<script src="admin/mock-clients.js"></script>
 <script>
 (async function () {
   const { data } = await supabaseClient.auth.getSession();
   // TEMP — connexion désactivée pour accès facile pendant les modifs.
   // Pour la réactiver : remettre "if (!data.session) { window.location.href = 'login.html'; return; }"
-  const user = data.session ? data.session.user : { id: 'preview', email: 'apercu@restup.fr', user_metadata: { company_name: 'Aperçu (non connecté)' } };
+  // Aperçu réglé sur le faux client "Le Petit Bouchon" (mock-1) — change l'id ci-dessous
+  // pour prévisualiser un autre faux client (voir admin/mock-clients.js).
+  const PREVIEW_CLIENT_ID = 'mock-1';
+  const mockProfile = (window.MOCK_CLIENTS || []).find(c => c.id === PREVIEW_CLIENT_ID);
+  const user = data.session ? data.session.user : { id: PREVIEW_CLIENT_ID, email: mockProfile?.email || 'apercu@restup.fr', user_metadata: { company_name: mockProfile?.company_name || 'Aperçu (non connecté)' } };
   const company = user.user_metadata?.company_name || 'votre établissement';
 
   document.getElementById('companyName').textContent = company;
@@ -626,9 +631,10 @@ p{margin:0 0 10px;color:var(--muted);}
   async function loadAudit() {
     try {
       const { data: row, error } = await supabaseClient.from('audits').select('*').eq('user_id', user.id).maybeSingle();
-      if (error || !row || !row.data) return null;
-      return row.data;
-    } catch (e) { return null; }
+      if (!error && row && row.data) return row.data;
+    } catch (e) { /* fall through to mock */ }
+    // TEMP — audit de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    return (window.MOCK_AUDITS || {})[user.id] || null;
   }
 
   function renderAudit(a) {
@@ -788,9 +794,12 @@ p{margin:0 0 10px;color:var(--muted);}
   async function loadPlan() {
     try {
       const { data: row, error } = await supabaseClient.from('plans').select('*').eq('user_id', user.id).maybeSingle();
-      if (error || !row || !row.data) return null;
-      return row;
-    } catch (e) { return null; }
+      if (!error && row && row.data) return row;
+    } catch (e) { /* fall through to mock */ }
+    // TEMP — plan de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    const mockPlan = (window.MOCK_PLANS || {})[user.id];
+    if (mockPlan) return { id: 'mock-plan-' + user.id, user_id: user.id, data: mockPlan };
+    return null;
   }
 
   async function savePlan() {
@@ -1040,9 +1049,11 @@ p{margin:0 0 10px;color:var(--muted);}
       const { data, error } = await supabaseClient
         .from('calls').select('*').eq('user_id', user.id)
         .order('scheduled_at', { ascending: false });
-      if (error || !data) return [];
-      return data;
-    } catch (e) { return []; }
+      if (!error && data && data.length) return data;
+    } catch (e) { /* fall through to mock */ }
+    // TEMP — calls de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    const mockCalls = (window.MOCK_CALLS || {})[user.id] || [];
+    return [...mockCalls].sort((a, b) => new Date(b.scheduled_at || 0) - new Date(a.scheduled_at || 0));
   }
 
   function formatCallWhen(iso) {
@@ -1217,8 +1228,10 @@ p{margin:0 0 10px;color:var(--muted);}
   async function loadMessages() {
     try {
       const { data } = await supabaseClient.from('messages').select('*').eq('user_id', user.id).order('created_at', { ascending: true });
-      return data || [];
-    } catch (e) { return []; }
+      if (data && data.length) return data;
+    } catch (e) { /* fall through to mock */ }
+    // TEMP — messages de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    return (window.MOCK_MESSAGES || {})[user.id] || [];
   }
   function renderMessageList(el, list) {
     if (!list.length) { el.innerHTML = '<div class="empty-state">Pas encore de messages.</div>'; return; }
