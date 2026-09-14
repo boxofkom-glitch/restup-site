@@ -1,0 +1,20 @@
+<svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : plan d'action hebdomadaire">
+<defs>
+  <radialGradient id="bgP" cx="50%" cy="28%" r="85%"><stop offset="0%" stop-color="#16281c"/><stop offset="60%" stop-color="#101010"/><stop offset="100%" stop-color="#0a0a0a"/></radialGradient>
+  <radialGradient id="glowP" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.4"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></radialGradient>
+  <pattern id="dotsP" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.06)"/></pattern>
+</defs>
+<rect width="480" height="320" fill="url(#bgP)"/>
+<rect width="480" height="320" fill="url(#dotsP)"/>
+<circle cx="240" cy="152" r="130" fill="url(#glowP)"/>
+<g transform="translate(240,150) scale(2.6) translate(-20,-20)" fill="none" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="8" width="32" height="27" rx="3"/>
+  <line x1="4" y1="16" x2="36" y2="16"/>
+  <line x1="12" y1="4" x2="12" y2="11"/>
+  <line x1="28" y1="4" x2="28" y2="11"/>
+  <path d="M9 23l2.4 2.4 4.6-5"/>
+  <path d="M21 23l2.4 2.4 4.6-5"/>
+  <path d="M9 30.5h5"/>
+  <path d="M21 30.5h5"/>
+</g>
+</svg>
