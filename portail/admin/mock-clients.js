@@ -1,0 +1,213 @@
+// TEMP — jeu de données de démonstration pour l'espace coach pendant les modifs.
+// Utilisé uniquement quand la base réelle ne renvoie aucun client / aucune donnée.
+// Pour retirer : supprimer ce fichier et les <script src="mock-clients.js"> qui le chargent.
+(function () {
+  window.MOCK_CLIENTS = [
+    { id: 'mock-1', company_name: 'Le Petit Bouchon', email: 'contact@lepetitbouchon.fr', active: true, created_at: '2026-04-12T09:00:00Z' },
+    { id: 'mock-2', company_name: 'Sushi Sakura', email: 'hello@sushisakura.fr', active: true, created_at: '2026-06-03T09:00:00Z' },
+    { id: 'mock-3', company_name: 'Pizzeria Bella Napoli', email: 'bella.napoli@gmail.com', active: true, created_at: '2026-08-30T09:00:00Z' },
+    { id: 'mock-4', company_name: 'Burger House Deluxe', email: 'contact@burgerhousedeluxe.fr', active: false, created_at: '2026-02-01T09:00:00Z' },
+    { id: 'mock-5', company_name: 'Le Jardin Provençal', email: 'contact@jardinprovencal.fr', active: true, created_at: '2026-08-28T09:00:00Z' },
+  ];
+
+  window.MOCK_AUDITS = {
+    'mock-1': {
+      company_name: 'Le Petit Bouchon',
+      contact_name: 'Marc Lefèvre',
+      company_description: "Bistrot gastronomique de 34 couverts à Lyon, cuisine de saison, ouvert depuis 6 ans. Équipe de 7 personnes dont 3 en cuisine.",
+      overview: { revenue: 612000, employees: 7, fixed_costs: 21400, avg_sale: 42, margin_pct: 64, cash: 18500 },
+      main_product: { name: 'Menu du marché (3 plats)', tag: 'Offre phare du soir', price_ht: 39, direct_cost: 13, gross_margin_pct: 67, net_margin_pct: 22 },
+      financial_history: [
+        { year: 2024, revenue: 528000, gross_margin_pct: 62, net_result_pct: 6, net_debt: 45000, cash: 9200 },
+        { year: 2025, revenue: 574000, gross_margin_pct: 63, net_result_pct: 7, net_debt: 38000, cash: 13800 },
+        { year: 2026, revenue: 612000, gross_margin_pct: 64, net_result_pct: 8, net_debt: 31000, cash: 18500 },
+      ],
+      competitors: [
+        { name: 'La Table de Léon', offer: 'Bistrot traditionnel, menu 32€', our_advantage: 'Carte plus créative, produits locaux', their_advantage: 'Emplacement centre-ville, notoriété' },
+      ],
+      market_opportunities: [
+        'Développer une offre brunch le dimanche, créneau peu occupé par la concurrence directe.',
+        'Proposer des accords mets-vins premium pour augmenter le ticket moyen.',
+      ],
+      growth_journey: {
+        story: "Repreneur d'un bistrot familial il y a 6 ans, passionné de cuisine de saison.",
+        vision_12m: "Stabiliser la rentabilité et ouvrir un second service le dimanche midi.",
+        objective_4m: "Passer le ticket moyen de 42€ à 48€ et réduire le coût matière de 2 points.",
+        blocker: "Trop de temps passé sur la gestion des plannings et des achats, au détriment de la carte.",
+        solutions: "Formaliser les fiches techniques et déléguer la gestion des stocks au second de cuisine.",
+      },
+      pillars: [
+        { name: 'Structure & opérations', score: 3, max: 4, criteria: [
+          { label: 'Fiches techniques', status: 'Bon', pct: 75 },
+          { label: 'Gestion des stocks', status: 'En cours', pct: 50 },
+          { label: 'Planning équipe', status: 'Excellent', pct: 95 },
+        ] },
+        { name: 'Acquisition & Vente', score: 2, max: 4, criteria: [
+          { label: 'Présence en ligne', status: 'Critique', pct: 20 },
+          { label: 'Fidélisation clients', status: 'En cours', pct: 45 },
+        ] },
+        { name: 'Vision & Pilotage', score: 3, max: 4, criteria: [
+          { label: 'Suivi des indicateurs', status: 'Bon', pct: 70 },
+          { label: 'Objectifs clairs', status: 'Excellent', pct: 90 },
+        ] },
+      ],
+    },
+    'mock-2': {
+      company_name: 'Sushi Sakura',
+      contact_name: 'Yuki Tanaka',
+      company_description: "Restaurant japonais de 28 couverts + vente à emporter, ouvert il y a 2 ans dans le 11e arrondissement de Paris.",
+      overview: { revenue: 385000, employees: 5, fixed_costs: 15800, avg_sale: 27, margin_pct: 58, cash: 9400 },
+      main_product: { name: 'Plateau Sakura (assortiment 20 pièces)', tag: 'Best-seller livraison', price_ht: 24, direct_cost: 9.5, gross_margin_pct: 60, net_margin_pct: 16 },
+      financial_history: [
+        { year: 2025, revenue: 298000, gross_margin_pct: 54, net_result_pct: 4, net_debt: 52000, cash: 4100 },
+        { year: 2026, revenue: 385000, gross_margin_pct: 58, net_result_pct: 9, net_debt: 44000, cash: 9400 },
+      ],
+      competitors: [
+        { name: 'Tokyo Street', offer: 'Sushi rapide, formules déjeuner à 14€', our_advantage: 'Produits plus qualitatifs, chef formé au Japon', their_advantage: 'Prix plus bas, plus rapide en livraison' },
+        { name: 'Umi Sushi', offer: 'Restaurant japonais haut de gamme', our_advantage: 'Rapport qualité-prix, ambiance décontractée', their_advantage: 'Image plus premium' },
+      ],
+      market_opportunities: [
+        'La livraison représente déjà 40% du CA : optimiser le temps de préparation pour absorber plus de commandes aux heures de pointe.',
+        'Lancer une offre traiteur pour événements d\'entreprise, peu exploitée dans le quartier.',
+      ],
+      growth_journey: {
+        story: "Ancienne cheffe sushi dans un restaurant étoilé, s'est lancée seule il y a 2 ans.",
+        vision_12m: "Doubler la capacité de production livraison sans dégrader la qualité en salle.",
+        objective_4m: "Recruter et former un second chef pour sécuriser les pics d'activité du week-end.",
+        blocker: "Dépendance à une seule personne (elle-même) pour la qualité constante des produits.",
+        solutions: "Documenter les recettes précisément et mettre en place une période de formation encadrée.",
+      },
+      pillars: [
+        { name: 'Structure & opérations', score: 2, max: 4, criteria: [
+          { label: 'Fiches techniques', status: 'Critique', pct: 15 },
+          { label: 'Gestion des stocks', status: 'Bon', pct: 70 },
+        ] },
+        { name: 'Acquisition & Vente', score: 4, max: 4, criteria: [
+          { label: 'Présence en ligne', status: 'Excellent', pct: 100 },
+          { label: 'Plateformes de livraison', status: 'Excellent', pct: 95 },
+        ] },
+        { name: 'Vision & Pilotage', score: 2, max: 4, criteria: [
+          { label: 'Suivi des indicateurs', status: 'En cours', pct: 40 },
+          { label: 'Objectifs clairs', status: 'Bon', pct: 65 },
+        ] },
+      ],
+    },
+    'mock-5': {
+      company_name: 'Le Jardin Provençal',
+      contact_name: 'Isabelle Roux',
+      company_description: "Restaurant traditionnel provençal de 50 couverts avec terrasse, à Aix-en-Provence.",
+      overview: { revenue: 495000, employees: 8, fixed_costs: 24000, avg_sale: 35, margin_pct: 55, cash: 7200 },
+      main_product: { name: 'Formule terrasse (entrée + plat)', tag: 'Offre déjeuner', price_ht: 22, direct_cost: 8, gross_margin_pct: 58, net_margin_pct: 12 },
+      financial_history: [
+        { year: 2025, revenue: 460000, gross_margin_pct: 53, net_result_pct: 5, net_debt: 60000, cash: 5100 },
+        { year: 2026, revenue: 495000, gross_margin_pct: 55, net_result_pct: 6, net_debt: 55000, cash: 7200 },
+      ],
+      competitors: [],
+      market_opportunities: [
+        'La terrasse est sous-exploitée le soir en semaine : envisager une offre apéritif-tapas.',
+      ],
+      growth_journey: {
+        story: "Reprise familiale du restaurant il y a 4 ans.",
+        vision_12m: "Améliorer la rentabilité de la terrasse en soirée.",
+        objective_4m: "Tester une carte apéritif-tapas sur 2 mois.",
+        blocker: "Peu de visibilité sur la rentabilité réelle par service (midi vs soir).",
+        solutions: "Mettre en place un suivi de caisse séparé midi/soir.",
+      },
+      pillars: [
+        { name: 'Structure & opérations', score: 3, max: 4, criteria: [
+          { label: 'Fiches techniques', status: 'Bon', pct: 72 },
+        ] },
+        { name: 'Acquisition & Vente', score: 2, max: 4, criteria: [
+          { label: 'Présence en ligne', status: 'En cours', pct: 48 },
+        ] },
+        { name: 'Vision & Pilotage', score: 1, max: 4, criteria: [
+          { label: 'Suivi des indicateurs', status: 'Critique', pct: 20 },
+        ] },
+      ],
+    },
+  };
+
+  window.MOCK_PLANS = {
+    'mock-1': {
+      contract_months: 6,
+      vision_12m: { title: 'Vision 12 mois', items: [
+        { text: 'Stabiliser la marge nette au-dessus de 10%', done: true },
+        { text: 'Ouvrir le service du dimanche midi', done: false },
+        { text: 'Réduire la dépendance au chef sur les achats', done: false },
+      ] },
+      priorities_4m: { title: 'Priorités 4 mois', items: [
+        { text: 'Formaliser 15 fiches techniques prioritaires', done: true },
+        { text: 'Augmenter le ticket moyen à 48€', done: false },
+        { text: 'Mettre en place un tableau de bord hebdomadaire', done: true },
+      ] },
+      axes: [
+        { name: 'Structure & opérations', subtitle: 'Fiabiliser la cuisine', situation: 'Fiches techniques incomplètes, dépendance au chef.', actions: ['Rédiger les fiches techniques manquantes', 'Former le second de cuisine aux achats'] },
+        { name: 'Acquisition & Vente', subtitle: 'Renforcer la visibilité', situation: 'Peu de présence en ligne, faible fidélisation.', actions: ['Créer une fiche Google Business complète', 'Lancer une carte de fidélité simple'] },
+      ],
+      cycles: [
+        { name: 'Cycle 1', active: true, months: [
+          { name: 'Mois 1', current: false, objective: 'Poser les bases du suivi', kpis: ['[CA] Suivi hebdomadaire du chiffre d\'affaires'], weeks: [
+            { label: 'Semaine 1', tasks: [ { text: 'Mettre en place le tableau de suivi CA', done: true }, { text: 'Lister les 15 plats prioritaires', done: true } ] },
+            { label: 'Semaine 2', tasks: [ { text: 'Rédiger 5 fiches techniques', done: true }, { text: 'Former le second sur les commandes', done: true } ] },
+            { label: 'Semaine 3', tasks: [ { text: 'Rédiger 5 fiches techniques supplémentaires', done: true }, { text: 'Auditer les fournisseurs actuels', done: false } ] },
+            { label: 'Semaine 4', tasks: [ { text: 'Finaliser les 15 fiches techniques', done: false }, { text: 'Bilan du mois avec le coach', done: false } ] },
+          ] },
+          { name: 'Mois 2', current: true, objective: 'Augmenter le ticket moyen', kpis: ['[Panier] Ticket moyen hebdomadaire'], weeks: [
+            { label: 'Semaine 1', tasks: [ { text: 'Retravailler la carte des vins', done: true }, { text: 'Former l\'équipe à la suggestion de vente', done: false } ] },
+            { label: 'Semaine 2', tasks: [ { text: 'Mettre en avant le menu dégustation', done: false } ] },
+            { label: 'Semaine 3', locked: true, tasks: [ { text: 'Analyser les retours clients', done: false } ] },
+            { label: 'Semaine 4', locked: true, tasks: [ { text: 'Bilan du mois avec le coach', done: false } ] },
+          ] },
+        ] },
+        { name: 'Cycle 2', active: false, months: [] },
+      ],
+    },
+    'mock-2': {
+      contract_months: 4,
+      vision_12m: { title: 'Vision 12 mois', items: [
+        { text: 'Doubler la capacité de production livraison', done: false },
+        { text: 'Recruter un second chef formé', done: false },
+      ] },
+      priorities_4m: { title: 'Priorités 4 mois', items: [
+        { text: 'Documenter les recettes signatures', done: true },
+        { text: 'Lancer le recrutement du second chef', done: true },
+        { text: 'Optimiser le temps de préparation livraison', done: false },
+      ] },
+      axes: [
+        { name: 'Structure & opérations', subtitle: 'Sécuriser la production', situation: 'Toute la qualité repose sur une seule personne.', actions: ['Documenter 20 recettes clés', 'Mettre en place une période de doublage'] },
+      ],
+      cycles: [
+        { name: 'Cycle 1', active: true, months: [
+          { name: 'Mois 1', current: true, objective: 'Sécuriser le savoir-faire', kpis: ['[Recettes] Nombre de recettes documentées'], weeks: [
+            { label: 'Semaine 1', tasks: [ { text: 'Documenter 5 recettes signatures', done: true } ] },
+            { label: 'Semaine 2', tasks: [ { text: 'Documenter 5 recettes supplémentaires', done: true } ] },
+            { label: 'Semaine 3', tasks: [ { text: 'Publier l\'offre d\'emploi second chef', done: false } ] },
+            { label: 'Semaine 4', tasks: [ { text: 'Premiers entretiens candidats', done: false } ] },
+          ] },
+        ] },
+      ],
+    },
+  };
+
+  window.MOCK_MESSAGES = {
+    'mock-1': [
+      { sender: 'client', text: 'Bonjour, on a testé le nouveau menu dégustation ce week-end, très bons retours !', created_at: '2026-09-10T18:20:00Z' },
+      { sender: 'coach', text: 'Super nouvelle ! On regarde ensemble les chiffres au prochain call jeudi ?', created_at: '2026-09-10T19:05:00Z' },
+    ],
+    'mock-2': [
+      { sender: 'client', text: 'On a eu un pic de commandes vendredi soir, on a dû refuser du monde.', created_at: '2026-09-08T21:10:00Z' },
+      { sender: 'coach', text: 'C\'est le signe qu\'il faut accélérer sur le recrutement. On en parle jeudi.', created_at: '2026-09-09T08:30:00Z' },
+    ],
+  };
+
+  window.MOCK_CALLS = {
+    'mock-1': [
+      { id: 'mc-1', status: 'done', notes: 'Point sur les fiches techniques et le suivi CA.', scheduled_at: '2026-08-28T13:00:00Z' },
+      { id: 'mc-2', status: 'confirmed', notes: 'Bilan du mois 2 et carte des vins.', scheduled_at: '2026-09-18T13:00:00Z' },
+    ],
+    'mock-2': [
+      { id: 'mc-3', status: 'done', notes: 'Lancement du recrutement second chef.', scheduled_at: '2026-08-25T10:00:00Z' },
+      { id: 'mc-4', status: 'requested', notes: 'Créneau souhaité : jeudi matin', scheduled_at: null },
+    ],
+  };
+})();
