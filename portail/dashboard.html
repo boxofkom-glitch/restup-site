@@ -581,9 +581,9 @@ p{margin:0 0 10px;color:var(--muted);}
 <script>
 (async function () {
   const { data } = await supabaseClient.auth.getSession();
-  if (!data.session) { window.location.href = 'login.html'; return; }
-
-  const user = data.session.user;
+  // TEMP — connexion désactivée pour accès facile pendant les modifs.
+  // Pour la réactiver : remettre "if (!data.session) { window.location.href = 'login.html'; return; }"
+  const user = data.session ? data.session.user : { id: 'preview', email: 'apercu@restup.fr', user_metadata: { company_name: 'Aperçu (non connecté)' } };
   const company = user.user_metadata?.company_name || 'votre établissement';
 
   document.getElementById('companyName').textContent = company;
