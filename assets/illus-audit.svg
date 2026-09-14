@@ -1,0 +1,17 @@
+<svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : audit terrain d'un restaurant">
+<defs>
+  <radialGradient id="bgA" cx="50%" cy="28%" r="85%"><stop offset="0%" stop-color="#16281c"/><stop offset="60%" stop-color="#101010"/><stop offset="100%" stop-color="#0a0a0a"/></radialGradient>
+  <radialGradient id="glowA" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.4"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></radialGradient>
+  <pattern id="dotsA" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.06)"/></pattern>
+</defs>
+<rect width="480" height="320" fill="url(#bgA)"/>
+<rect width="480" height="320" fill="url(#dotsA)"/>
+<circle cx="240" cy="152" r="130" fill="url(#glowA)"/>
+<g transform="translate(240,150) scale(2.6) translate(-20,-20)" fill="none" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="6" y="22" width="5" height="10" opacity=".85"/>
+  <rect x="14" y="15" width="5" height="17" opacity=".85"/>
+  <rect x="22" y="9" width="5" height="23" opacity=".85"/>
+  <circle cx="16" cy="16" r="10"/>
+  <line x1="23" y1="23" x2="33" y2="33"/>
+</g>
+</svg>
