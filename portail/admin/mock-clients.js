@@ -127,6 +127,44 @@
     },
   };
 
+  // ---- Générateur de semaines à 7 tâches, pour un plan d'action bien rempli ----
+  var TASK_POOL = [
+    'Rédiger la fiche technique du plat du jour', 'Mettre à jour l\'inventaire de la cave à vin',
+    'Former un commis aux normes HACCP', 'Réorganiser le poste chaud pour gagner en fluidité',
+    'Renégocier les tarifs avec le fournisseur de viande', 'Standardiser les portions des entrées',
+    'Auditer les pertes en fin de service', 'Mettre à jour le planning de l\'équipe cuisine',
+    'Tester une nouvelle recette de dessert', 'Vérifier les dates de péremption en réserve',
+    'Optimiser la rotation des stocks de légumes', 'Former le second aux commandes fournisseurs',
+    'Publier 3 posts Instagram sur les plats de saison', 'Répondre aux avis Google de la semaine',
+    'Mettre à jour la fiche Google Business', 'Lancer une offre déjeuner pour la semaine',
+    'Relancer les clients inactifs par email', 'Créer une carte de fidélité simple',
+    'Photographier les nouveaux plats pour le site', 'Tester une formule apéritif en terrasse',
+    'Analyser les avis clients pour identifier les points faibles', 'Former l\'équipe à la vente additionnelle',
+    'Mettre à jour le menu en ligne', 'Mettre à jour le tableau de suivi du chiffre d\'affaires',
+    'Calculer la marge réelle du menu du marché', 'Faire le point hebdomadaire avec le coach',
+    'Analyser les charges fixes du mois', 'Suivre l\'évolution du ticket moyen',
+    'Vérifier la trésorerie disponible', 'Comparer les ventes à l\'objectif du mois',
+  ];
+  function genWeek(label, weekIdx, doneCount, locked, poolOffset) {
+    var tasks = [];
+    for (var i = 0; i < 7; i++) {
+      var text = TASK_POOL[(poolOffset + weekIdx * 7 + i) % TASK_POOL.length];
+      tasks.push({ text: text, done: i < doneCount });
+    }
+    var week = { label: label, tasks: tasks };
+    if (locked) week.locked = true;
+    return week;
+  }
+  function genMonth(name, monthIdx, current, objective, kpis, doneCountsPerWeek, lockedFrom, poolOffset) {
+    var weeks = [];
+    for (var w = 0; w < 4; w++) {
+      var doneCount = doneCountsPerWeek[w] != null ? doneCountsPerWeek[w] : 0;
+      var locked = lockedFrom != null && w >= lockedFrom;
+      weeks.push(genWeek('Semaine ' + (w + 1), monthIdx * 4 + w, locked ? 0 : doneCount, locked, poolOffset || 0));
+    }
+    return { name: name, current: !!current, objective: objective, kpis: kpis, weeks: weeks };
+  }
+
   window.MOCK_PLANS = {
     'mock-1': {
       contract_months: 6,
@@ -146,18 +184,10 @@
       ],
       cycles: [
         { name: 'Cycle 1', active: true, months: [
-          { name: 'Mois 1', current: false, objective: 'Poser les bases du suivi', kpis: ['[CA] Suivi hebdomadaire du chiffre d\'affaires'], weeks: [
-            { label: 'Semaine 1', tasks: [ { text: 'Mettre en place le tableau de suivi CA', done: true }, { text: 'Lister les 15 plats prioritaires', done: true } ] },
-            { label: 'Semaine 2', tasks: [ { text: 'Rédiger 5 fiches techniques', done: true }, { text: 'Former le second sur les commandes', done: true } ] },
-            { label: 'Semaine 3', tasks: [ { text: 'Rédiger 5 fiches techniques supplémentaires', done: true }, { text: 'Auditer les fournisseurs actuels', done: false } ] },
-            { label: 'Semaine 4', tasks: [ { text: 'Finaliser les 15 fiches techniques', done: false }, { text: 'Bilan du mois avec le coach', done: false } ] },
-          ] },
-          { name: 'Mois 2', current: true, objective: 'Augmenter le ticket moyen', kpis: ['[Panier] Ticket moyen hebdomadaire'], weeks: [
-            { label: 'Semaine 1', tasks: [ { text: 'Retravailler la carte des vins', done: true }, { text: 'Former l\'équipe à la suggestion de vente', done: false } ] },
-            { label: 'Semaine 2', tasks: [ { text: 'Mettre en avant le menu dégustation', done: false } ] },
-            { label: 'Semaine 3', locked: true, tasks: [ { text: 'Analyser les retours clients', done: false } ] },
-            { label: 'Semaine 4', locked: true, tasks: [ { text: 'Bilan du mois avec le coach', done: false } ] },
-          ] },
+          genMonth('Mois 1', 0, false, 'Poser les bases du suivi', ['[CA] Suivi hebdomadaire du chiffre d\'affaires'], [7, 7, 7, 7]),
+          genMonth('Mois 2', 1, true, 'Augmenter le ticket moyen', ['[Panier] Ticket moyen hebdomadaire'], [7, 7, 4, 0]),
+          genMonth('Mois 3', 2, false, 'Fidéliser la clientèle régulière', ['[Fidélité] Nombre de cartes distribuées'], [0, 0, 0, 0]),
+          genMonth('Mois 4', 3, false, 'Préparer l\'ouverture du dimanche midi', ['[Ouverture] Jours de test réalisés'], [0, 0, 0, 0], 1),
         ] },
         { name: 'Cycle 2', active: false, months: [] },
       ],
@@ -178,12 +208,8 @@
       ],
       cycles: [
         { name: 'Cycle 1', active: true, months: [
-          { name: 'Mois 1', current: true, objective: 'Sécuriser le savoir-faire', kpis: ['[Recettes] Nombre de recettes documentées'], weeks: [
-            { label: 'Semaine 1', tasks: [ { text: 'Documenter 5 recettes signatures', done: true } ] },
-            { label: 'Semaine 2', tasks: [ { text: 'Documenter 5 recettes supplémentaires', done: true } ] },
-            { label: 'Semaine 3', tasks: [ { text: 'Publier l\'offre d\'emploi second chef', done: false } ] },
-            { label: 'Semaine 4', tasks: [ { text: 'Premiers entretiens candidats', done: false } ] },
-          ] },
+          genMonth('Mois 1', 0, true, 'Sécuriser le savoir-faire', ['[Recettes] Nombre de recettes documentées'], [7, 5, 0, 0], null, 11),
+          genMonth('Mois 2', 1, false, 'Recruter et former le second chef', ['[Équipe] Entretiens réalisés'], [0, 0, 0, 0], 2, 11),
         ] },
       ],
     },
