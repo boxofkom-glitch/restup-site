@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#0D0D0D;}
+.slide{width:1080px;height:1350px;position:relative;background:#0D0D0D;font-family:'Urbanist',sans-serif;overflow:hidden;}
+.slide-glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.slide .brand-row{position:absolute;top:56px;left:64px;right:64px;display:flex;align-items:center;gap:16px;z-index:2;}
+.slide .brand-row img{width:56px;height:56px;border-radius:50%;}
+.slide .brand-row span{font-weight:900;font-size:32px;color:#fff;}
+.slide .brand-row span b{color:#22C55E;font-weight:900;}
+.slide .cat-pill{position:absolute;top:150px;left:64px;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.5);color:#C99BFF;font-weight:800;font-size:26px;padding:14px 32px;border-radius:999px;z-index:2;}
+.slide .step-pill{position:absolute;top:150px;left:64px;background:#22C55E;color:#0D0D0D;font-weight:900;font-size:26px;padding:14px 34px;border-radius:999px;z-index:2;letter-spacing:.02em;}
+.slide h2.cover-title{position:absolute;top:280px;left:64px;right:64px;font-size:74px;font-weight:900;color:#fff;line-height:1.12;z-index:2;}
+.slide .cover-sub{position:absolute;bottom:220px;left:64px;right:64px;font-size:30px;color:#B8B8B8;line-height:1.5;z-index:2;}
+.slide .swipe-cta{position:absolute;bottom:64px;left:64px;right:64px;display:flex;align-items:center;justify-content:center;gap:14px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15);border-radius:999px;padding:24px;font-weight:800;font-size:30px;color:#fff;z-index:2;}
+.slide .body-text{position:absolute;top:340px;left:64px;right:64px;bottom:180px;font-size:46px;line-height:1.5;color:#F2ECFF;font-weight:600;z-index:2;overflow:hidden;}
+.slide .foot-row{position:absolute;bottom:64px;left:64px;right:64px;display:flex;align-items:center;justify-content:space-between;z-index:2;}
+.slide .dots{display:flex;gap:10px;}
+.slide .dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2);}
+.slide .dots span.on{background:#22C55E;}
+.slide .kpi-box{position:absolute;left:64px;right:64px;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.4);border-radius:24px;padding:32px;z-index:2;}
+.slide .kpi-box b{display:block;color:#22C55E;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+.slide .kpi-box p{font-size:32px;color:#fff;line-height:1.45;font-weight:600;}
+.slide .cta-title{position:absolute;top:300px;left:64px;right:64px;font-size:60px;font-weight:900;color:#fff;text-align:center;line-height:1.2;z-index:2;}
+.slide .cta-sub{position:absolute;top:520px;left:64px;right:64px;font-size:32px;color:#C9BEEA;text-align:center;line-height:1.5;z-index:2;}
+.slide .cta-button{position:absolute;bottom:200px;left:120px;right:120px;background:#22C55E;color:#0D0D0D;text-align:center;font-weight:900;font-size:34px;padding:26px;border-radius:999px;z-index:2;}
+.slide .cta-handle{position:absolute;bottom:120px;left:64px;right:64px;text-align:center;font-size:26px;color:#888;z-index:2;}
+.slide .big-num{position:absolute;top:64px;right:64px;font-size:160px;font-weight:900;color:rgba(255,255,255,.06);z-index:1;line-height:1;}
+</style>
+</head>
+<body>
+<div class="slide" id="slide"></div>
+<script src="livre-data.js"></script>
+<script>
+function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+const params = new URLSearchParams(location.search);
+const ch = parseInt(params.get('ch'), 10);
+const s = parseInt(params.get('s'), 10);
+const n = parseInt(params.get('n'), 10);
+const logo = '../logo-restup.png';
+
+const chapter = LIVRE_DATA[ch];
+const sit = chapter.situations[s];
+const data = { ...sit, chapterName: chapter.name, chapterTags: chapter.tags };
+const tag = data.chapterTags[0] || data.chapterName;
+
+const templates = {
+  1: `
+    <span class="slide-glow" style="width:500px;height:500px;background:rgba(34,197,94,.35);top:-160px;right:-160px;"></span>
+    <div class="brand-row"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <span class="cat-pill">${esc(tag)}</span>
+    <h2 class="cover-title">${esc(data.title)}</h2>
+    <p class="cover-sub">${esc(data.teaser)}</p>
+    <div class="swipe-cta">👉 Swipe pour le plan d'action</div>
+  `,
+  2: `
+    <span class="big-num">01</span>
+    <div class="brand-row"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <span class="step-pill">LA SITUATION</span>
+    <p class="body-text">${esc(data.situation)}</p>
+    <div class="foot-row"><div class="dots"><span class="on"></span><span></span><span></span><span></span></div></div>
+  `,
+  3: `
+    <span class="big-num">02</span>
+    <div class="brand-row"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <span class="step-pill">LE DIAGNOSTIC</span>
+    <p class="body-text">${esc(data.diagnostic)}</p>
+    <div class="foot-row"><div class="dots"><span></span><span class="on"></span><span></span><span></span></div></div>
+  `,
+  4: `
+    <span class="big-num">03</span>
+    <div class="brand-row"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <span class="step-pill">L'ACTION</span>
+    <p class="body-text">${esc(data.action)}</p>
+    <div class="foot-row"><div class="dots"><span></span><span></span><span class="on"></span><span></span></div></div>
+  `,
+  5: `
+    <span class="big-num">04</span>
+    <div class="brand-row"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <span class="step-pill" style="position:relative;top:0;left:0;display:inline-block;margin-top:150px;margin-left:64px;">PRÉVENTION &amp; KPI</span>
+    <div class="kpi-box" style="top:420px;"><b>À suivre</b><p>${esc(data.prevention)}</p></div>
+    <div class="foot-row"><div class="dots"><span></span><span></span><span></span><span class="on"></span></div></div>
+  `,
+  6: `
+    <span class="slide-glow" style="width:460px;height:460px;background:rgba(34,197,94,.3);bottom:-140px;left:-140px;"></span>
+    <div class="brand-row" style="justify-content:center;left:0;right:0;top:110px;"><img src="${logo}"><span>Rest<b>Up</b></span></div>
+    <p class="cta-title">Cette situation vous parle ?</p>
+    <p class="cta-sub">On regarde ensemble où votre marge s'échappe — avec vos vrais chiffres, pas des généralités.</p>
+    <div class="cta-button">Audit gratuit — lien en bio</div>
+    <p class="cta-handle">restup-accompagnement.fr</p>
+  `
+};
+
+document.getElementById('slide').innerHTML = templates[n] || '<p style="color:red;padding:40px;">Paramètres invalides</p>';
+
+document.fonts.ready.then(() => {
+  const img = document.querySelector('.brand-row img');
+  const markReady = () => { document.title = 'READY'; };
+  if (img && !img.complete) { img.addEventListener('load', markReady); img.addEventListener('error', markReady); }
+  else { markReady(); }
+});
+</script>
+</body>
+</html>
