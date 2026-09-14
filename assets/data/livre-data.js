@@ -1,0 +1,922 @@
+const LIVRE_DATA = [
+  {
+    "id": "ch-marge",
+    "num": 1,
+    "name": "Marge & prix",
+    "tags": [
+      "coût matière",
+      "prix de vente",
+      "marge contributive"
+    ],
+    "situations": [
+      {
+        "title": "La marge recule alors que le CA tient",
+        "teaser": "CA stable, marge en baisse : le mix de vente a glissé",
+        "situation": "Le CA mensuel est stable, voire en légère hausse, mais la marge nette continue de reculer trimestre après trimestre.",
+        "diagnostic": "Comparer le mix de ventes du trimestre à celui de l'an dernier — un glissement vers les produits à faible marge (souvent portés par les promos ou la livraison) suffit à faire baisser la marge globale sans que le CA bouge.",
+        "action": "Recalculer la marge brute réelle des 10 produits les plus vendus, isoler ceux sous 60% de marge, et soit ajuster leur prix soit réduire leur mise en avant sur la carte et les plateformes.",
+        "prevention": "Suivre mensuellement la marge moyenne pondérée par le mix de ventes, pas seulement la marge par produit isolée — c'est le vrai indicateur qui bouge en premier."
+      },
+      {
+        "title": "Une hausse fournisseur qu'on n'a jamais vraiment répercutée",
+        "teaser": "Le coût a grimpé, le prix de vente non",
+        "situation": "Un fournisseur clé a augmenté ses tarifs de 6 à 8% il y a plusieurs mois, et personne n'a formellement ajusté les prix de vente en conséquence.",
+        "diagnostic": "Reprendre les fiches techniques des plats concernés avec le coût matière actualisé — l'écart entre le coût théorique d'origine et le coût réel actuel donne le vrai manque à gagner, souvent supérieur à ce qu'on imagine.",
+        "action": "Augmenter le prix des 3 à 5 plats les plus touchés de 3 à 5%, en les accompagnant d'un ajustement perceptible (portion, présentation, garniture) pour que la hausse ne se voie pas comme une hausse sèche.",
+        "prevention": "Mettre une alerte trimestrielle : dès qu'un fournisseur annonce une hausse de plus de 3%, ouvrir automatiquement une révision de la fiche technique concernée dans les 15 jours."
+      },
+      {
+        "title": "Une promo qui cannibalise les ventes à plein tarif",
+        "teaser": "L'offre tourne bien, la marge du service recule",
+        "situation": "Une offre ou un menu promotionnel tourne bien en volume, mais la marge globale du service ne suit pas, voire baisse pendant les périodes où la promo est active.",
+        "diagnostic": "Vérifier si les clients qui auraient commandé à plein tarif basculent simplement vers l'offre promo (cannibalisation), plutôt que d'attirer de nouveaux clients supplémentaires.",
+        "action": "Limiter la promo à des créneaux ou jours réellement creux (ceux où elle génère du volume additionnel plutôt que du transfert), et retirer les produits à forte marge de son périmètre.",
+        "prevention": "Suivre le panier moyen et la marge par couvert pendant vs hors promo, sur les mêmes créneaux — pas seulement le volume de ventes de l'offre elle-même."
+      },
+      {
+        "title": "Un menu trop long qui dilue la marge moyenne",
+        "teaser": "Trop de plats à faible volume et faible marge",
+        "situation": "La carte compte 40+ références, mais une poignée de plats portent l'essentiel du volume — les autres traînent en stock, en temps de prépa et en complexité sans contribuer vraiment au résultat.",
+        "diagnostic": "Classer chaque plat selon deux axes — volume de ventes et marge dégagée — pour repérer ceux qui cumulent faible volume ET faible marge, les vrais candidats à la suppression.",
+        "action": "Retirer ou remplacer les 15% de plats les moins performants sur les deux axes, sans attendre une refonte complète de la carte.",
+        "prevention": "Revoir ce classement tous les 6 mois — une carte qui grossit sans jamais être nettoyée dilue mécaniquement la marge moyenne au fil du temps."
+      },
+      {
+        "title": "Un prix psychologique jamais retouché malgré l'inflation",
+        "teaser": "Le prix rond n'a pas bougé depuis l'ouverture",
+        "situation": "Certains prix sont restés figés à un seuil « rond » (9,90€, 14,90€...) depuis l'ouverture, alors que les coûts ont augmenté tout autour.",
+        "diagnostic": "Calculer, plat par plat, le ratio coût matière/prix de vente actuel — un ratio qui grimpe année après année sur un prix qui n'a jamais bougé signale une marge qui s'érode en silence.",
+        "action": "Augmenter légèrement (quelques dizaines de centimes) plutôt que de changer brutalement de palier psychologique — un ajustement discret passe mieux qu'un saut de prix visible.",
+        "prevention": "Revoir chaque prix au moins une fois par an, même de quelques centimes, pour éviter d'avoir à faire un rattrapage douloureux d'un coup."
+      },
+      {
+        "title": "Une remise systématique accordée sans cadre",
+        "teaser": "Des gestes commerciaux jamais additionnés sur l'année",
+        "situation": "L'équipe (ou le dirigeant) accorde des remises ponctuelles — client fidèle, petite erreur, geste commercial — sans règle claire, et leur poids cumulé sur l'année n'est jamais mesuré.",
+        "diagnostic": "Additionner le total des remises accordées sur un mois type et le rapporter au CA — ce pourcentage, une fois visible, est souvent plus élevé que ce que chacun pense individuellement.",
+        "action": "Fixer un cadre simple (montant max, motifs autorisés, qui peut valider) pour que le geste commercial reste un outil et non une fuite de marge non pilotée.",
+        "prevention": "Suivre le montant total de remises accordées chaque mois comme un poste à part entière, au même titre que le food cost ou les charges."
+      },
+      {
+        "title": "Une carte des boissons largement sous-exploitée en marge",
+        "teaser": "Les boissons se vendent seules, sans jamais être proposées",
+        "situation": "Les boissons (softs, vins, bières) sont vendues, mais sans réelle stratégie de mise en avant, alors qu'elles comptent parmi les marges les plus élevées de la carte.",
+        "diagnostic": "Comparer le taux d'attachement boisson (part des additions avec au moins une boisson vendue) à la moyenne du secteur — un taux faible signale une marge facile laissée de côté.",
+        "action": "Former l'équipe à proposer systématiquement une boisson à l'accueil ou à la prise de commande, plutôt que d'attendre que le client la demande.",
+        "prevention": "Suivre le taux d'attachement boisson par service, et viser une progression progressive plutôt qu'un objectif brutal du jour au lendemain."
+      },
+      {
+        "title": "Un plat signature vendu en dessous de son vrai coût",
+        "teaser": "Le plat vitrine cache une marge faible, voire négative",
+        "situation": "Le plat « vitrine » du restaurant, souvent mis en avant en photo ou en tête de carte, dégage en réalité une marge très faible voire négative une fois tous les coûts comptés.",
+        "diagnostic": "Recalculer son coût matière complet, garnitures et sauces incluses, souvent oubliées dans le calcul initial du prix.",
+        "action": "Soit ajuster légèrement le prix, soit revoir la garniture ou la portion pour rééquilibrer la marge, sans dénaturer ce qui fait le succès du plat.",
+        "prevention": "Revoir le coût complet de chaque plat « signature » au moins une fois par an, car ce sont souvent eux qui évoluent le moins alors que leurs coûts annexes bougent."
+      },
+      {
+        "title": "Un menu du jour qui écrase la marge du service",
+        "teaser": "La formule attire du monde, mais rapporte peu",
+        "situation": "La formule ou le menu du jour attire du monde à midi, mais sa marge est nettement plus faible que celle de la carte classique, sans que cet écart soit vraiment piloté.",
+        "diagnostic": "Calculer la marge réelle de la formule, en incluant tous ses composants, et la comparer à la marge moyenne du service midi hors formule.",
+        "action": "Ajuster la composition de la formule (un accompagnement moins coûteux, une boisson en option plutôt qu'incluse) pour réduire l'écart sans la rendre moins attractive.",
+        "prevention": "Suivre la marge du menu du jour séparément du reste de la carte, comme un produit à part entière avec son propre objectif."
+      },
+      {
+        "title": "Une TVA mal appliquée qui fausse la marge perçue",
+        "teaser": "Un taux de TVA erroné qui fausse tous les calculs",
+        "situation": "Certains produits (sur place, à emporter, boissons alcoolisées) ont des taux de TVA différents, et une erreur d'application fausse silencieusement le calcul de marge réelle.",
+        "diagnostic": "Vérifier, avec le comptable ou le logiciel de caisse, que chaque catégorie de produit applique bien le taux de TVA correspondant à son mode de consommation réel.",
+        "action": "Corriger le paramétrage caisse si un écart est détecté, et recalculer la marge réelle sur les produits concernés une fois la correction faite.",
+        "prevention": "Faire vérifier ce paramétrage une fois par an, en particulier après toute évolution réglementaire ou changement de logiciel de caisse."
+      }
+    ]
+  },
+  {
+    "id": "ch-achats",
+    "num": 2,
+    "name": "Achats & stocks",
+    "tags": [
+      "rupture fournisseur",
+      "stock de sécurité",
+      "taux de rupture"
+    ],
+    "situations": [
+      {
+        "title": "Des ruptures qui tombent toujours en plein rush",
+        "teaser": "Le même produit manque, toujours au pire moment",
+        "situation": "Un ou deux produits phares manquent régulièrement en fin de service, précisément aux moments où la demande est la plus forte.",
+        "diagnostic": "Comparer la fréquence de commande fournisseur à la courbe réelle de consommation hebdomadaire — dans la majorité des cas, la commande est calée sur une moyenne qui ignore les pics du vendredi et du samedi soir.",
+        "action": "Fixer un stock de sécurité spécifique aux produits à rupture fréquente, calculé sur le pic (pas la moyenne), et revu toutes les 4 semaines selon la saisonnalité.",
+        "prevention": "Suivre le taux de rupture par produit et par créneau — un produit qui rompt plus de 2 fois par mois au même moment mérite une règle de stock dédiée, pas un réassort au cas par cas."
+      },
+      {
+        "title": "Un surstock qui immobilise la trésorerie sans qu'on le voie",
+        "teaser": "Des livraisons qui s'accumulent, de l'argent qui dort",
+        "situation": "Les livraisons s'accumulent « pour être tranquille », et une partie du stock frais tourne trop lentement, entre pertes et argent immobilisé en réserve.",
+        "diagnostic": "Calculer la rotation réelle (stock moyen ÷ consommation hebdo) produit par produit — un produit qui tourne en plus de 10 jours mérite d'être questionné, surtout sur du frais périssable.",
+        "action": "Réduire la fréquence ou le volume de commande sur les 3-4 produits à rotation la plus lente, et négocier des livraisons plus fréquentes en plus petites quantités si le fournisseur le permet.",
+        "prevention": "Suivre la valeur du stock immobilisé en euros chaque semaine, pas seulement en volume — c'est ce chiffre qui parle vraiment à la trésorerie."
+      },
+      {
+        "title": "Un seul fournisseur pour un ingrédient stratégique",
+        "teaser": "Aucun plan B si ce fournisseur fait défaut",
+        "situation": "Un produit central à plusieurs best-sellers de la carte dépend d'un unique fournisseur, sans solution de repli en cas de rupture ou de hausse brutale.",
+        "diagnostic": "Identifier les 3 à 5 ingrédients dont dépend le plus votre carte (présents dans le plus de plats, ou dans les plats les plus vendus), et vérifier pour chacun s'il existe une alternative identifiée.",
+        "action": "Qualifier au moins un fournisseur de secours par ingrédient stratégique — pas forcément pour commander régulièrement, mais pour avoir un contact et un tarif déjà négociés en cas de besoin.",
+        "prevention": "Documenter cette liste dans une fiche « continuité d'activité » simple, revue une fois par trimestre — elle sert autant en cas de rupture qu'en levier de négociation avec le fournisseur principal."
+      },
+      {
+        "title": "Des écarts d'inventaire qui ne s'expliquent jamais vraiment",
+        "teaser": "Le stock théorique ne colle jamais au réel",
+        "situation": "L'inventaire théorique (ce qui devrait rester en stock selon les ventes) ne colle jamais exactement à l'inventaire réel compté, sans qu'on sache si c'est de la perte, du vol ou une erreur de saisie.",
+        "diagnostic": "Isoler les 5 produits avec l'écart le plus important en valeur, plutôt que de chercher à tout expliquer d'un coup — ce sont eux qui pèsent le plus sur le résultat.",
+        "action": "Mettre en place un comptage hebdomadaire ciblé sur ces produits seulement, pour identifier à quel moment du processus (réception, stockage, service) l'écart apparaît.",
+        "prevention": "Suivre le taux d'écart d'inventaire en valeur chaque mois — un taux qui dépasse 1 à 2% du coût matière mérite une investigation, pas une simple correction comptable."
+      },
+      {
+        "title": "Une commande fournisseur qui repose sur une seule personne",
+        "teaser": "Une absence, et les commandes partent en vrille",
+        "situation": "Une seule personne dans l'équipe sait vraiment comment et quand commander — en cas d'absence, les commandes sont oubliées, doublées ou mal ajustées.",
+        "diagnostic": "Vérifier si les règles de commande (quantités, fréquence, seuils de déclenchement) sont écrites quelque part ou seulement dans la tête de cette personne.",
+        "action": "Documenter une règle simple par fournisseur clé (quand commander, combien, à qui) pour qu'une deuxième personne puisse prendre le relais sans improviser.",
+        "prevention": "Tester la procédure en formant une deuxième personne sur au moins un fournisseur stratégique, et vérifier qu'elle peut commander seule sans erreur."
+      },
+      {
+        "title": "Une livraison réceptionnée sans contrôle systématique",
+        "teaser": "Rangé direct en réserve, sans vérification à l'arrivée",
+        "situation": "Les livraisons sont rangées directement en réserve, sans vérification systématique de la quantité, de la qualité ou de la température à réception.",
+        "diagnostic": "Comparer, sur quelques réceptions, le bon de livraison à ce qui est réellement livré — les écarts non détectés à ce stade se retrouvent ensuite dans les écarts de stock ou les problèmes qualité en cuisine.",
+        "action": "Instaurer un contrôle rapide et systématique à réception (quantité, DLC, état) avant rangement, avec une personne clairement responsable de ce contrôle.",
+        "prevention": "Suivre le nombre d'anomalies détectées à réception chaque mois — un chiffre qui baisse dans le temps traduit une meilleure fiabilité fournisseur, ou une meilleure vigilance interne."
+      },
+      {
+        "title": "Des prix fournisseurs jamais comparés à la concurrence",
+        "teaser": "Les mêmes fournisseurs depuis toujours, sans vérifier les prix",
+        "situation": "Le restaurant travaille avec les mêmes fournisseurs depuis longtemps, sans avoir vérifié récemment si leurs tarifs restent compétitifs.",
+        "diagnostic": "Demander un devis comparatif sur 3 à 5 produits clés à un ou deux fournisseurs alternatifs, pour objectiver l'écart de prix réel plutôt que de rester sur une impression.",
+        "action": "Utiliser cet écart, même s'il est faible, comme base de négociation avec le fournisseur actuel, en valorisant la fidélité plutôt qu'en menaçant de partir.",
+        "prevention": "Refaire cette comparaison une fois par an sur les produits les plus significatifs en volume ou en coût."
+      },
+      {
+        "title": "Un excédent de matière première en fin de semaine jeté le lundi",
+        "teaser": "Le trop-plein du week-end finit systématiquement à la poubelle",
+        "situation": "Certains produits frais commandés en trop grande quantité pour le week-end finissent régulièrement à la poubelle en début de semaine suivante.",
+        "diagnostic": "Suivre sur quelques semaines la quantité réellement jetée le lundi par produit, pour objectiver l'ampleur du phénomène plutôt que de le supposer.",
+        "action": "Ajuster les quantités commandées pour le week-end à la baisse, ou prévoir un plat ou une offre du lundi qui valorise spécifiquement ces excédents.",
+        "prevention": "Suivre le poids ou la valeur jetée chaque lundi, avec un objectif de réduction progressif plutôt qu'un objectif zéro perte irréaliste."
+      },
+      {
+        "title": "Des conditions de stockage qui accélèrent la perte de fraîcheur",
+        "teaser": "Certains produits périment plus vite que prévu",
+        "situation": "Certains produits périment plus vite que prévu, sans qu'on sache si c'est un problème de qualité fournisseur ou de conditions de stockage sur place.",
+        "diagnostic": "Vérifier les températures réelles des équipements de stockage (frigo, chambre froide) et comparer aux préconisations pour chaque type de produit.",
+        "action": "Corriger l'écart identifié (réglage, rangement, rotation des produits) et réorganiser le stockage en fonction des dates de péremption les plus proches devant.",
+        "prevention": "Contrôler et noter les températures régulièrement, pas seulement lors d'un contrôle sanitaire — un écart repéré tôt évite une perte de stock complète."
+      },
+      {
+        "title": "Une commande passée « à l'habitude » plutôt qu'à la demande réelle",
+        "teaser": "Les mêmes quantités commandées depuis toujours",
+        "situation": "Les quantités commandées chaque semaine sont globalement les mêmes depuis longtemps, sans lien direct avec l'évolution réelle des ventes ou de la saison.",
+        "diagnostic": "Comparer les quantités commandées sur plusieurs semaines à la consommation réelle sur la même période, produit par produit.",
+        "action": "Ajuster les commandes des produits où l'écart est le plus important, en tenant compte de la saisonnalité plutôt que de reconduire un montant fixe chaque semaine.",
+        "prevention": "Revoir ce comparatif commande/consommation une fois par mois, en particulier lors des changements de saison."
+      }
+    ]
+  },
+  {
+    "id": "ch-production",
+    "num": 3,
+    "name": "Production",
+    "tags": [
+      "temps de préparation",
+      "poste de production",
+      "temps de cycle"
+    ],
+    "situations": [
+      {
+        "title": "Un poste qui devient le goulot d'étranglement du service",
+        "teaser": "Tout ralentit toujours au même poste en rush",
+        "situation": "Pendant le rush, tout le service ralentit systématiquement au même poste (plancha, friture, dressage...), même quand le reste de l'équipe est prêt à suivre.",
+        "diagnostic": "Chronométrer le temps de cycle réel de ce poste sur un service complet — comparé aux autres postes, il révèle souvent un déséquilibre d'organisation plus qu'un problème de compétence individuelle.",
+        "action": "Rééquilibrer les tâches autour de ce poste (préparer certains éléments en amont, ajouter un renfort ponctuel, ou simplifier une étape), plutôt que de simplement demander à la personne d'aller plus vite.",
+        "prevention": "Suivre le temps de cycle de ce poste précis chaque semaine pendant le rush identifié, jusqu'à stabilisation sous le seuil visé."
+      },
+      {
+        "title": "Un temps de préparation qui dérive sans qu'on le mesure",
+        "teaser": "Le plat met plus longtemps à sortir qu'avant",
+        "situation": "Le temps entre la prise de commande et la sortie plat s'est allongé progressivement, sans qu'aucune décision n'ait été prise en ce sens.",
+        "diagnostic": "Chronométrer 10 sorties de plats consécutives sur le plat le plus vendu et comparer au temps théorique de la fiche technique — l'écart révèle souvent un geste ou une étape qui s'est complexifiée au fil du temps.",
+        "action": "Reprendre la fiche technique du plat avec l'équipe en cuisine, retirer ou simplifier l'étape qui a le plus dérivé, et valider le nouveau temps sur un service test.",
+        "prevention": "Contrôler le temps de sortie sur les 3 plats les plus vendus une fois par mois — un dérapage se corrige facilement tôt, difficilement une fois ancré comme habitude."
+      },
+      {
+        "title": "Une nouvelle recette qui casse le rythme de cuisine",
+        "teaser": "Un plat trop long déséquilibre toute la ligne",
+        "situation": "Un nouveau plat ajouté à la carte ralentit tout le service, même s'il ne représente qu'une petite part des ventes.",
+        "diagnostic": "Comparer son temps de préparation réel à celui des autres plats du même poste — un plat qui prend 2 à 3 fois plus de temps déséquilibre la cadence de toute la ligne, pas seulement sa propre sortie.",
+        "action": "Simplifier la recette pour la rapprocher du temps de cycle du poste, ou la réserver à des créneaux moins tendus (hors rush) si elle ne peut pas être simplifiée sans perdre en qualité.",
+        "prevention": "Tester systématiquement le temps de préparation de toute nouvelle recette en conditions de rush avant validation définitive à la carte — pas seulement en cuisine calme."
+      },
+      {
+        "title": "Une mise en place jamais terminée avant le coup de feu",
+        "teaser": "Le service démarre alors que rien n'est prêt",
+        "situation": "Le service démarre alors que la mise en place n'est pas complètement terminée, obligeant l'équipe à préparer en même temps qu'elle sert.",
+        "diagnostic": "Chronométrer le temps réel de mise en place nécessaire et le comparer au temps réellement disponible avant l'ouverture — l'écart montre si c'est un problème d'organisation ou de temps insuffisant.",
+        "action": "Réordonner les tâches de mise en place par priorité (ce qui est utilisé dès la première commande en premier), ou avancer l'heure d'arrivée d'une personne si le temps disponible est structurellement trop court.",
+        "prevention": "Suivre un simple indicateur oui/non chaque jour : la mise en place était-elle terminée à l'heure d'ouverture ? Un taux de « non » élevé pointe un problème récurrent à corriger, pas un accident isolé."
+      },
+      {
+        "title": "Un gaspillage de production invisible car réparti sur toute la journée",
+        "teaser": "De petites pertes partout, un vrai trou en cumulé",
+        "situation": "Personne ne remarque de gros gaspillage ponctuel, mais additionnées, les petites pertes de production (chutes, ratés, surproduction) pèsent significativement sur le food cost.",
+        "diagnostic": "Faire peser ou noter les pertes de production sur une seule journée type, poste par poste — le total surprend souvent, car chaque perte individuelle semblait négligeable.",
+        "action": "Identifier le poste ou le produit qui génère le plus de perte ce jour-là, et ajuster une seule pratique (portionnage, réutilisation des chutes, ajustement de recette) avant de s'attaquer aux autres.",
+        "prevention": "Répéter ce relevé une fois par trimestre sur une journée type — suivre la tendance plutôt qu'un chiffre isolé."
+      },
+      {
+        "title": "Une cuisine qui tourne différemment selon qui est aux fourneaux",
+        "teaser": "Le même plat, jamais tout à fait pareil",
+        "situation": "Le même plat n'a pas tout à fait le même goût, la même présentation ou le même temps de sortie selon quel cuisinier le prépare.",
+        "diagnostic": "Comparer la fiche technique officielle (quantités, gestes, temps) à ce que chaque personne fait réellement en observant discrètement un service.",
+        "action": "Reformer l'équipe sur les points d'écart identifiés, avec la fiche technique comme référence commune, plutôt que de laisser chacun garder sa propre version « qui marche ».",
+        "prevention": "Faire goûter/comparer le même plat préparé par deux personnes différentes une fois par trimestre, pour vérifier que l'écart s'est réduit."
+      },
+      {
+        "title": "Une fiche technique jamais mise à jour après un changement de fournisseur",
+        "teaser": "L'ingrédient a changé, la fiche non",
+        "situation": "Un ingrédient a été remplacé (fournisseur, marque, calibre) sans que la fiche technique du plat concerné n'ait été révisée en conséquence.",
+        "diagnostic": "Vérifier si les quantités, temps de cuisson ou coûts de la fiche technique correspondent encore à l'ingrédient réellement utilisé aujourd'hui.",
+        "action": "Mettre à jour la fiche technique dès qu'un changement de ce type est fait, en testant si nécessaire la recette avec le nouvel ingrédient avant de généraliser.",
+        "prevention": "Intégrer une révision systématique de la fiche technique concernée à chaque changement de fournisseur ou de référence produit, comme une étape obligatoire et non optionnelle."
+      },
+      {
+        "title": "Une organisation de poste qui oblige à des déplacements inutiles",
+        "teaser": "Des allers-retours en cuisine qui s'additionnent tout le service",
+        "situation": "Un cuisinier doit régulièrement se déplacer d'un bout à l'autre de la cuisine pour accéder à un ingrédient ou un outil utilisé à chaque plat.",
+        "diagnostic": "Observer un service et compter le nombre de déplacements évitables sur un poste donné — ils paraissent souvent anodins un par un, mais s'accumulent sur tout un service.",
+        "action": "Réorganiser physiquement le poste ou le rangement des ingrédients les plus utilisés pour réduire ces déplacements, même avec des ajustements simples et peu coûteux.",
+        "prevention": "Revoir l'agencement du poste après tout changement notable de carte ou de volume d'activité, pas seulement à l'ouverture du restaurant."
+      },
+      {
+        "title": "Un matériel de cuisine sous-dimensionné pour le volume réel",
+        "teaser": "Un équipement devient le vrai facteur limitant du service",
+        "situation": "Un équipement (four, plancha, friteuse) devient le facteur limitant du service, sans que cela soit clairement identifié comme un problème de capacité matérielle plutôt qu'humaine.",
+        "diagnostic": "Comparer la capacité réelle de l'équipement (quantité traitée par cycle, temps de cycle) au volume qu'il doit absorber pendant le rush.",
+        "action": "Si l'investissement dans un équipement plus grand n'est pas immédiatement possible, réorganiser la production pour lisser la charge sur cet équipement (préparation anticipée, cuisson par lots optimisés).",
+        "prevention": "Suivre si ce même équipement reste le facteur limitant après ajustement, pour objectiver si un investissement matériel devient réellement nécessaire."
+      },
+      {
+        "title": "Une cuisson qui varie selon l'heure du service",
+        "teaser": "Le même plat, cuit différemment en début et en fin de rush",
+        "situation": "Un plat cuit différemment (plus ou moins bien, plus ou moins vite) selon qu'il est préparé en début ou en fin de rush, sans que ce soit intentionnel.",
+        "diagnostic": "Comparer la cuisson réelle du même plat en début et en fin de service — la fatigue, la pression du temps ou un équipement qui chauffe différemment en continu peuvent expliquer l'écart.",
+        "action": "Identifier la cause précise (repère visuel insuffisant, minuteur non utilisé, équipement qui dérive) et donner à l'équipe un repère fiable et simple à suivre quelle que soit la pression du moment.",
+        "prevention": "Goûter ou vérifier ponctuellement ce même plat à différents moments d'un service pour confirmer que la régularité s'est améliorée."
+      }
+    ]
+  },
+  {
+    "id": "ch-rush",
+    "num": 4,
+    "name": "Rush & capacité",
+    "tags": [
+      "saturation du service",
+      "capacité horaire",
+      "temps d'attente"
+    ],
+    "situations": [
+      {
+        "title": "Une capacité horaire dépassée aux mêmes créneaux chaque semaine",
+        "teaser": "Le vendredi soir dépasse toujours ce que la cuisine encaisse",
+        "situation": "Certains créneaux (souvent le vendredi ou samedi soir) dépassent systématiquement la capacité réelle de la cuisine et de la salle, créant retards et clients mécontents.",
+        "diagnostic": "Calculer la capacité horaire réelle (nombre de couverts que le poste le plus lent peut sortir par heure) et la comparer au volume de commandes reçu sur ces créneaux précis.",
+        "action": "Soit lisser la demande (créneaux de réservation, incitation à commander plus tôt), soit augmenter la capacité sur ce créneau précis (renfort ponctuel, préparation anticipée des éléments les plus longs).",
+        "prevention": "Suivre le temps d'attente moyen sur ces créneaux identifiés chaque semaine — c'est l'indicateur le plus direct de la saturation, avant même la baisse de CA qu'elle finit par provoquer."
+      },
+      {
+        "title": "Un temps d'attente qui grimpe sans que personne ne le voie venir",
+        "teaser": "Personne n'a de vrai chiffre, seulement une impression",
+        "situation": "Les clients patientent de plus en plus longtemps entre la commande et le service, mais personne dans l'équipe n'a de chiffre précis — seulement une impression.",
+        "diagnostic": "Mesurer le temps réel sur un échantillon d'une semaine (même approximatif, à la volée) plutôt que de se fier au ressenti — l'écart entre perception et réalité est souvent plus grand qu'on ne le pense.",
+        "action": "Identifier le point de blocage précis dans le parcours (prise de commande, cuisine, dressage, service) et concentrer l'effort sur ce seul maillon plutôt que de chercher à accélérer tout le processus en même temps.",
+        "prevention": "Afficher ou communiquer un objectif de temps d'attente clair à l'équipe, et le mesurer régulièrement — ce qui n'est pas mesuré ne s'améliore pas durablement."
+      },
+      {
+        "title": "Une équipe débordée alors que le CA du créneau ne justifie pas plus de monde",
+        "teaser": "Le stress est là, mais pas vraiment le volume",
+        "situation": "Le service semble tendu et l'équipe stressée sur un créneau donné, alors que le chiffre d'affaires généré ne semble pas justifier une sensation de surcharge.",
+        "diagnostic": "Vérifier si le problème vient vraiment du volume, ou d'une désorganisation ponctuelle (rupture de stock qui complique le service, poste mal réparti, nouvel employé pas encore autonome).",
+        "action": "Traiter la cause réelle plutôt que d'ajouter du personnel par réflexe — un renfort mal placé peut même ralentir un service déjà désorganisé.",
+        "prevention": "Comparer régulièrement le ratio « personnes en salle/cuisine » au CA généré sur le créneau, pour distinguer un vrai problème de capacité d'un problème d'organisation."
+      },
+      {
+        "title": "Une réservation qui ne tient pas compte de la vraie capacité cuisine",
+        "teaser": "On accepte des couverts que la cuisine ne peut pas suivre",
+        "situation": "Le système de réservation accepte des couverts sans lien avec ce que la cuisine peut réellement absorber sur le créneau, créant une surcharge invisible jusqu'au moment du service.",
+        "diagnostic": "Comparer le nombre de couverts réservés par créneau à la capacité horaire réelle mesurée en cuisine (et pas seulement au nombre de places assises en salle).",
+        "action": "Fixer un plafond de réservations par créneau aligné sur la capacité cuisine réelle, quitte à refuser ou décaler des réservations au-delà de ce seuil.",
+        "prevention": "Suivre l'écart entre couverts réservés et capacité cuisine chaque semaine, jusqu'à ce que le plafond soit respecté sans ajustement manuel constant."
+      },
+      {
+        "title": "Un rush qui démarre toujours avec du retard pris en amont",
+        "teaser": "Le service commence déjà en retard sur la première commande",
+        "situation": "Le service du soir commence déjà en retard sur les premières commandes, un handicap qui se creuse ensuite tout au long du rush.",
+        "diagnostic": "Observer précisément ce qui se passe dans les 15 minutes précédant l'ouverture — souvent, un dernier réglage ou une tâche de mise en place non terminée décale tout le début de service.",
+        "action": "Identifier cette tâche récurrente et la déplacer plus tôt dans la journée, même si cela demande de réorganiser légèrement les horaires d'arrivée.",
+        "prevention": "Suivre le temps de sortie du tout premier plat de chaque service — s'il est anormalement long par rapport aux suivants, le retard vient bien du démarrage, pas du rythme du rush lui-même."
+      },
+      {
+        "title": "Une salle pleine mais une cuisine qui tourne au ralenti (ou l'inverse)",
+        "teaser": "Un vrai déséquilibre entre la capacité salle et cuisine",
+        "situation": "Un déséquilibre récurrent entre la capacité de la salle et celle de la cuisine crée soit de l'attente en salle, soit une cuisine qui produit plus vite que le service ne peut suivre.",
+        "diagnostic": "Mesurer séparément la capacité de chaque zone (couverts/heure en salle, plats/heure en cuisine) pour identifier laquelle des deux limite réellement le service.",
+        "action": "Renforcer spécifiquement la zone identifiée comme le vrai frein, plutôt que d'ajouter du personnel de façon uniforme sur tout le service.",
+        "prevention": "Suivre ce ratio salle/cuisine sur plusieurs services types pour confirmer que le déséquilibre est structurel et pas ponctuel avant d'investir dans un renfort permanent."
+      },
+      {
+        "title": "Un jour de la semaine systématiquement sous-staffé",
+        "teaser": "Le planning n'a jamais suivi la vraie fréquentation",
+        "situation": "Un jour précis de la semaine (souvent en milieu de semaine) est régulièrement en sous-effectif par rapport à l'activité réelle qu'il génère, sans que le planning n'ait été ajusté en conséquence.",
+        "diagnostic": "Comparer le CA ou le nombre de couverts par jour de la semaine sur plusieurs semaines à l'effectif planifié ce jour-là.",
+        "action": "Rééquilibrer le planning en fonction de cette réalité, même si cela signifie déplacer une personne d'un jour habituellement considéré comme calme vers ce jour identifié.",
+        "prevention": "Revoir ce comparatif CA/effectif par jour une fois par trimestre, la fréquentation pouvant évoluer avec la saison ou le quartier."
+      },
+      {
+        "title": "Une file d'attente qui fait fuir les clients avant même d'entrer",
+        "teaser": "Des clients qui repartent sans jamais s'installer",
+        "situation": "Des clients potentiels font demi-tour en voyant la file d'attente, sans que le restaurant ne le sache ni ne cherche à les retenir autrement.",
+        "diagnostic": "Observer, sur quelques services, combien de personnes s'approchent puis repartent sans s'installer ni prendre de numéro.",
+        "action": "Proposer une alternative simple pour ces clients (prise de nom avec estimation d'attente, système de réservation de dernière minute, suggestion d'un créneau plus calme) plutôt que de les laisser partir sans solution.",
+        "prevention": "Suivre, même approximativement, le nombre de départs avant installation — un chiffre qui baisse traduit une meilleure gestion de l'attente perçue."
+      },
+      {
+        "title": "Un pic de livraison qui percute le rush sur place",
+        "teaser": "Deux flux à gérer en même temps, sans priorité claire",
+        "situation": "Les commandes en livraison affluent au même moment que le rush en salle, désorganisant la cuisine qui doit gérer les deux flux en simultané sans priorité claire.",
+        "diagnostic": "Superposer les courbes horaires des commandes livraison et des couverts sur place pour visualiser précisément le moment où les deux pics se chevauchent.",
+        "action": "Définir une règle claire de priorité ou d'alternance entre les deux flux pendant ce créneau spécifique, plutôt que de les traiter dans l'ordre d'arrivée sans réflexion.",
+        "prevention": "Suivre le temps de sortie des plats livraison et sur place séparément pendant ce créneau, pour vérifier qu'aucun des deux flux n'est systématiquement sacrifié."
+      },
+      {
+        "title": "Une météo qui bouleverse l'activité sans anticipation",
+        "teaser": "Pluie, canicule ou grand froid, jamais anticipés",
+        "situation": "Un jour de pluie, de canicule ou de grand froid fait varier fortement l'activité (baisse en terrasse, hausse en livraison...), sans que l'équipe ou les commandes ne soient ajustées en conséquence.",
+        "diagnostic": "Comparer l'activité de quelques jours à météo extrême aux jours similaires sans particularité, pour objectiver l'ampleur réelle de l'effet météo sur votre établissement précis.",
+        "action": "Définir à l'avance un ajustement simple (staffing, commande, mise en avant de la livraison) à déclencher dès qu'une météo extrême est annoncée, plutôt que de réagir le jour même.",
+        "prevention": "Suivre l'écart d'activité les jours à météo marquée d'une saison sur l'autre, pour affiner cet ajustement au fil du temps."
+      }
+    ]
+  },
+  {
+    "id": "ch-livraison",
+    "num": 5,
+    "name": "Livraison",
+    "tags": [
+      "qualité à l'arrivée",
+      "menu livraison",
+      "taux de réclamation"
+    ],
+    "situations": [
+      {
+        "title": "Des plats qui arrivent froids ou dénaturés",
+        "teaser": "Le trajet abîme certains plats plus que d'autres",
+        "situation": "Les avis et réclamations en livraison mentionnent régulièrement des plats froids, du packaging qui a laissé le plat se détremper, ou une présentation abîmée à l'arrivée.",
+        "diagnostic": "Identifier lesquels de vos plats voyagent mal spécifiquement (fritures qui ramollissent, sauces qui se séparent, plats qui continuent de cuire dans leur emballage) plutôt que de traiter la livraison comme un bloc uniforme.",
+        "action": "Adapter le packaging ou la recette des plats identifiés (contenants ventilés, sauce à part, cuisson légèrement ajustée pour tenir le trajet), même si cela s'écarte de la version dégustée sur place.",
+        "prevention": "Suivre le taux de réclamation par plat en livraison, pas seulement le taux global — il pointe directement vers les recettes à corriger en priorité."
+      },
+      {
+        "title": "Une carte livraison identique à la carte sur place",
+        "teaser": "Aucune distinction entre ce qui voyage bien ou mal",
+        "situation": "Le menu proposé en livraison est une copie conforme de la carte du restaurant, sans distinction pour les plats qui voyagent bien ou mal.",
+        "diagnostic": "Croiser les ventes en livraison avec le taux de réclamation par plat — certains best-sellers sur place peuvent être de mauvais candidats à la livraison, et inversement.",
+        "action": "Construire un menu livraison spécifique, resserré sur les plats qui voyagent bien et qui restent rentables une fois la commission de la plateforme déduite.",
+        "prevention": "Revoir la composition du menu livraison chaque trimestre à partir des données réclamation/marge, plutôt que de le laisser figé une fois lancé."
+      },
+      {
+        "title": "Un taux de réclamation qui grimpe sur une seule plateforme",
+        "teaser": "Une seule plateforme concentre tous les retours négatifs",
+        "situation": "Les retours négatifs se concentrent sur une plateforme de livraison en particulier, alors que les autres canaux (sur place, autre plateforme) restent stables.",
+        "diagnostic": "Vérifier si le problème vient du délai de prise en charge par le livreur de cette plateforme, ou d'un souci propre à la façon dont vos commandes y sont préparées/dispatchées.",
+        "action": "Ajuster le temps de préparation communiqué à cette plateforme spécifique pour mieux coller à la réalité du délai de livraison, plutôt que de subir un décalage systématique.",
+        "prevention": "Comparer mensuellement le taux de réclamation par plateforme — un écart net entre deux plateformes sur les mêmes plats pointe presque toujours vers un problème logistique, pas produit."
+      },
+      {
+        "title": "Un temps de préparation irréaliste affiché sur les plateformes",
+        "teaser": "Le délai annoncé ne correspond jamais à la réalité",
+        "situation": "Le temps de préparation communiqué aux plateformes ne correspond pas au temps réel, provoquant systématiquement des livraisons perçues comme en retard côté client.",
+        "diagnostic": "Chronométrer le temps réel entre réception de la commande en cuisine et remise au livreur, sur plusieurs commandes, et comparer au temps paramétré sur chaque plateforme.",
+        "action": "Ajuster le temps affiché à la réalité mesurée, même si cela semble « moins attractif » — un délai annoncé correctement respecté vaut mieux qu'un délai optimiste jamais tenu.",
+        "prevention": "Suivre le taux de commandes livrées dans le délai annoncé par plateforme — l'objectif est la fiabilité perçue, pas la vitesse affichée."
+      },
+      {
+        "title": "Une commission qui grignote toute la marge sur les petits paniers",
+        "teaser": "Certaines commandes livrées ne rapportent presque rien",
+        "situation": "Certaines commandes en livraison, une fois la commission plateforme déduite, dégagent une marge quasi nulle voire négative, sans que cela apparaisse clairement dans le suivi habituel.",
+        "diagnostic": "Calculer la marge nette réelle (après commission) sur un échantillon de commandes livraison, en particulier les petits paniers, plutôt que de raisonner uniquement en marge brute produit.",
+        "action": "Fixer un panier minimum pour la livraison, ou ajuster légèrement les prix sur ce canal pour absorber la commission sans la répercuter sur le prix affiché en salle.",
+        "prevention": "Suivre la marge nette moyenne par commande livraison séparément de la marge sur place — les deux canaux ne se pilotent pas avec les mêmes seuils."
+      },
+      {
+        "title": "Un packaging qui coûte plus cher que prévu et personne ne l'a recalculé",
+        "teaser": "Le coût de l'emballage jamais vraiment intégré au prix",
+        "situation": "Le coût du contenant, des couverts et des sachets pour la livraison n'a jamais été formellement intégré au calcul de marge du plat livré.",
+        "diagnostic": "Additionner le coût réel de tous les éléments de packaging d'un plat type livré, et le comparer à ce qui est effectivement pris en compte dans le prix de vente.",
+        "action": "Intégrer ce coût dans la fiche technique du plat « version livraison », distincte de la version salle, pour que la marge affichée reflète la réalité.",
+        "prevention": "Revoir ce coût packaging à chaque changement de fournisseur d'emballage ou de plateforme — les écarts entre fournisseurs peuvent être significatifs sur un poste qu'on néglige souvent."
+      },
+      {
+        "title": "Une note spécifique livraison bien plus basse que la note globale",
+        "teaser": "Bonne note sur place, mauvaise note en livraison",
+        "situation": "La note du restaurant sur place est bonne, mais sa note spécifique livraison (quand la plateforme la distingue) est nettement plus basse.",
+        "diagnostic": "Lire spécifiquement les avis livraison pour identifier s'ils pointent un problème produit (qualité, quantité) ou un problème logistique (délai, erreur de commande).",
+        "action": "Traiter la cause identifiée en priorité — si c'est logistique, ajuster le processus de préparation/remise ; si c'est produit, revoir le plat concerné pour la livraison spécifiquement.",
+        "prevention": "Suivre cette note spécifique livraison séparément de la note globale, car les deux ne réagissent pas aux mêmes leviers."
+      },
+      {
+        "title": "Un livreur externe qui représente mal le restaurant",
+        "teaser": "Le dernier contact client échappe totalement au restaurant",
+        "situation": "Le contact entre le livreur (souvent externe à l'équipe) et le client final peut créer une mauvaise impression, sans que le restaurant n'ait de contrôle direct sur ce moment.",
+        "diagnostic": "Lire les avis mentionnant explicitement le livreur ou la remise de commande, pour distinguer ce qui relève du restaurant de ce qui relève strictement du transporteur.",
+        "action": "Quand c'est possible, signaler à la plateforme les cas répétés concernant un livreur précis, et soigner ce qui reste sous votre contrôle (état du sac, étiquetage clair, mot de remerciement dans le sachet).",
+        "prevention": "Suivre la part des avis négatifs livraison qui mentionnent spécifiquement le livreur plutôt que le plat, pour ne pas confondre les deux responsabilités."
+      },
+      {
+        "title": "Des horaires de livraison mal calés sur la vraie demande",
+        "teaser": "Le canal reste ouvert sur des créneaux sans demande réelle",
+        "situation": "Le service livraison est ouvert sur des horaires fixes, sans lien avec les moments où la demande réelle existe vraiment sur cette zone.",
+        "diagnostic": "Comparer le volume de commandes livraison par heure sur plusieurs semaines aux horaires d'ouverture actuellement configurés sur les plateformes.",
+        "action": "Ajuster les horaires d'ouverture livraison pour coller aux vrais pics identifiés, quitte à fermer ce canal sur des créneaux qui ne génèrent presque aucune commande.",
+        "prevention": "Revoir ce calage une à deux fois par an, la demande pouvant évoluer avec de nouveaux concurrents ou de nouveaux habitants dans la zone."
+      },
+      {
+        "title": "Une rupture de stock non répercutée sur les plateformes",
+        "teaser": "Un produit indisponible en cuisine, encore affiché en ligne",
+        "situation": "Un produit en rupture en cuisine reste affiché comme disponible sur les plateformes de livraison, provoquant des annulations ou des remplacements de dernière minute frustrants pour le client.",
+        "diagnostic": "Vérifier le délai réel entre la rupture constatée en cuisine et sa désactivation effective sur chaque plateforme utilisée.",
+        "action": "Désigner clairement qui est responsable de mettre à jour la disponibilité des produits sur les plateformes, avec un réflexe simple dès qu'une rupture est identifiée.",
+        "prevention": "Suivre le nombre de commandes annulées ou modifiées pour cause de rupture chaque mois — un chiffre élevé pointe un problème de mise à jour, pas seulement de stock."
+      }
+    ]
+  },
+  {
+    "id": "ch-directe",
+    "num": 6,
+    "name": "Commande directe",
+    "tags": [
+      "conversion digitale",
+      "parcours de commande",
+      "part de commandes directes"
+    ],
+    "situations": [
+      {
+        "title": "Une dépendance forte aux plateformes tierces et leurs commissions",
+        "teaser": "20 à 30% de commission qui rongent la marge",
+        "situation": "La majorité du CA livraison passe par des plateformes qui prélèvent 20 à 30% de commission, rongeant une marge déjà tendue.",
+        "diagnostic": "Calculer la part réelle de commandes directes (site, appli, téléphone) face aux commandes via plateforme, et ce que représenterait en euros un basculement, même partiel, vers le direct.",
+        "action": "Mettre en avant un avantage clair pour la commande directe (prix légèrement plus bas, offre fidélité, délai prioritaire) et le communiquer sur les emballages et tickets des commandes plateforme.",
+        "prevention": "Suivre la part de commandes directes dans le CA total chaque mois — un point de bascule vers le direct pèse plus lourd en marge qu'un point de CA supplémentaire via plateforme."
+      },
+      {
+        "title": "Un site ou une appli de commande peu utilisé malgré son existence",
+        "teaser": "L'outil existe, presque personne ne s'en sert",
+        "situation": "Le restaurant a un système de commande en ligne, mais très peu de clients l'utilisent — la majorité passe encore par le téléphone ou les plateformes.",
+        "diagnostic": "Tester vous-même le parcours de commande de bout en bout — un tunnel trop long, un paiement compliqué, ou une simple absence de mention claire du lien suffisent à décourager l'usage.",
+        "action": "Simplifier le parcours au strict nécessaire, et rendre le lien visible partout où un client peut le voir (table, ticket de caisse, réseaux sociaux, réponse aux avis).",
+        "prevention": "Suivre le taux de conversion du site (visites → commandes finalisées), pas seulement le nombre de visites — c'est souvent là que se perdent le plus de clients potentiels."
+      },
+      {
+        "title": "Des clients qui commandent une fois en direct puis repassent par une plateforme",
+        "teaser": "Le direct testé une fois, jamais reproduit ensuite",
+        "situation": "Un client teste la commande directe une fois, puis revient ensuite systématiquement via une plateforme tierce.",
+        "diagnostic": "Vérifier si l'expérience de commande directe (délai, communication, suivi) était réellement à la hauteur de ce qu'offre la plateforme — souvent plus simple et plus rassurante pour le client par habitude.",
+        "action": "Mettre en place un geste de fidélisation dès la première commande directe (réduction sur la suivante, petit geste offert) pour ancrer l'habitude avant qu'elle ne se reporte sur une plateforme.",
+        "prevention": "Suivre le taux de réachat en direct spécifiquement, pas seulement le nombre total de commandes directes — c'est la fidélisation qui détermine si l'effort initial est rentable."
+      },
+      {
+        "title": "Un programme de fidélité qui existe mais que personne ne mentionne",
+        "teaser": "Le programme existe, l'équipe ne le propose jamais",
+        "situation": "Un système de fidélité (carte, appli, points) a été mis en place, mais l'équipe ne le propose pas systématiquement aux clients, qui l'ignorent souvent.",
+        "diagnostic": "Observer sur quelques services combien de fois l'équipe mentionne réellement le programme aux clients qui ne le connaissent pas encore.",
+        "action": "Intégrer une phrase simple et systématique dans le script d'accueil ou d'encaissement pour proposer le programme, plutôt que de compter sur l'initiative individuelle.",
+        "prevention": "Suivre le taux d'inscription au programme chaque mois — un chiffre qui stagne indique souvent un problème de proposition, pas d'intérêt des clients."
+      },
+      {
+        "title": "Des avis positifs qui ne renvoient jamais vers la commande directe",
+        "teaser": "De bons avis qui ne redirigent vers rien",
+        "situation": "Les clients laissent de bons avis en ligne, mais rien dans la réponse ou la communication du restaurant ne les invite à commander directement la prochaine fois.",
+        "diagnostic": "Relire les 10 dernières réponses aux avis positifs — vérifier si elles se contentent de remercier ou si elles orientent activement vers un canal direct.",
+        "action": "Ajouter systématiquement une mention simple (lien, mot sur la carte fidélité) dans les réponses aux avis positifs et sur les supports de communication.",
+        "prevention": "Suivre l'origine des nouvelles commandes directes pour voir si une part provient bien de ces points de contact travaillés."
+      },
+      {
+        "title": "Un numéro de téléphone qui sonne dans le vide pendant le rush",
+        "teaser": "Les appels non décrochés partent chez le concurrent plateforme",
+        "situation": "Les clients qui essaient de commander par téléphone pendant les heures de pointe tombent souvent sur une ligne occupée ou sans réponse, et abandonnent au profit d'une plateforme.",
+        "diagnostic": "Compter, sur un service type, le nombre d'appels manqués ou non décrochés à temps pendant le rush.",
+        "action": "Désigner une personne clairement responsable de répondre au téléphone pendant ces créneaux, ou orienter activement vers le site/l'appli pendant les pics d'appels.",
+        "prevention": "Suivre le taux d'appels manqués pendant le rush — chaque appel manqué est une commande potentiellement perdue vers un canal moins rentable."
+      },
+      {
+        "title": "Un QR code sur table qui ne mène nulle part d'utile",
+        "teaser": "Un QR code présent, mais sans réel bénéfice",
+        "situation": "Un QR code est présent sur les tables ou à l'entrée, mais renvoie vers une carte statique ou une page peu engageante, sans réel bénéfice pour le client à l'utiliser.",
+        "diagnostic": "Scanner vous-même le QR code et évaluer honnêtement ce qu'il apporte concrètement — souvent, il ne fait que dupliquer une information déjà visible ailleurs.",
+        "action": "Le faire renvoyer vers quelque chose d'utile et exclusif (commande directe, programme de fidélité, offre réservée aux scans) plutôt que vers une simple carte déjà affichée sur table.",
+        "prevention": "Suivre le taux de scan du QR code et ce qu'il déclenche ensuite (commande, inscription) pour juger s'il mérite d'être conservé tel quel."
+      },
+      {
+        "title": "Un paiement en ligne compliqué qui fait abandonner la commande",
+        "teaser": "Le client abandonne juste avant de payer",
+        "situation": "Des clients commencent une commande sur le site ou l'appli, mais abandonnent au moment de payer, sans qu'on sache précisément pourquoi.",
+        "diagnostic": "Tester vous-même le parcours de paiement de bout en bout sur mobile en particulier — trop d'étapes, un formulaire trop long ou un bug fréquent suffisent à faire fuir un client pressé.",
+        "action": "Simplifier au maximum le tunnel de paiement (moins de champs, options de paiement rapide si disponibles) et corriger tout point de friction identifié en priorité.",
+        "prevention": "Suivre le taux d'abandon au moment précis du paiement, séparément du taux d'abandon global du parcours de commande."
+      },
+      {
+        "title": "Aucune différence perçue entre commander en direct ou via une plateforme",
+        "teaser": "Rien n'incite le client à préférer le direct",
+        "situation": "Pour le client, commander directement ou passer par une plateforme tierce revient exactement au même en termes de prix, de délai et d'expérience — rien ne l'incite à préférer le direct.",
+        "diagnostic": "Comparer objectivement les deux parcours du point de vue du client : prix, simplicité, rapidité, avantages — et identifier où le direct est actuellement moins bon.",
+        "action": "Créer au moins un avantage tangible et visible au direct (prix, cadeau, priorité) sur le point identifié comme le plus faible, plutôt que de compter sur la seule bonne volonté du client.",
+        "prevention": "Suivre l'évolution de la part de commandes directes après la mise en place de cet avantage, pour vérifier qu'il produit un effet mesurable."
+      },
+      {
+        "title": "Un client direct traité moins bien qu'un client plateforme",
+        "teaser": "Les commandes plateforme passent en priorité sur le direct",
+        "situation": "Par habitude ou par contrainte opérationnelle, les commandes plateforme sont parfois traitées en priorité sur les commandes directes, ce qui pénalise justement les clients qu'on cherche à fidéliser.",
+        "diagnostic": "Observer sur un service si un ordre de priorité informel existe réellement entre les deux types de commandes, et lequel est favorisé en pratique.",
+        "action": "Fixer une règle claire de traitement (ordre d'arrivée réel, ou priorité au direct) et la communiquer à toute l'équipe, pour que l'intention de valoriser le direct soit suivie dans les faits.",
+        "prevention": "Comparer le délai moyen de préparation entre commandes directes et commandes plateforme — un écart défavorable au direct doit alerter immédiatement."
+      }
+    ]
+  },
+  {
+    "id": "ch-relation",
+    "num": 7,
+    "name": "Relation client",
+    "tags": [
+      "réclamation client",
+      "récupération de service",
+      "taux de réachat"
+    ],
+    "situations": [
+      {
+        "title": "Une réclamation traitée trop tard ou pas du tout",
+        "teaser": "Le client part mécontent avant qu'on ne réagisse",
+        "situation": "Des clients mécontents laissent un avis négatif en ligne sans que le restaurant n'ait eu l'occasion de résoudre le problème avant qu'il ne devienne public.",
+        "diagnostic": "Vérifier le délai moyen entre l'incident en salle et sa remontée à un responsable — souvent, le client mécontent quitte l'établissement sans que personne n'ait eu l'occasion de réagir sur le moment.",
+        "action": "Former l'équipe à identifier et remonter immédiatement tout signe d'insatisfaction en salle, avec un geste de récupération simple et pré-autorisé (dessert offert, réduction) qu'elle peut proposer sans attendre validation.",
+        "prevention": "Suivre le nombre d'incidents récupérés en salle avant qu'ils ne deviennent un avis négatif en ligne — un indicateur souvent plus parlant que la note moyenne elle-même."
+      },
+      {
+        "title": "Un client mécontent qu'on ne relance jamais",
+        "teaser": "Des excuses sur le moment, puis plus rien",
+        "situation": "Un client a eu un problème (attente, erreur de commande, plat non conforme), reçoit des excuses sur le moment, mais n'entend plus jamais parler du restaurant ensuite.",
+        "diagnostic": "Regarder si un processus de relance existe réellement après un incident, ou si tout s'arrête une fois le client sorti de l'établissement.",
+        "action": "Mettre en place une relance simple (message, appel, geste) dans les jours suivant un incident identifié — cela transforme souvent une expérience négative en preuve de sérieux aux yeux du client.",
+        "prevention": "Suivre le taux de réachat des clients ayant eu un incident récupéré vs non récupéré — l'écart démontre concrètement la valeur de cette relance."
+      },
+      {
+        "title": "Une note en ligne qui stagne malgré un service jugé satisfaisant en salle",
+        "teaser": "Seuls les mécontents pensent à laisser un avis",
+        "situation": "L'équipe a le sentiment que le service se passe bien, mais la note Google ou les avis en ligne ne progressent pas, voire stagnent en dessous des attentes.",
+        "diagnostic": "Vérifier si les clients satisfaits sont réellement invités à laisser un avis — souvent, seuls les clients mécontents prennent l'initiative de le faire spontanément, biaisant la note vers le bas.",
+        "action": "Mettre en place une sollicitation simple et systématique des avis auprès des clients satisfaits (au moment du paiement, sur le ticket, par un message de suivi), sans forcer ni acheter les avis.",
+        "prevention": "Suivre le volume d'avis reçus par mois autant que la note elle-même — plus le volume est élevé et régulier, plus la note reflète fidèlement la réalité du service."
+      },
+      {
+        "title": "Un client régulier qui disparaît sans qu'on s'en aperçoive",
+        "teaser": "Il venait souvent, personne n'a remarqué son absence",
+        "situation": "Un client qui venait plusieurs fois par mois ne s'est pas manifesté depuis longtemps, sans que personne dans l'équipe ne l'ait remarqué ni cherché à comprendre pourquoi.",
+        "diagnostic": "Si un système de fidélité ou de commande directe existe, repérer les clients dont la fréquence a nettement baissé plutôt que d'attendre qu'ils disparaissent complètement.",
+        "action": "Mettre en place une relance simple et personnalisée pour les clients réguliers qui ralentissent, avant qu'ils ne soient complètement perdus.",
+        "prevention": "Suivre le taux de clients réguliers « actifs » (revenus dans les 60 derniers jours) plutôt que le seul nombre total de clients fidélisés."
+      },
+      {
+        "title": "Une équipe qui ne sait pas comment gérer un client difficile",
+        "teaser": "Chacun improvise sa propre réponse face au conflit",
+        "situation": "Face à un client mécontent ou agressif, chaque membre de l'équipe improvise sa propre réponse, avec des résultats très inégaux.",
+        "diagnostic": "Demander à l'équipe de décrire comment elle a géré les 2-3 derniers incidents clients — les écarts de méthode et de résultat apparaissent vite.",
+        "action": "Définir une trame simple en 3-4 étapes (écouter, reformuler, proposer une solution, remercier) que toute l'équipe peut appliquer, avec des limites claires sur ce qu'elle peut décider seule.",
+        "prevention": "Revoir cette trame avec l'équipe après chaque incident notable, pour l'ajuster à des situations réelles plutôt que de la laisser théorique."
+      },
+      {
+        "title": "Des avis négatifs jamais réellement lus ni analysés",
+        "teaser": "On répond poliment, sans jamais chercher la cause",
+        "situation": "Les avis négatifs reçoivent une réponse polie, mais personne ne prend le temps de les analyser collectivement pour en tirer des enseignements.",
+        "diagnostic": "Relire les 15-20 derniers avis négatifs d'affilée et noter les thèmes qui reviennent le plus souvent — le motif principal ressort généralement très vite.",
+        "action": "Traiter en priorité la cause la plus fréquemment citée, plutôt que de répondre à chaque avis individuellement sans jamais s'attaquer au problème de fond.",
+        "prevention": "Faire cette relecture groupée une fois par mois, et suivre si le thème principal identifié recule d'un mois sur l'autre."
+      },
+      {
+        "title": "Un client fidèle qui ne se sent pas reconnu comme tel",
+        "teaser": "Traité comme un client de passage malgré des années de fidélité",
+        "situation": "Un client qui vient très régulièrement depuis longtemps est traité exactement comme un client de passage, sans aucune reconnaissance particulière de sa fidélité.",
+        "diagnostic": "Vérifier si l'équipe reconnaît réellement les visages ou les noms des clients réguliers, ou si chaque service repart de zéro sans mémoire collective.",
+        "action": "Mettre en place un petit geste simple et peu coûteux pour les clients identifiés comme réguliers (un mot, une attention, une reconnaissance verbale), sans que cela demande un système complexe.",
+        "prevention": "Recueillir ponctuellement le ressenti de quelques clients réguliers sur leur sentiment de reconnaissance, au-delà des seuls chiffres de fréquentation."
+      },
+      {
+        "title": "Une erreur de commande jamais vraiment excusée",
+        "teaser": "Corrigée techniquement, mais sans vrai geste commercial",
+        "situation": "Quand une erreur de commande arrive (mauvais plat, oubli), elle est corrigée techniquement, mais sans réel geste ou excuse qui rassure le client sur la suite.",
+        "diagnostic": "Observer comment l'équipe gère concrètement une erreur de commande — correction silencieuse ou reconnaissance explicite de l'erreur avec un geste adapté.",
+        "action": "Définir un geste minimum systématique en cas d'erreur avérée (excuse claire, petit geste), pour que le client reparte avec une impression positive malgré l'incident.",
+        "prevention": "Suivre si les erreurs de commande corrigées avec un geste génèrent moins de réclamations ou d'avis négatifs que celles simplement corrigées sans rien de plus."
+      },
+      {
+        "title": "Un client qui ne sait pas comment signaler un problème",
+        "teaser": "Personne d'identifiable à qui s'adresser en cas de souci",
+        "situation": "Un client insatisfait ne sait pas vers qui se tourner sur le moment (personne clairement identifiable, pas de moyen simple de remonter un souci), et préfère souvent ne rien dire sur place.",
+        "diagnostic": "Se mettre à la place d'un client mécontent et vérifier s'il est évident de savoir à qui s'adresser en salle en cas de problème.",
+        "action": "Rendre visible et clair qui peut être sollicité en cas de souci (responsable identifiable, formule d'ouverture explicite en début de service), pour capter l'insatisfaction avant qu'elle ne parte ailleurs.",
+        "prevention": "Suivre si le nombre de remontées directes en salle augmente une fois ce point clarifié — c'est un signe positif, pas un problème en soi."
+      },
+      {
+        "title": "Un anniversaire ou une occasion spéciale non exploitée",
+        "teaser": "Un moment fort en émotion, jamais valorisé",
+        "situation": "Des clients viennent pour une occasion particulière (anniversaire, fête), mais rien dans l'expérience ne le reconnaît ni ne le valorise, alors que c'est un moment à forte charge émotionnelle et de recommandation.",
+        "diagnostic": "Vérifier si l'équipe a pour habitude de demander ou de repérer ce type d'occasion lors de la réservation ou de l'accueil.",
+        "action": "Mettre en place un geste simple et peu coûteux pour ces occasions repérées (bougie, mot, petite attention), qui marque durablement l'expérience du client.",
+        "prevention": "Suivre le nombre d'occasions spéciales identifiées et traitées chaque mois, comme un indicateur de la capacité de l'équipe à personnaliser l'expérience."
+      }
+    ]
+  },
+  {
+    "id": "ch-marketing",
+    "num": 8,
+    "name": "Marketing local",
+    "tags": [
+      "acquisition locale",
+      "offre et ciblage",
+      "coût d'acquisition"
+    ],
+    "situations": [
+      {
+        "title": "Un coût d'acquisition qui grimpe sans qu'on sache pourquoi",
+        "teaser": "Le budget augmente, les nouveaux clients ne suivent pas",
+        "situation": "Le budget consacré à attirer de nouveaux clients (publicité, promotions de lancement, mise en avant sur les plateformes) augmente, sans que le nombre de nouveaux clients suive au même rythme.",
+        "diagnostic": "Calculer le coût d'acquisition réel par canal (combien coûte un nouveau client via chaque levier utilisé) plutôt que de raisonner en budget global — certains canaux coûtent souvent 2 à 3 fois plus cher que d'autres pour un résultat comparable.",
+        "action": "Réorienter le budget vers le ou les canaux au coût d'acquisition le plus bas identifiés, et réduire ou couper ceux qui ne se justifient plus.",
+        "prevention": "Suivre le coût d'acquisition par canal chaque mois, pas seulement le nombre de nouveaux clients total — c'est ce chiffre qui dit si le budget marketing est bien utilisé."
+      },
+      {
+        "title": "Une zone de chalandise mal identifiée",
+        "teaser": "On cible une zone qui n'est pas la vraie",
+        "situation": "Les actions marketing locales (flyers, publicité géolocalisée, partenariats) ciblent une zone qui ne correspond pas vraiment à celle d'où viennent réellement les clients.",
+        "diagnostic": "Croiser les adresses de livraison ou les zones d'origine des clients (quand l'information est disponible) avec la zone actuellement ciblée par les actions marketing.",
+        "action": "Recentrer les actions locales sur le rayon réel qui génère le plus de clients, plutôt que sur un rayon théorique autour de l'adresse du restaurant.",
+        "prevention": "Revoir cette zone de chalandise réelle une fois par an, ou après tout changement notable (nouvelle concurrence, nouveau quartier en développement à proximité)."
+      },
+      {
+        "title": "Des offres qui attirent les mauvais clients",
+        "teaser": "Des chasseurs de promo qui ne reviennent jamais au plein tarif",
+        "situation": "Les promotions génèrent du monde, mais surtout des clients occasionnels attirés par le prix, qui ne reviennent jamais à tarif normal ensuite.",
+        "diagnostic": "Suivre le taux de réachat spécifique des clients venus via une offre promotionnelle, comparé à ceux venus sans promotion — l'écart révèle si l'offre construit une clientèle ou seulement un pic ponctuel.",
+        "action": "Orienter les offres vers la fidélisation de clients déjà venus (plutôt que l'acquisition pure), ou les réserver aux périodes réellement creuses où elles ne cannibalisent pas les ventes à plein tarif.",
+        "prevention": "Mesurer la marge nette générée par une offre sur 3 mois, pas seulement le volume immédiat qu'elle a créé le jour J."
+      },
+      {
+        "title": "Une fiche Google Business laissée à l'abandon",
+        "teaser": "Horaires, photos, infos : rien n'a été mis à jour",
+        "situation": "Les horaires, photos ou informations de la fiche Google Business n'ont pas été mis à jour depuis longtemps, alors que c'est souvent le premier point de contact avec un client potentiel.",
+        "diagnostic": "Consulter la fiche comme le ferait un client — horaires exacts, photos récentes, menu à jour — et noter chaque information obsolète ou manquante.",
+        "action": "Mettre à jour l'ensemble en une seule session (photos récentes, horaires, description), puis planifier une vérification rapide mensuelle plutôt qu'un oubli prolongé.",
+        "prevention": "Suivre le nombre de vues et d'actions (appel, itinéraire, clic site) sur la fiche chaque mois — une fiche à jour se traduit généralement par une hausse mesurable de ces interactions."
+      },
+      {
+        "title": "Une présence sur les réseaux qui s'essouffle après un bon démarrage",
+        "teaser": "Un bel élan au lancement, puis plus rien",
+        "situation": "Le restaurant a publié activement à l'ouverture, puis la fréquence de publication a nettement ralenti, faute de temps ou d'idées.",
+        "diagnostic": "Regarder la fréquence réelle de publication des 3 derniers mois — un rythme qui tombe sous 1-2 publications par semaine perd généralement en portée organique.",
+        "action": "Fixer un rythme réaliste et tenable (même faible mais régulier) plutôt qu'un objectif ambitieux abandonné après deux semaines, en s'appuyant sur du contenu simple à produire (coulisses, plat du jour, équipe).",
+        "prevention": "Suivre la régularité de publication autant que l'engagement — la constance dans le temps compte souvent plus que la qualité d'un post isolé."
+      },
+      {
+        "title": "Un partenariat local jamais exploité après le lancement",
+        "teaser": "Un partenariat lancé, puis oublié depuis",
+        "situation": "Un partenariat avec un commerce, une entreprise ou une association du quartier a été mis en place, mais n'a jamais été communiqué ni relancé depuis son démarrage.",
+        "diagnostic": "Lister les partenariats ou contacts locaux existants et vérifier lesquels sont encore actifs concrètement (offre visible, flux de clients identifiable) versus oubliés.",
+        "action": "Réactiver le partenariat le plus prometteur avec une action concrète et datée (offre croisée, événement commun), plutôt que de le laisser comme une bonne intention non suivie.",
+        "prevention": "Suivre le nombre de clients ou de commandes identifiables comme venant de ce partenariat, pour juger s'il mérite d'être poursuivi ou remplacé."
+      },
+      {
+        "title": "Une devanture qui ne donne pas envie d'entrer",
+        "teaser": "Du flux piéton réel, mais peu de clients de passage",
+        "situation": "Le restaurant reçoit peu de clients « de passage » alors qu'il est situé dans une zone avec du flux piéton réel, ce qui peut signaler un problème de devanture plutôt que d'emplacement.",
+        "diagnostic": "Observer la devanture avec un regard extérieur, comme le ferait un passant qui ne connaît pas encore l'établissement — visibilité de la carte, éclairage, propreté, ambiance perçue depuis la rue.",
+        "action": "Corriger les points les plus évidents (carte visible et lisible de l'extérieur, éclairage engageant, vitrine dégagée) sans attendre un investissement lourd.",
+        "prevention": "Suivre l'évolution du flux entrant « spontané » (sans réservation) après ces ajustements, en le comparant à une période similaire avant changement."
+      },
+      {
+        "title": "Un concept mal compris par les passants",
+        "teaser": "Les passants hésitent, ne comprennent pas l'offre",
+        "situation": "Des passants hésitent ou passent leur chemin car ils ne comprennent pas immédiatement ce que propose le restaurant (type de cuisine, gamme de prix, format).",
+        "diagnostic": "Demander à quelques personnes extérieures (proches, clients occasionnels) ce qu'elles comprennent du concept en regardant seulement la devanture, sans autre explication.",
+        "action": "Clarifier le message principal affiché à l'extérieur (type de cuisine, spécialité, gamme de prix) pour lever l'hésitation en quelques secondes.",
+        "prevention": "Suivre si la clientèle de passage évolue après cette clarification, signe que le message extérieur correspond mieux à l'offre réelle."
+      },
+      {
+        "title": "Une concurrence directe qui gagne du terrain sans qu'on le voie",
+        "teaser": "Un nouveau concurrent, jamais vraiment évalué",
+        "situation": "Un nouvel établissement concurrent s'est installé ou a gagné en popularité à proximité, et son effet sur votre activité n'a jamais été formellement évalué.",
+        "diagnostic": "Comparer l'évolution de votre activité sur la période depuis l'arrivée ou la montée de ce concurrent, plutôt que d'attribuer une éventuelle baisse à des causes vagues.",
+        "action": "Si un effet réel est confirmé, identifier ce qui différencie votre offre et le mettre davantage en avant, plutôt que d'essayer de copier directement le concurrent.",
+        "prevention": "Garder un œil régulier (visite, avis en ligne, réseaux) sur les 2-3 concurrents directs les plus proches, pour ne pas être surpris par leur évolution."
+      },
+      {
+        "title": "Un bouche-à-oreille jamais activement encouragé",
+        "teaser": "On compte dessus, sans jamais le faciliter",
+        "situation": "Le restaurant compte sur le bouche-à-oreille naturel de ses clients satisfaits, sans jamais chercher à l'encourager ou à le faciliter activement.",
+        "diagnostic": "Vérifier si les clients satisfaits ont un moyen simple et naturel de recommander le restaurant (carte à partager, mention sur les réseaux, code de parrainage) ou si tout repose sur leur seule initiative.",
+        "action": "Créer un moyen simple de transformer un client satisfait en ambassadeur actif (petit geste de parrainage, invitation à taguer le restaurant sur les réseaux), sans complexité excessive.",
+        "prevention": "Suivre le nombre de nouveaux clients arrivés par recommandation identifiée, quand c'est mesurable (question simple en caisse ou à la réservation)."
+      }
+    ]
+  },
+  {
+    "id": "ch-equipe",
+    "num": 9,
+    "name": "Équipe",
+    "tags": [
+      "écart d'exécution",
+      "rituel d'équipe",
+      "productivité par heure"
+    ],
+    "situations": [
+      {
+        "title": "Un écart d'exécution entre deux équipes ou deux services",
+        "teaser": "Le niveau change selon qui est présent ce jour-là",
+        "situation": "La qualité de service, la rapidité ou le respect des standards varient nettement selon l'équipe présente, ou selon que le manager est là ou non.",
+        "diagnostic": "Observer concrètement les deux équipes sur un même type de service pour identifier ce qui diffère réellement — souvent une consigne connue d'un côté et pas de l'autre, plus qu'un problème de motivation.",
+        "action": "Uniformiser la consigne ou la procédure concernée par écrit, la faire valider par les deux équipes, et vérifier son application sur les services suivants.",
+        "prevention": "Suivre un indicateur simple et comparable entre équipes (temps de service, erreurs de commande) pour objectiver l'écart plutôt que de rester sur une impression."
+      },
+      {
+        "title": "Une productivité par heure très différente d'un salarié à l'autre",
+        "teaser": "Le même poste, un rendement très différent selon la personne",
+        "situation": "Sur un même poste, certains membres de l'équipe traitent nettement plus de couverts ou de tâches par heure que d'autres, sans explication évidente.",
+        "diagnostic": "Distinguer si l'écart vient d'un manque de formation, d'un poste mal adapté à la personne, ou d'un vrai problème d'implication — les trois se traitent très différemment.",
+        "action": "Si c'est un manque de formation : former et réévaluer. Si c'est un problème de poste : réaffecter. Si c'est un problème d'implication : en parler directement et clairement, avant d'envisager une sanction.",
+        "prevention": "Suivre la productivité par heure et par poste régulièrement, pour repérer les écarts tôt et les traiter avant qu'ils ne deviennent une habitude tolérée par toute l'équipe."
+      },
+      {
+        "title": "Des rituels d'équipe qui existent sur le papier mais pas dans la réalité",
+        "teaser": "Le brief quotidien censé exister, mais sauté la plupart du temps",
+        "situation": "Un brief quotidien ou un point hebdomadaire est censé exister, mais il est sauté la plupart du temps par manque de temps ou d'habitude.",
+        "diagnostic": "Vérifier si le rituel a été abandonné parce qu'il ne servait à rien de concret, ou simplement par glissement progressif sans décision explicite.",
+        "action": "Redéfinir un rituel court et utile (5 minutes, 3 points fixes : hier, aujourd'hui, alerte) plutôt qu'un rituel long qu'on finit toujours par sauter.",
+        "prevention": "Suivre le taux de tenue réel du rituel sur un mois — un rituel tenu moins de 70% du temps doit être raccourci ou repensé, pas simplement rappelé à l'équipe."
+      },
+      {
+        "title": "Un turnover élevé qui coûte plus cher qu'on ne le pense",
+        "teaser": "Chaque départ semble normal, son vrai coût jamais additionné",
+        "situation": "L'équipe change souvent, et chaque départ semble « normal » dans le secteur, sans que son coût réel (recrutement, formation, erreurs de débutant) ne soit jamais additionné.",
+        "diagnostic": "Estimer le coût complet d'un remplacement (temps de recrutement, temps de formation non productif, erreurs pendant la montée en compétence) sur les derniers départs.",
+        "action": "Identifier le motif de départ le plus fréquent parmi les derniers partis (rémunération, horaires, ambiance, management) et traiter en priorité celui-là plutôt que d'agir sur tout à la fois.",
+        "prevention": "Suivre le taux de turnover et sa principale cause déclarée chaque trimestre, pour vérifier si l'action mise en place a un effet réel."
+      },
+      {
+        "title": "Un nouvel employé livré à lui-même dès la première semaine",
+        "teaser": "Formé vite, puis lâché en autonomie sans suivi",
+        "situation": "Un nouveau membre de l'équipe est formé rapidement puis mis en autonomie, sans accompagnement structuré sur ses premières semaines.",
+        "diagnostic": "Vérifier si un parcours d'intégration existe réellement (qui forme, sur quoi, pendant combien de temps) ou si cela dépend de qui est présent ce jour-là.",
+        "action": "Formaliser un parcours simple sur les 2 premières semaines (postes à découvrir, personne référente, points d'étape), même minimal, plutôt que de laisser l'intégration au hasard.",
+        "prevention": "Suivre le taux de nouveaux employés encore présents après 3 mois — un indicateur direct de la qualité de l'intégration, pas seulement du recrutement."
+      },
+      {
+        "title": "Des horaires qui ne collent jamais à la vie personnelle de l'équipe",
+        "teaser": "Un planning imposé plutôt que construit avec l'équipe",
+        "situation": "Les plannings créent des tensions récurrentes — changements de dernière minute, horaires jugés injustes, demandes jamais prises en compte.",
+        "diagnostic": "Vérifier si les demandes de disponibilité de l'équipe sont réellement collectées et prises en compte avant la construction du planning, ou si le planning est construit puis imposé.",
+        "action": "Mettre en place un processus simple de recueil des disponibilités avant chaque planning, avec des règles claires sur les priorités en cas de conflit entre demandes.",
+        "prevention": "Suivre le nombre de modifications de planning de dernière minute chaque mois — une baisse traduit un planning mieux construit en amont."
+      },
+      {
+        "title": "Un manager qui ne délègue jamais vraiment",
+        "teaser": "Toutes les décisions, même mineures, remontent à lui",
+        "situation": "Un responsable ou manager reprend systématiquement la main sur les décisions, même mineures, empêchant l'équipe de développer son autonomie.",
+        "diagnostic": "Observer combien de décisions du quotidien remontent systématiquement à ce manager alors qu'elles pourraient raisonnablement être prises par l'équipe elle-même.",
+        "action": "Identifier 2-3 catégories de décisions simples à déléguer explicitement, avec un cadre clair sur les limites de cette délégation.",
+        "prevention": "Suivre si le nombre de sollicitations du manager pour des décisions mineures diminue une fois cette délégation posée clairement."
+      },
+      {
+        "title": "Une reconnaissance du travail bien fait quasi inexistante",
+        "teaser": "Le feedback ne porte que sur ce qui ne va pas",
+        "situation": "Le feedback à l'équipe se limite presque exclusivement aux erreurs ou aux points à corriger, sans reconnaissance des efforts ou des réussites du quotidien.",
+        "diagnostic": "Repenser aux derniers échanges avec l'équipe — la proportion de retours négatifs versus positifs donne une indication assez nette du climat installé.",
+        "action": "Intégrer un geste ou un mot de reconnaissance simple et sincère dans les rituels existants (brief, fin de service), sans que cela devienne artificiel ou systématique au point de perdre son sens.",
+        "prevention": "Observer si le climat d'équipe (ambiance perçue, initiative spontanée) évolue positivement dans les semaines suivant ce changement."
+      },
+      {
+        "title": "Un conflit interne qui pourrit l'ambiance de travail",
+        "teaser": "Une tension jamais traitée qui s'installe durablement",
+        "situation": "Une tension entre deux membres de l'équipe, jamais vraiment traitée, affecte progressivement l'ambiance générale et parfois la qualité de service.",
+        "diagnostic": "Vérifier depuis combien de temps ce conflit existe et s'il a déjà été abordé directement avec les personnes concernées, ou seulement subi en silence.",
+        "action": "Organiser un échange direct et cadré avec les personnes concernées, plutôt que d'espérer que la situation se résolve d'elle-même avec le temps.",
+        "prevention": "Suivre l'évolution du climat d'équipe après cet échange, et ne pas hésiter à revenir dessus si la tension persiste malgré la première tentative."
+      },
+      {
+        "title": "Une polyvalence de l'équipe jamais développée",
+        "teaser": "Chacun cantonné à son poste, une organisation fragile",
+        "situation": "Chaque membre de l'équipe reste cantonné à son poste habituel, ce qui rend l'organisation très fragile en cas d'absence ou de pic d'activité imprévu.",
+        "diagnostic": "Lister, poste par poste, combien de personnes dans l'équipe sont réellement capables de le tenir seules en cas de besoin.",
+        "action": "Organiser une montée en polyvalence progressive et ciblée sur les postes les plus critiques identifiés, plutôt que de viser une polyvalence totale d'un coup.",
+        "prevention": "Suivre le nombre de postes couverts par au moins deux personnes formées, comme indicateur direct de la résilience de l'équipe."
+      }
+    ]
+  },
+  {
+    "id": "ch-pilotage",
+    "num": 10,
+    "name": "Pilotage",
+    "tags": [
+      "écart de performance",
+      "tableau de bord",
+      "résultat d'exploitation"
+    ],
+    "situations": [
+      {
+        "title": "Un tableau de bord qui existe mais que personne ne regarde",
+        "teaser": "L'outil est là, personne ne le consulte vraiment",
+        "situation": "Un tableau de suivi (Excel, logiciel de caisse, outil dédié) a été mis en place à un moment, mais il n'est plus consulté ni mis à jour régulièrement.",
+        "diagnostic": "Identifier pourquoi il n'est plus utilisé — trop complexe, pas assez actionnable, ou simplement pas intégré dans une habitude hebdomadaire claire.",
+        "action": "Réduire le tableau de bord à 4-5 indicateurs vraiment décisifs, et fixer un moment fixe chaque semaine pour le regarder — pas plus, mais pas moins.",
+        "prevention": "Suivre le fait même de consulter le tableau de bord chaque semaine, avant de suivre les chiffres qu'il contient — un outil non consulté ne sert à rien, quelle que soit sa qualité."
+      },
+      {
+        "title": "Un écart de performance découvert trop tard, en fin de mois",
+        "teaser": "Le problème n'apparaît qu'au bilan, trop tard pour agir",
+        "situation": "Les problèmes de rentabilité ou de trésorerie ne sont identifiés qu'au moment du bilan mensuel, quand il est déjà trop tard pour réagir sur la période concernée.",
+        "diagnostic": "Vérifier si des indicateurs simples pourraient être suivis en cours de mois (CA hebdomadaire, food cost estimé, heures travaillées) plutôt que d'attendre la clôture comptable complète.",
+        "action": "Mettre en place un point hebdomadaire rapide sur 3-4 indicateurs clés, permettant de réagir en cours de mois plutôt que de constater après coup.",
+        "prevention": "Comparer l'écart entre la performance estimée en cours de mois et le résultat réel en fin de mois — plus cet écart se réduit avec le temps, plus le pilotage hebdomadaire devient fiable."
+      },
+      {
+        "title": "Un résultat d'exploitation qui surprend à chaque bilan",
+        "teaser": "Le résultat ne colle jamais à ce qui était prévu",
+        "situation": "Le résultat de fin de mois ou de trimestre ne correspond jamais vraiment à ce qui était anticipé, en bien ou en mal, sans qu'on comprenne clairement pourquoi.",
+        "diagnostic": "Vérifier si un budget ou une prévision existe réellement en amont, ou si le pilotage se limite à constater le résultat après coup sans point de comparaison.",
+        "action": "Construire une prévision simple en début de mois (CA attendu, charges fixes connues, food cost et masse salariale cibles) pour avoir un référentiel auquel comparer le résultat réel.",
+        "prevention": "Suivre l'écart entre le prévisionnel et le réel chaque mois — plus qu'un chiffre isolé, c'est la capacité à prévoir qui doit s'améliorer avec le temps."
+      },
+      {
+        "title": "Des objectifs fixés sans lien avec la réalité du terrain",
+        "teaser": "L'équipe ne sait pas comment contribuer à l'objectif",
+        "situation": "Un objectif de CA ou de marge a été fixé, mais l'équipe ne comprend pas comment il se traduit concrètement dans son travail quotidien.",
+        "diagnostic": "Demander à 2-3 membres de l'équipe s'ils connaissent l'objectif du mois et ce qu'ils peuvent faire concrètement pour y contribuer — la réponse révèle souvent un objectif resté au niveau du dirigeant seul.",
+        "action": "Traduire l'objectif global en actions concrètes et compréhensibles à l'échelle de l'équipe (ex : panier moyen, temps de service, taux de recommandation) plutôt que de communiquer uniquement un chiffre financier abstrait.",
+        "prevention": "Vérifier régulièrement que l'équipe peut relier son travail quotidien à l'objectif du mois — un signe que le pilotage descend vraiment jusqu'au terrain."
+      },
+      {
+        "title": "Une trésorerie surveillée seulement quand elle inquiète",
+        "teaser": "On ne regarde la trésorerie qu'en cas d'alerte",
+        "situation": "La trésorerie n'est vraiment regardée que lorsqu'un problème de paiement approche, plutôt que suivie régulièrement en amont.",
+        "diagnostic": "Vérifier la fréquence réelle à laquelle la trésorerie est consultée — souvent seulement en cas d'alerte, jamais en routine.",
+        "action": "Mettre en place un point trésorerie hebdomadaire simple (solde, entrées et sorties prévues sur 2-3 semaines), pour anticiper plutôt que réagir dans l'urgence.",
+        "prevention": "Suivre le nombre de fois où un problème de trésorerie a été anticipé plusieurs semaines à l'avance versus découvert au dernier moment."
+      },
+      {
+        "title": "Un dirigeant qui reste le seul à connaître les vrais chiffres",
+        "teaser": "Aucune délégation possible sans partage des chiffres clés",
+        "situation": "Les chiffres clés de l'activité ne sont connus que du dirigeant, ce qui bloque toute délégation réelle et toute décision rapide en son absence.",
+        "diagnostic": "Identifier quels chiffres sont réellement nécessaires à un responsable de site ou un manager pour prendre des décisions du quotidien sans attendre le retour du dirigeant.",
+        "action": "Partager ce socle minimal de chiffres avec les responsables concernés, avec un cadre clair sur ce qu'ils peuvent décider seuls à partir de ces informations.",
+        "prevention": "Suivre le nombre de décisions courantes prises sans intervention du dirigeant — un indicateur direct de progression vers la sortie de l'opérationnel."
+      },
+      {
+        "title": "Un investissement décidé sans vraiment calculer sa rentabilité",
+        "teaser": "Un achat sur impression, sans retour sur investissement chiffré",
+        "situation": "Un équipement, une rénovation ou un nouvel outil a été acheté sur une impression de nécessité, sans calcul précis du retour attendu ni du délai pour le rentabiliser.",
+        "diagnostic": "Reprendre les derniers investissements significatifs et vérifier si un calcul de retour sur investissement, même simple, avait été fait avant la décision.",
+        "action": "Adopter un réflexe simple avant toute dépense importante à venir : coût total, gain ou économie attendue, délai de retour estimé — même approximatif, cela évite les décisions purement intuitives.",
+        "prevention": "Suivre après coup si l'investissement a tenu ses promesses dans le délai estimé, pour affiner ce réflexe la fois suivante."
+      },
+      {
+        "title": "Une comparaison jamais faite avec les mêmes périodes de l'année précédente",
+        "teaser": "Chaque mois jugé seul, sans repère historique",
+        "situation": "Les résultats du mois sont commentés dans l'absolu, sans être systématiquement comparés au même mois de l'année précédente, ce qui empêche de distinguer une vraie tendance d'un simple effet saisonnier.",
+        "diagnostic": "Vérifier si les chiffres actuels sont mis en perspective avec l'historique, ou seulement regardés isolément mois après mois.",
+        "action": "Ajouter systématiquement la comparaison N-1 à chaque point mensuel, même de façon simple, pour resituer chaque résultat dans son contexte réel.",
+        "prevention": "Suivre l'écart en pourcentage vs l'année précédente comme indicateur central, plutôt que la seule valeur brute du mois."
+      },
+      {
+        "title": "Une décision importante prise sous le coup de l'émotion",
+        "teaser": "Une décision structurante prise dans l'urgence",
+        "situation": "Une décision structurante (licenciement, changement de fournisseur, gros investissement) a été prise rapidement, sous l'effet d'une frustration ou d'une urgence ressentie, plutôt qu'après une analyse posée.",
+        "diagnostic": "Repenser aux dernières décisions importantes prises dans l'urgence, et évaluer honnêtement si un temps de recul aurait changé le résultat.",
+        "action": "Se fixer une règle simple pour les décisions les plus structurantes — un délai minimum de réflexion ou un avis extérieur avant validation définitive, sauf urgence réellement vitale.",
+        "prevention": "Suivre, avec le recul, si les décisions prises après ce temps de pause s'avèrent différentes ou plus solides que celles prises dans l'urgence auparavant."
+      },
+      {
+        "title": "Un objectif de développement fixé sans évaluer la capacité réelle à l'absorber",
+        "teaser": "Un objectif ambitieux, sans vérifier si l'organisation suit",
+        "situation": "Un objectif ambitieux (nouvelle ouverture, forte hausse de CA visée) a été fixé sans vérifier si l'organisation actuelle (équipe, process, trésorerie) peut réellement l'encaisser.",
+        "diagnostic": "Lister ce qui devrait être vrai dans l'organisation actuelle pour absorber cet objectif sans casser ce qui fonctionne déjà, et vérifier honnêtement où sont les vrais manques.",
+        "action": "Séquencer l'objectif en étapes qui respectent la capacité réelle d'absorption, plutôt que de viser le résultat final sans étapes intermédiaires solides.",
+        "prevention": "Revoir cette capacité d'absorption à chaque jalon important de la trajectoire de développement, pas seulement au moment de fixer l'objectif initial."
+      }
+    ]
+  }
+];
