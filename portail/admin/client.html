@@ -103,6 +103,13 @@ body{overflow-x:hidden;}
 .drive-file-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);font-size:13.5px;}
 .drive-file-row:last-child{border-bottom:none;}
 .drive-file-row a{color:var(--lime);text-decoration:none;font-weight:700;}
+.paid-tag{font-size:11px;font-weight:800;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.paid-tag.yes{background:var(--lime-dim);color:var(--lime);}
+.paid-tag.no{background:rgba(255,80,80,.12);color:#ff8a8a;}
+.btn-danger{background:transparent;border:1px solid rgba(255,80,80,.4);color:#ff8a8a;font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;font-family:inherit;}
+.btn-danger:hover{background:rgba(255,60,60,.1);}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);color:#fff;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:999px;cursor:pointer;text-decoration:none;}
+.btn-secondary:hover{border-color:var(--muted);}
 
 /* ---- Parcours tab (mirrors client dashboard) ---- */
 .parcours-step{display:flex;align-items:center;gap:14px;padding:16px 4px;border-bottom:1px solid var(--line);}
@@ -272,10 +279,11 @@ body{overflow-x:hidden;}
 
   <div class="client-hero">
     <div class="client-avatar" id="clientAvatar">--</div>
-    <div>
+    <div style="flex:1;">
       <div class="client-hero-name" id="clientHeroName">Chargement…</div>
       <div class="client-hero-badges" id="clientBadges"></div>
     </div>
+    <a class="btn-secondary" id="waRecapBtn" href="#" target="_blank" rel="noopener" style="display:none;white-space:nowrap;">📋 Récap semaine WhatsApp</a>
   </div>
 
   <div class="chrono-card">
@@ -286,6 +294,7 @@ body{overflow-x:hidden;}
     <button type="button" class="tab-btn active" data-tab="general">Général</button>
     <button type="button" class="tab-btn" data-tab="closer">Closer</button>
     <button type="button" class="tab-btn" data-tab="parcours">Onboarding</button>
+    <button type="button" class="tab-btn" data-tab="audit">Audit</button>
     <button type="button" class="tab-btn" data-tab="plan">Coaching</button>
     <button type="button" class="tab-btn" data-tab="financier">Financier</button>
     <button type="button" class="tab-btn" data-tab="activite">Activité</button>
@@ -674,6 +683,40 @@ body{overflow-x:hidden;}
   }
 
   // =========================================================
+  // Récap concis de la semaine en cours + tâches en retard des semaines précédentes (pas de liste détaillée).
+  function renderWaRecap() {
+    const btn = document.getElementById('waRecapBtn');
+    const waNumber = (profile?.phone || '').replace(/[^\d]/g, '');
+    if (!waNumber) { btn.style.display = 'none'; return; }
+    const fallback = `Bonjour, ici votre coach RestUp 👋 On fait le point cette semaine ?`;
+    let msg = fallback;
+    const cycle = planData ? (planData.cycles || []).find(cy => cy.active) : null;
+    if (cycle) {
+      const months = cycle.months || [];
+      const monthIdx = Math.max(0, months.findIndex(m => m.current));
+      const month = months[monthIdx] || months[0];
+      const weeks = (month && month.weeks) || [];
+      if (weeks.length) {
+        let curIdx = weeks.findIndex(w => !w.locked && (w.tasks || []).some(t => !t.done));
+        if (curIdx === -1) { for (let i = weeks.length - 1; i >= 0; i--) { if (!weeks[i].locked) { curIdx = i; break; } } }
+        if (curIdx === -1) curIdx = 0;
+        const curWeek = weeks[curIdx] || { tasks: [] };
+        const curDone = (curWeek.tasks || []).filter(t => t.done).length;
+        const curTotal = (curWeek.tasks || []).length;
+        let lateCount = 0;
+        weeks.forEach((w, i) => { if (i < curIdx && !w.locked) lateCount += (w.tasks || []).filter(t => !t.done).length; });
+        msg = `Bonjour ${displayName} 👋 Récap ${curWeek.label || 'de la semaine'} : ${curDone}/${curTotal} tâches faites.`;
+        msg += lateCount > 0
+          ? ` Il vous reste ${lateCount} tâche${lateCount > 1 ? 's' : ''} en retard des semaines précédentes à boucler.`
+          : ` Aucun retard, bravo !`;
+        msg += ` On se cale un point cette semaine ? 💪\n— votre coach RestUp`;
+      }
+    }
+    btn.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
+    btn.style.display = 'inline-flex';
+  }
+
+  // =========================================================
   // KPIS (agrégés depuis tous les mois du plan)
   // =========================================================
   function renderKpis() {
@@ -703,7 +746,15 @@ body{overflow-x:hidden;}
         <p style="font-size:13.5px;color:var(--muted);">Déposez un fichier à partager avec ce client (max 50 Mo).</p>
         <input type="file" id="driveFileInput">
       </div>
-      <div class="info-card" id="driveListWrap"><div class="empty-state">Chargement…</div></div>`;
+      <div class="info-card" id="driveListWrap"><div class="empty-state">Chargement…</div></div>
+      <h3 style="margin-top:24px;">Documents demandés à ce client</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Demandez un document précis (ex. Kbis, bail commercial...) : il apparaîtra dans son espace avec un bouton "Importer".</p>
+      <form id="docReqForm" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <input id="docReqLabel" placeholder="Nom du document (ex. Extrait Kbis)" required style="flex:1;min-width:200px;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 14px;color:#fff;font-family:inherit;font-size:13.5px;">
+        <input id="docReqNote" placeholder="Précision (optionnel)" style="flex:1;min-width:180px;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 14px;color:#fff;font-family:inherit;font-size:13.5px;">
+        <button type="submit" class="btn-primary magnetic" style="padding:10px 18px;">Demander</button>
+      </form>
+      <div id="docReqList"></div>`;
     document.getElementById('driveFileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -713,6 +764,24 @@ body{overflow-x:hidden;}
       if (window.toast) toast('Fichier envoyé', 'ok');
       renderDrive();
     });
+
+    renderDocRequests();
+    document.getElementById('docReqForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const label = document.getElementById('docReqLabel').value.trim();
+      const note = document.getElementById('docReqNote').value.trim();
+      if (!label) return;
+      const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
+      const list = all[clientId] || [];
+      list.push({ id: 'req-' + Date.now(), label, note, createdAt: new Date().toISOString() });
+      all[clientId] = list;
+      localStorage.setItem('restup_doc_requests', JSON.stringify(all));
+      document.getElementById('docReqLabel').value = '';
+      document.getElementById('docReqNote').value = '';
+      renderDocRequests();
+      if (window.toast) toast('Document demandé au client', 'ok');
+    });
+
     const files = await loadDriveFiles();
     const listWrap = document.getElementById('driveListWrap');
     if (files === null) {
@@ -724,6 +793,32 @@ body{overflow-x:hidden;}
       const { data } = supabaseClient.storage.from('client-files').getPublicUrl(`${clientId}/${f.name}`);
       return `<div class="drive-file-row"><span>${esc(f.name.replace(/^\d+-/, ''))}</span><a href="${esc(data.publicUrl)}" target="_blank" rel="noopener">Ouvrir</a></div>`;
     }).join('');
+  }
+
+  // TEMP — demandes de documents en localStorage (bus démo coach ↔ client, voir dashboard.html).
+  function renderDocRequests() {
+    const wrap = document.getElementById('docReqList');
+    const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
+    const list = all[clientId] || [];
+    const uploadsAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
+    const uploads = uploadsAll[clientId] || {};
+    if (!list.length) { wrap.innerHTML = '<div class="empty-state">Aucun document demandé pour l\'instant.</div>'; return; }
+    wrap.innerHTML = list.map(r => {
+      const up = uploads[r.id];
+      return `<div class="drive-file-row">
+        <span><b>${esc(r.label)}</b>${r.note ? ` <span style="color:var(--muted-dim);">— ${esc(r.note)}</span>` : ''}</span>
+        <span style="display:flex;align-items:center;gap:10px;">
+          ${up ? `<span class="paid-tag yes">Reçu : ${esc(up.fileName)}</span>` : `<span class="paid-tag no">En attente</span>`}
+          <button type="button" class="btn-danger" data-del="${r.id}" style="padding:5px 12px;font-size:11.5px;">Retirer</button>
+        </span>
+      </div>`;
+    }).join('');
+    wrap.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => {
+      const all2 = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
+      all2[clientId] = (all2[clientId] || []).filter(r => r.id !== btn.dataset.del);
+      localStorage.setItem('restup_doc_requests', JSON.stringify(all2));
+      renderDocRequests();
+    }));
   }
 
   // =========================================================
@@ -1113,6 +1208,7 @@ body{overflow-x:hidden;}
   // ---- Init ----
   await loadAudit(); renderAuditTab();
   await loadPlan(); renderPlanEditor();
+  renderWaRecap();
   renderChronologie();
   renderGeneral();
   renderFinancier();

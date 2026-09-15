@@ -123,6 +123,9 @@ p{margin:0 0 10px;color:var(--muted);}
 /* reusable stat-card grid (audit financials + plan KPIs) */
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 @media (max-width:640px){.stat-grid{grid-template-columns:1fr 1fr;}}
+.stat-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media (max-width:860px){.stat-grid-4{grid-template-columns:1fr 1fr;}}
+@media (max-width:480px){.stat-grid-4{grid-template-columns:1fr;}}
 .stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 16px;}
 .stat-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .stat-card-head span{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-dim);}
@@ -167,6 +170,9 @@ p{margin:0 0 10px;color:var(--muted);}
 .doc-icon{width:34px;height:34px;border-radius:var(--r-sm);background:var(--lime-dim);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
 .doc-icon svg{width:16px;height:16px;stroke:var(--lime);}
 .doc-item a{color:var(--lime);text-decoration:none;font-weight:700;font-size:13px;}
+.paid-tag{font-size:11px;font-weight:800;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.paid-tag.yes{background:var(--lime-dim);color:var(--lime);}
+.paid-tag.no{background:rgba(255,80,80,.12);color:#ff8a8a;}
 .empty-state{font-size:13.5px;color:var(--muted-dim);text-align:center;padding:20px 0;}
 
 /* parcours: onboarding checklist */
@@ -357,6 +363,13 @@ p{margin:0 0 10px;color:var(--muted);}
 .week-locked-banner svg{width:13px;height:13px;}
 .week-card.locked .task-item{opacity:.35;filter:blur(.4px);pointer-events:none;}
 .week-card-body{padding:6px 16px 8px;}
+.week-toggle{background:transparent;border:none;color:var(--muted-dim);cursor:pointer;padding:4px;margin-left:2px;display:flex;align-items:center;justify-content:center;transition:transform .2s ease,color .2s;flex:0 0 auto;}
+.week-toggle svg{width:15px;height:15px;}
+.week-toggle:hover{color:#fff;}
+.week-card.collapsed .week-toggle{transform:rotate(-90deg);}
+.week-card.collapsed .week-card-body{display:none;}
+.week-card-head{gap:8px;}
+.week-card-head h5{flex:1;}
 
 .kpi-tag-list{display:flex;flex-direction:column;gap:8px;}
 .kpi-tag-list .tag-row{display:flex;gap:10px;font-size:13px;color:#EDE4D6;}
@@ -588,8 +601,13 @@ p{margin:0 0 10px;color:var(--muted);}
 
         <!-- DOCUMENTS -->
         <section class="view" id="view-documents">
-          <div class="page-title-row"><div><h1>Documents</h1><p>Tout ce que votre coach partage avec vous.</p></div></div>
+          <div class="page-title-row"><div><h1>Documents</h1><p>Tout ce que votre coach partage avec vous, et ce qu'il vous demande.</p></div></div>
+          <div class="card glow-card reveal in-view" id="docReqCard" style="display:none;">
+            <h3>Documents demandés par votre coach</h3>
+            <div id="docReqClientList"></div>
+          </div>
           <div class="card glow-card reveal in-view">
+            <h3>Partagés par votre coach</h3>
             <div id="docsList"><div class="empty-state">Chargement…</div></div>
           </div>
         </section>
@@ -992,7 +1010,7 @@ p{margin:0 0 10px;color:var(--muted);}
     if (currentCycleIdx < 0) currentCycleIdx = activeCycleIdx;
 
     let html = `<button type="button" class="doc-jump" data-goto="audit">← Voir l'audit</button>`;
-    html += `<div class="stat-grid reveal in-view" style="margin-bottom:30px;">
+    html += `<div class="stat-grid-4 reveal in-view" style="margin-bottom:30px;">
       <div class="stat-card" style="display:flex;align-items:center;gap:14px;">
         <div class="ring-wrap sm"><svg viewBox="0 0 76 76"><circle class="ring-track" cx="38" cy="38" r="31" stroke-width="7"/><circle class="ring-fill" id="planRing" cx="38" cy="38" r="31" stroke-width="7" style="stroke-dasharray:195;stroke-dashoffset:195;"/></svg><div class="ring-label sm"><b id="planRingPct">0%</b></div></div>
         <div><span style="font-size:10.5px;color:var(--muted-dim);text-transform:uppercase;font-weight:700;">Progression globale</span><br><b style="font-size:15px;color:#fff;">${all.length ? Math.round(doneCount / all.length * 100) : 0}%</b></div>
@@ -1143,11 +1161,20 @@ p{margin:0 0 10px;color:var(--muted);}
 
     if (month.objective) html += `<div class="month-objectif"><b>Objectif du mois</b><p>${esc(month.objective)}</p></div>`;
 
-    html += weeks.map((w, wi) => `<div class="week-card${w.locked ? ' locked' : ''}">
-      <div class="week-card-head"><h5>${esc(w.label)}</h5><span>${(w.tasks || []).filter(t => t.done).length}/${(w.tasks || []).length}</span></div>
+    // Semaine en cours = première semaine débloquée non terminée (sinon la dernière débloquée).
+    let currentWeekIdx = weeks.findIndex(w => !w.locked && (w.tasks || []).some(t => !t.done));
+    if (currentWeekIdx === -1) {
+      for (let i = weeks.length - 1; i >= 0; i--) { if (!weeks[i].locked) { currentWeekIdx = i; break; } }
+    }
+
+    html += weeks.map((w, wi) => {
+      const isCollapsed = !w.locked && wi !== currentWeekIdx;
+      return `<div class="week-card${w.locked ? ' locked' : ''}${isCollapsed ? ' collapsed' : ''}">
+      <div class="week-card-head"><h5>${esc(w.label)}</h5><span>${(w.tasks || []).filter(t => t.done).length}/${(w.tasks || []).length}</span>${!w.locked ? `<button type="button" class="week-toggle" aria-label="Afficher/masquer la semaine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>` : ''}</div>
       ${w.locked ? `<div class="week-locked-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Masqué au client</div>` : ''}
       <div class="week-card-body" data-week-idx="${wi}"></div>
-    </div>`).join('');
+    </div>`;
+    }).join('');
 
     if ((month.kpis || []).length) {
       html += `<div class="card glow-card" style="margin-top:14px;">
@@ -1168,6 +1195,10 @@ p{margin:0 0 10px;color:var(--muted);}
       const body = container.querySelector(`.week-card-body[data-week-idx="${wi}"]`);
       (w.tasks || []).forEach(t => { const el = renderTaskItem(t); bindCheck(el, t, () => renderPlan(plan)); body.appendChild(el); });
     });
+
+    container.querySelectorAll('.week-toggle').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('.week-card').classList.toggle('collapsed'));
+    });
   }
 
   // =========================================================
@@ -1180,6 +1211,42 @@ p{margin:0 0 10px;color:var(--muted);}
       return data || [];
     } catch (e) { return null; }
   }
+  // TEMP — demandes de documents en localStorage (bus démo coach ↔ client, voir admin/client.html).
+  function renderDocRequestsClient() {
+    const card = document.getElementById('docReqCard');
+    const wrap = document.getElementById('docReqClientList');
+    const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
+    const list = all[user.id] || [];
+    if (!list.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const uploadsAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
+    const uploads = uploadsAll[user.id] || {};
+    wrap.innerHTML = list.map(r => {
+      const up = uploads[r.id];
+      return `<div class="doc-item">
+        <span class="doc-name"><span class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>${esc(r.label)}${r.note ? ` <span style="color:var(--muted-dim);font-weight:400;">— ${esc(r.note)}</span>` : ''}</span>
+        <span style="display:flex;align-items:center;gap:10px;">
+          ${up
+            ? `<span class="paid-tag yes">Envoyé : ${esc(up.fileName)}</span>`
+            : `<label class="btn-primary magnetic" style="padding:8px 16px;font-size:12.5px;cursor:pointer;">Importer<input type="file" data-req="${r.id}" style="display:none;"></label>`}
+        </span>
+      </div>`;
+    }).join('');
+    wrap.querySelectorAll('input[type=file]').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const uAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
+        const uUser = uAll[user.id] || {};
+        uUser[input.dataset.req] = { fileName: file.name, uploadedAt: new Date().toISOString() };
+        uAll[user.id] = uUser;
+        localStorage.setItem('restup_doc_uploads', JSON.stringify(uAll));
+        if (window.toast) toast('Document envoyé à votre coach', 'ok');
+        renderDocRequestsClient();
+      });
+    });
+  }
+
   function renderDocs(files) {
     const list = document.getElementById('docsList');
     if (files === null) { list.innerHTML = '<div class="empty-state">Votre coach n\'a pas encore partagé de documents.</div>'; return; }
@@ -1358,6 +1425,7 @@ p{margin:0 0 10px;color:var(--muted);}
     renderBooking();
     renderParcours(audit, planRow, calls);
     renderDocs(await loadDocs());
+    renderDocRequestsClient();
   });
 
   // ---- Sidebar navigation between views ----
