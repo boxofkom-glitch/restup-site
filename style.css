@@ -33,17 +33,18 @@ button{cursor:pointer}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.7px;margin:0 0 25px}
 .intro{font-size:18px;line-height:1.75;max-width:490px;color:var(--muted);margin:0 0 29px}
 
-.hero-full{position:relative;min-height:86vh;display:flex;align-items:center;overflow:hidden;background:radial-gradient(120% 130% at 78% 28%,#4a2482 0%,#1c0e33 45%,var(--ink) 78%)}
+.hero-full{position:relative;min-height:86vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(120% 130% at 78% 28%,#4a2482 0%,#1c0e33 45%,var(--ink) 78%)}
 .hero-full-media{position:absolute;inset:0;display:flex;justify-content:flex-end}
 .hero-full-media img{height:100%;width:auto;max-width:none;display:block}
 .hero-full-fade{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(to bottom,transparent,var(--ink));pointer-events:none}
-.hero-full-content{position:relative;z-index:2;max-width:640px;padding:64px 40px 56px 56px}
+.hero-full-content{position:relative;z-index:2;max-width:760px;padding:64px 40px 56px;text-align:center;margin:0 auto}
 .hero-full-content .eyebrow{color:#fff;margin-bottom:18px}
 .hero-full-content h1{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(46px,5vw,76px);font-weight:400;line-height:1.03;letter-spacing:-1px;margin:0 0 20px;color:#fff}
+.hero-full-content h1.hero-question{font-size:clamp(52px,6.2vw,92px)}
 .hero-full-content h1 span{display:inline-block;color:var(--lime);margin:4px 0 0}
-.hero-full-content .intro{color:#E4E1EC;max-width:520px;margin:0 0 20px}
+.hero-full-content .intro{color:#E4E1EC;max-width:520px;margin:0 auto 20px}
 .hero-full-content .intro .accent{color:var(--lime);font-weight:700}
-.hero-full-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:4px}
+.hero-full-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:4px}
 .hero-cta{display:inline-flex;align-items:center;gap:14px;border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:15px 20px;color:#fff;font-weight:700;font-size:16px;background:rgba(20,10,34,.35);backdrop-filter:blur(6px);transition:border-color .25s,background .25s,transform .25s}
 .hero-cta:hover{border-color:var(--lime);background:rgba(20,10,34,.55);transform:translateY(-2px)}
 .hero-cta .arrow{margin-left:auto;font-size:19px;padding-left:6px}
