@@ -147,6 +147,7 @@ body{overflow-x:hidden;}
 .stat-card span{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-dim);display:block;margin-bottom:8px;}
 .stat-card b{font-size:21px;font-weight:900;color:#fff;}
 .journey-mini{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:14px;}
+.status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;margin-bottom:16px;}
 .journey-mini h5{font-size:12px;color:var(--muted-dim);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
 .journey-mini p{font-size:14px;color:#EDE4D6;line-height:1.6;}
 .raw-toggle{background:transparent;border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;margin-top:6px;}
@@ -324,6 +325,7 @@ body{overflow-x:hidden;}
 
     <!-- COACHING (plan d'action) -->
     <section class="view" id="view-plan">
+      <div id="planStatusRow"></div>
       <div class="quick-actions">
         <button type="button" id="unlockWeekBtn">🔓 Débloquer la semaine suivante</button>
         <button type="button" id="activateCycleBtn">▶️ Activer le cycle suivant</button>
@@ -409,6 +411,24 @@ body{overflow-x:hidden;}
   document.getElementById('adminPage').style.display = 'block';
 
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // TEMP — repli localStorage pour les clients de démo (id non-UUID) que Supabase refuse en écriture.
+  // Voir aussi portail/dashboard.html, portail/admin/audits.html, portail/admin/plans.html.
+  function localSave(table, userId, data) {
+    const key = 'restup_local_' + table;
+    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    all[userId] = data;
+    localStorage.setItem(key, JSON.stringify(all));
+  }
+  function localLoad(table, userId) {
+    const all = JSON.parse(localStorage.getItem('restup_local_' + table) || '{}');
+    return all[userId] || null;
+  }
+  async function upsertWithFallback(table, userId, data) {
+    const { error } = await supabaseClient.from(table).upsert({ user_id: userId, data }, { onConflict: 'user_id' });
+    if (error) localSave(table, userId, data);
+    return { error: null };
+  }
   const fmtEuro = (n) => n == null ? '—' : Number(n).toLocaleString('fr-FR') + ' €';
 
   async function doLogout() {
@@ -528,9 +548,10 @@ body{overflow-x:hidden;}
   let auditRow = null;
   async function loadAudit() {
     const { data } = await supabaseClient.from('audits').select('*').eq('user_id', clientId).maybeSingle();
-    // TEMP — bascule sur un audit de démonstration si aucune ligne réelle n'existe.
+    // TEMP — bascule sur un brouillon local puis sur l'audit de démonstration si aucune ligne réelle n'existe.
+    const localAudit = localLoad('audits', clientId);
     const mockAudit = (window.MOCK_AUDITS || {})[clientId];
-    auditRow = data || (mockAudit ? { user_id: clientId, data: mockAudit } : null);
+    auditRow = data || (localAudit ? { user_id: clientId, data: localAudit } : null) || (mockAudit ? { user_id: clientId, data: mockAudit } : null);
   }
 
   function renderAuditTab() {
@@ -542,8 +563,14 @@ body{overflow-x:hidden;}
     const a = auditRow.data || {};
     const ov = a.overview || {};
     const gj = a.growth_journey || {};
+    const isDraft = a.status === 'draft';
     root.innerHTML = `
+      <div class="status-row">
+        <span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon — non visible par le client' : 'Publié — visible par le client'}</span>
+        <button type="button" class="btn-primary magnetic" id="togglePublishAudit" style="padding:9px 18px;">${isDraft ? 'Publier au client' : 'Repasser en brouillon'}</button>
+      </div>
       <button type="button" class="doc-jump" id="jumpToPlan">Voir le plan d'action →</button>
+      ${a.source_prompt ? `<div class="journey-mini" style="border-color:rgba(155,77,255,.3);"><h5>📝 Notes / transcription utilisées pour générer ce brouillon</h5><p style="white-space:pre-wrap;">${esc(a.source_prompt)}</p></div>` : ''}
       <div class="stat-grid">
         <div class="stat-card"><span>Chiffre d'affaires</span><b>${fmtEuro(ov.revenue)}</b></div>
         <div class="stat-card"><span>Marge nette</span><b>${ov.margin_pct ?? '—'}%</b></div>
@@ -562,6 +589,13 @@ body{overflow-x:hidden;}
       </div>
     `;
     document.getElementById('jumpToPlan').addEventListener('click', () => switchTab('plan'));
+    document.getElementById('togglePublishAudit').addEventListener('click', async () => {
+      const next = { ...a, status: isDraft ? 'published' : 'draft' };
+      await upsertWithFallback('audits', clientId, next);
+      if (window.toast) toast(isDraft ? 'Audit publié au client' : 'Audit repassé en brouillon', 'ok');
+      await loadAudit();
+      renderAuditTab();
+    });
     document.getElementById('toggleRawAudit').addEventListener('click', () => {
       const wrap = document.getElementById('rawAuditWrap');
       wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
@@ -570,8 +604,7 @@ body{overflow-x:hidden;}
       let parsed;
       try { parsed = JSON.parse(document.getElementById('rawAuditText').value); }
       catch (e) { if (window.toast) toast('JSON invalide : ' + e.message, 'error'); return; }
-      const { error } = await supabaseClient.from('audits').upsert({ user_id: clientId, data: parsed }, { onConflict: 'user_id' });
-      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      await upsertWithFallback('audits', clientId, parsed);
       if (window.toast) toast('Audit enregistré', 'ok');
       await loadAudit();
       renderAuditTab();
@@ -844,13 +877,12 @@ body{overflow-x:hidden;}
 
   async function loadPlan() {
     const { data } = await supabaseClient.from('plans').select('*').eq('user_id', clientId).maybeSingle();
-    // TEMP — bascule sur un plan de démonstration si aucune ligne réelle n'existe.
-    planData = data ? data.data : ((window.MOCK_PLANS || {})[clientId] || null);
+    // TEMP — bascule sur un brouillon local puis sur un plan de démonstration si aucune ligne réelle n'existe.
+    planData = data ? data.data : (localLoad('plans', clientId) || (window.MOCK_PLANS || {})[clientId] || null);
   }
 
   async function savePlan(silent) {
-    const { error } = await supabaseClient.from('plans').upsert({ user_id: clientId, data: planData }, { onConflict: 'user_id' });
-    if (error) { if (window.toast) toast(error.message, 'error'); return false; }
+    await upsertWithFallback('plans', clientId, planData);
     if (!silent && window.toast) toast('Plan enregistré', 'ok');
     return true;
   }
@@ -936,9 +968,29 @@ body{overflow-x:hidden;}
     </div>`;
   }
 
+  function renderPlanStatus() {
+    const row = document.getElementById('planStatusRow');
+    if (!planData) { row.innerHTML = ''; return; }
+    const isDraft = planData.status === 'draft';
+    row.innerHTML = `
+      <div class="status-row">
+        <span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon — non visible par le client' : 'Publié — visible par le client'}</span>
+        <button type="button" class="btn-primary magnetic" id="togglePublishPlan" style="padding:9px 18px;">${isDraft ? 'Publier au client' : 'Repasser en brouillon'}</button>
+      </div>
+      ${planData.source_prompt ? `<div class="journey-mini" style="border-color:rgba(155,77,255,.3);"><h5>📝 Notes / transcription utilisées pour générer ce brouillon</h5><p style="white-space:pre-wrap;">${esc(planData.source_prompt)}</p></div>` : ''}
+    `;
+    document.getElementById('togglePublishPlan').addEventListener('click', async () => {
+      planData.status = isDraft ? 'published' : 'draft';
+      await savePlan(true);
+      if (window.toast) toast(isDraft ? 'Plan publié au client' : 'Plan repassé en brouillon', 'ok');
+      renderPlanStatus();
+    });
+  }
+
   function renderPlanEditor() {
     const root = document.getElementById('planEditorRoot');
     const saveBar = document.getElementById('planSaveBar');
+    renderPlanStatus();
     if (!planData) {
       root.innerHTML = `<div class="empty-state">Pas encore de plan pour ce client.</div>
         <button type="button" class="btn-primary magnetic" id="genPlanBtn">Générer une structure de plan vierge</button>`;
@@ -1222,6 +1274,9 @@ body{overflow-x:hidden;}
   renderMessages(msgList);
   renderCalls(callsList);
   renderActivite(msgList, callsList);
+
+  const jumpTab = params.get('tab');
+  if (jumpTab) switchTab(jumpTab);
 })();
 </script>
 </body>

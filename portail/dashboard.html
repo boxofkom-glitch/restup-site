@@ -786,9 +786,12 @@ p{margin:0 0 10px;color:var(--muted);}
   async function loadAudit() {
     try {
       const { data: row, error } = await supabaseClient.from('audits').select('*').eq('user_id', user.id).maybeSingle();
-      if (!error && row && row.data) return row.data;
+      // Tant que le coach n'a pas publié l'audit (brouillon généré par IA ou en cours), le client ne le voit pas.
+      if (!error && row && row.data && row.data.status !== 'draft') return row.data;
     } catch (e) { /* fall through to mock */ }
-    // TEMP — audit de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    // TEMP — repli sur un brouillon local (clients de démo) puis sur l'audit de démonstration.
+    const local = JSON.parse(localStorage.getItem('restup_local_audits') || '{}')[user.id];
+    if (local) return local.status !== 'draft' ? local : null;
     return (window.MOCK_AUDITS || {})[user.id] || null;
   }
 
@@ -949,9 +952,12 @@ p{margin:0 0 10px;color:var(--muted);}
   async function loadPlan() {
     try {
       const { data: row, error } = await supabaseClient.from('plans').select('*').eq('user_id', user.id).maybeSingle();
-      if (!error && row && row.data) return row;
+      // Tant que le coach n'a pas publié le plan (brouillon généré par IA ou en cours), le client ne le voit pas.
+      if (!error && row && row.data && row.data.status !== 'draft') return row;
     } catch (e) { /* fall through to mock */ }
-    // TEMP — plan de démonstration si aucune ligne réelle n'existe (voir admin/mock-clients.js).
+    // TEMP — repli sur un brouillon local (clients de démo) puis sur un plan de démonstration.
+    const local = JSON.parse(localStorage.getItem('restup_local_plans') || '{}')[user.id];
+    if (local) return local.status !== 'draft' ? { id: 'local-plan-' + user.id, user_id: user.id, data: local } : null;
     const mockPlan = (window.MOCK_PLANS || {})[user.id];
     if (mockPlan) return { id: 'mock-plan-' + user.id, user_id: user.id, data: mockPlan };
     return null;
@@ -959,8 +965,13 @@ p{margin:0 0 10px;color:var(--muted);}
 
   async function savePlan() {
     if (!planRow) return;
-    const { error } = await supabaseClient.from('plans').update({ data: planRow.data }).eq('id', planRow.id);
-    if (error && window.toast) toast(error.message, 'error');
+    const { error } = await supabaseClient.from('plans').upsert({ user_id: user.id, data: planRow.data }, { onConflict: 'user_id' });
+    if (error) {
+      // TEMP — repli localStorage pour les clients de démo (id non-UUID) que Supabase refuse en écriture.
+      const all = JSON.parse(localStorage.getItem('restup_local_plans') || '{}');
+      all[user.id] = planRow.data;
+      localStorage.setItem('restup_local_plans', JSON.stringify(all));
+    }
   }
 
   function allTasksFlat(plan) {
