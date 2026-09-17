@@ -250,8 +250,16 @@ body{overflow-x:hidden;}
   let clients = [];
 
   async function loadClients() {
+    // Un coach (autre que le développeur) ne voit que les clients qui lui sont attribués.
+    let myTeamId = null;
+    if (user.email !== 'box.of.kom@gmail.com') {
+      const { data: myTeamRow } = await supabaseClient.from('team_members').select('id').eq('user_id', user.id).eq('role', 'coach').maybeSingle();
+      myTeamId = myTeamRow ? myTeamRow.id : null;
+    }
+    let profilesQuery = supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+    if (myTeamId) profilesQuery = profilesQuery.eq('coach_id', myTeamId);
     const [{ data: profiles }, { data: plans }, { data: calls }] = await Promise.all([
-      supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }),
+      profilesQuery,
       supabaseClient.from('plans').select('user_id, data'),
       supabaseClient.from('calls').select('user_id, status'),
     ]);
@@ -297,6 +305,11 @@ body{overflow-x:hidden;}
         plan,
       };
     });
+  }
+
+  // Message de bienvenue personnalisé, à envoyer avant l'audit (onboarding).
+  function welcomeMessage(c) {
+    return `Bonjour ${c.company} 👋 Ici votre coach RestUp !\n\nRavi de démarrer l'accompagnement avec vous. On va commencer par un audit complet de votre établissement pour cadrer les priorités, puis construire ensemble votre plan d'action semaine par semaine.\n\nJe reviens vite vers vous pour caler le premier rendez-vous. À très vite !\n— votre coach RestUp`;
   }
 
   // Récap concis de la semaine en cours + tâches en retard des semaines précédentes (pas de liste détaillée).
@@ -395,6 +408,7 @@ body{overflow-x:hidden;}
       <div class="qv-row"><span>Téléphone</span><span>${esc(c.phone)}</span></div>
       <div class="qv-actions">
         <a class="btn-primary" href="client.html?id=${esc(c.id)}">Afficher sa page →</a>
+        ${waNumber ? `<a class="btn-secondary" href="https://wa.me/${esc(waNumber)}?text=${encodeURIComponent(welcomeMessage(c))}" target="_blank" rel="noopener">👋 Message de bienvenue WhatsApp</a>` : ''}
         ${waNumber ? `<a class="btn-secondary" href="https://wa.me/${esc(waNumber)}?text=${encodeURIComponent(weeklyRecapMessage(c))}" target="_blank" rel="noopener">📋 Récap semaine WhatsApp</a>` : ''}
         <button type="button" class="btn-secondary" id="qvLogCall">Enregistrer un appel</button>
       </div>
@@ -410,6 +424,8 @@ body{overflow-x:hidden;}
       btn.disabled = false; btn.textContent = '✉️ Envoyer les accès du portail';
       if (error) { if (window.toast) toast(error.message, 'error'); return; }
       if (window.toast) toast('Email d\'accès envoyé à ' + c.email, 'ok');
+      const waNumber = (c.phone || '').replace(/[^\d]/g, '');
+      if (waNumber) window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(welcomeMessage(c))}`, '_blank');
     });
     document.getElementById('qvLogCall').addEventListener('click', async () => {
       const when = prompt('Créneau du call (ex : Jeudi 14h) :');

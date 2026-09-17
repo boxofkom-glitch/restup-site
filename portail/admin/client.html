@@ -285,6 +285,7 @@ body{overflow-x:hidden;}
       <div class="client-hero-badges" id="clientBadges"></div>
     </div>
     <button type="button" class="btn-primary magnetic" id="sendAccessBtn" style="white-space:nowrap;">✉️ Envoyer les accès</button>
+    <a class="btn-secondary" id="waWelcomeBtn" href="#" target="_blank" rel="noopener" style="display:none;white-space:nowrap;">👋 Bienvenue WhatsApp</a>
     <a class="btn-secondary" id="waRecapBtn" href="#" target="_blank" rel="noopener" style="display:none;white-space:nowrap;">📋 Récap semaine WhatsApp</a>
   </div>
 
@@ -380,6 +381,7 @@ body{overflow-x:hidden;}
 
     <!-- CALLS -->
     <section class="view" id="view-calls">
+      <button type="button" class="btn-primary magnetic" id="newCallBtn" style="margin-bottom:16px;">+ Nouveau call</button>
       <div id="callsRoot"></div>
     </section>
 
@@ -732,8 +734,12 @@ body{overflow-x:hidden;}
   // Récap concis de la semaine en cours + tâches en retard des semaines précédentes (pas de liste détaillée).
   function renderWaRecap() {
     const btn = document.getElementById('waRecapBtn');
+    const welcomeBtn = document.getElementById('waWelcomeBtn');
     const waNumber = (profile?.phone || '').replace(/[^\d]/g, '');
-    if (!waNumber) { btn.style.display = 'none'; return; }
+    if (!waNumber) { btn.style.display = 'none'; welcomeBtn.style.display = 'none'; return; }
+    const welcomeMsg = `Bonjour ${displayName} 👋 Ici votre coach RestUp !\n\nRavi de démarrer l'accompagnement avec vous. On va commencer par un audit complet de votre établissement pour cadrer les priorités, puis construire ensemble votre plan d'action semaine par semaine.\n\nJe reviens vite vers vous pour caler le premier rendez-vous. À très vite !\n— votre coach RestUp`;
+    welcomeBtn.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(welcomeMsg)}`;
+    welcomeBtn.style.display = 'inline-flex';
     const fallback = `Bonjour, ici votre coach RestUp 👋 On fait le point cette semaine ?`;
     let msg = fallback;
     const cycle = planData ? (planData.cycles || []).find(cy => cy.active) : null;
@@ -1232,6 +1238,16 @@ body{overflow-x:hidden;}
     const pad = (n) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
+  // Construit un brouillon d'audit à partir d'une transcription de call (voir aussi admin/audits.html).
+  function auditDraftFromPrompt(prompt) {
+    return {
+      status: 'draft',
+      source_prompt: prompt,
+      overview: { revenue: null, margin_pct: null, employees: null, fixed_costs: null, avg_sale: null, cash: null },
+      growth_journey: { vision_12m: '', objective_4m: '', blocker: '' },
+    };
+  }
+
   function renderCalls(list) {
     const root = document.getElementById('callsRoot');
     if (!list.length) { root.innerHTML = '<div class="empty-state">Aucune demande de call pour ce client.</div>'; return; }
@@ -1245,8 +1261,11 @@ body{overflow-x:hidden;}
           </select>
           <input type="datetime-local" data-field="scheduled_at" value="${toLocalInputValue(c.scheduled_at)}" style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;color:#fff;font-family:inherit;font-size:13px;">
         </div>
-        <div class="field"><label>Notes</label><textarea rows="2" data-field="notes">${esc(c.notes || '')}</textarea></div>
-        <button type="button" class="btn-primary magnetic save-call-btn" style="padding:9px 16px;font-size:13px;">Enregistrer</button>
+        <div class="field"><label>Notes / transcription de l'appel</label><textarea rows="4" data-field="notes" placeholder="Collez ici vos notes ou la transcription du call...">${esc(c.notes || '')}</textarea></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary magnetic save-call-btn" style="padding:9px 16px;font-size:13px;">Enregistrer</button>
+          <button type="button" class="btn-secondary gen-audit-btn" style="padding:9px 16px;font-size:13px;">⚡ Générer l'audit à partir de cette transcription</button>
+        </div>
       </div>`).join('');
     root.querySelectorAll('.call-row').forEach(row => {
       row.querySelector('.save-call-btn').addEventListener('click', async () => {
@@ -1261,6 +1280,16 @@ body{overflow-x:hidden;}
         }).eq('id', id);
         if (error) { if (window.toast) toast(error.message, 'error'); return; }
         if (window.toast) toast('Call mis à jour', 'ok');
+      });
+      row.querySelector('.gen-audit-btn').addEventListener('click', async () => {
+        const notes = row.querySelector('[data-field="notes"]').value.trim();
+        if (!notes) { if (window.toast) toast('Ajoutez des notes ou une transcription d\'abord.', 'error'); return; }
+        if (auditRow && !confirm('Un audit existe déjà pour ce client. Le remplacer par un brouillon généré depuis cette transcription ?')) return;
+        auditRow = { user_id: clientId, data: auditDraftFromPrompt(notes) };
+        await upsertWithFallback('audits', clientId, auditRow.data);
+        if (window.toast) toast('Audit généré depuis la transcription — à compléter puis publier', 'ok');
+        switchTab('audit');
+        renderAuditTab();
       });
     });
   }
@@ -1329,6 +1358,8 @@ body{overflow-x:hidden;}
     btn.disabled = false; btn.textContent = '✉️ Envoyer les accès';
     if (error) { if (window.toast) toast(error.message, 'error'); return; }
     if (window.toast) toast('Email d\'accès envoyé à ' + email, 'ok');
+    const waNumber = (profile?.phone || '').replace(/[^\d]/g, '');
+    if (waNumber) window.open(document.getElementById('waWelcomeBtn').href, '_blank');
   });
   renderChronologie();
   renderGeneral();
@@ -1343,6 +1374,11 @@ body{overflow-x:hidden;}
   renderMessages(msgList);
   renderCalls(callsList);
   renderActivite(msgList, callsList);
+  document.getElementById('newCallBtn').addEventListener('click', async () => {
+    const { error } = await supabaseClient.from('calls').insert({ user_id: clientId, status: 'requested', notes: '' });
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
+    renderCalls(await loadCalls());
+  });
 
   const jumpTab = params.get('tab');
   if (jumpTab) switchTab(jumpTab);

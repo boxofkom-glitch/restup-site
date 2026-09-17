@@ -60,6 +60,19 @@ body{overflow-x:hidden;}
 .paid-tag.yes{background:var(--lime-dim);color:var(--lime);}
 .paid-tag.no{background:rgba(255,80,80,.12);color:#ff8a8a;}
 .warn-box{background:rgba(255,190,60,.08);border:1px solid rgba(255,190,60,.25);color:#ffc94d;border-radius:var(--r-md);padding:14px 16px;font-size:13px;margin-bottom:18px;}
+.tab-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+.tab-btn{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:500;font-size:13.5px;padding:8px 14px;border-radius:999px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.tab-btn.active{background:var(--lime-dim);border-color:transparent;color:var(--lime);}
+.sub-tab-nav{display:flex;gap:6px;margin-bottom:18px;}
+.sub-tab-btn{flex:0 0 auto;background:var(--ink);border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;font-family:inherit;}
+.sub-tab-btn.active{background:var(--lime-dim);border-color:transparent;color:var(--lime);}
+.view{display:none;}
+.view.active{display:block;}
+.team-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);font-size:13.5px;}
+.team-row:last-child{border-bottom:none;}
+.team-row .name{font-weight:700;color:#fff;}
+.team-row .email{color:var(--muted-dim);font-size:12px;}
+.team-row select{background:var(--surface-2);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:6px 10px;font-family:inherit;font-size:12.5px;}
 </style>
 </head>
 <body>
@@ -140,37 +153,73 @@ body{overflow-x:hidden;}
           <div><h1>Développeur</h1><p>Accès et outils réservés — visible uniquement pour box.of.kom@gmail.com.</p></div>
         </div>
 
-        <div class="dev-card">
-          <h3>Accès rapides</h3>
-          <p>Pour naviguer et tester les deux espaces sans changer de compte.</p>
-          <div class="quick-links">
-            <a href="index.html">Espace coach<span>Liste des clients</span></a>
-            <a href="../dashboard.html">Espace client<span>Aperçu démo (mock-1)</span></a>
-            <a href="../login.html">Page de connexion<span>Point d'entrée public</span></a>
-            <a href="../index.html">Site public<span>restup.solutions</span></a>
+        <div class="tab-nav">
+          <button type="button" class="tab-btn active" data-tab="rapide">Accès rapides</button>
+          <button type="button" class="tab-btn" data-tab="acces">Accès</button>
+        </div>
+
+        <section class="view active" id="view-rapide">
+          <div class="dev-card">
+            <h3>Accès rapides</h3>
+            <p>Pour naviguer et tester les deux espaces sans changer de compte.</p>
+            <div class="quick-links">
+              <a href="index.html">Espace coach<span>Liste des clients</span></a>
+              <a href="../dashboard.html">Espace client<span>Aperçu démo (mock-1)</span></a>
+              <a href="../login.html">Page de connexion<span>Point d'entrée public</span></a>
+              <a href="../index.html">Site public<span>restup.solutions</span></a>
+            </div>
           </div>
-        </div>
 
-        <div class="dev-card">
-          <h3>Inviter un coach</h3>
-          <p>Envoie un email au futur coach avec un lien pour créer son mot de passe. À sa première connexion, son compte est automatiquement rattaché à l'espace coach.</p>
-          <div class="warn-box">⚠️ Nécessite qu'une policy RLS Supabase autorise un utilisateur authentifié à s'ajouter lui-même dans la table <code>admins</code> — sinon l'invitation part mais le rattachement automatique échouera silencieusement (voir note en fin de page).</div>
-          <div class="field"><label>Email du coach</label><input type="email" id="coachInviteEmail" placeholder="prenom@restup.fr"></div>
-          <button type="button" class="btn-primary magnetic" id="coachInviteBtn">Envoyer l'invitation coach</button>
-        </div>
+          <div class="dev-card">
+            <h3>Invitations envoyées (historique local)</h3>
+            <p>Suivi conservé dans ce navigateur — pas encore un annuaire serveur.</p>
+            <div id="inviteHistory"><div class="empty-state">Aucune invitation envoyée depuis ce navigateur.</div></div>
+          </div>
+        </section>
 
-        <div class="dev-card">
-          <h3>Inviter un client</h3>
-          <p>Même principe, pour un client. Vous pouvez aussi le faire directement depuis la fiche du client (bouton "Envoyer les accès").</p>
-          <div class="field"><label>Email du client</label><input type="email" id="clientInviteEmail" placeholder="contact@restaurant.fr"></div>
-          <button type="button" class="btn-primary magnetic" id="clientInviteBtn">Envoyer l'invitation client</button>
-        </div>
+        <section class="view" id="view-acces">
+          <div class="sub-tab-nav">
+            <button type="button" class="sub-tab-btn active" data-sub="coach">Coach</button>
+            <button type="button" class="sub-tab-btn" data-sub="eleves">Élèves</button>
+            <button type="button" class="sub-tab-btn" data-sub="closer">Closer</button>
+          </div>
 
-        <div class="dev-card">
-          <h3>Invitations envoyées (historique local)</h3>
-          <p>Suivi conservé dans ce navigateur — pas encore un annuaire serveur (voir limites en bas de page).</p>
-          <div id="inviteHistory"><div class="empty-state">Aucune invitation envoyée depuis ce navigateur.</div></div>
-        </div>
+          <div class="sub-view active" id="sub-coach">
+            <div class="dev-card">
+              <h3>Inviter un coach</h3>
+              <p>Envoie un email brandé RestUp avec un lien pour créer son mot de passe. À sa première connexion, il accède à son propre tableau de bord coach.</p>
+              <div class="field"><label>Nom du coach</label><input type="text" id="coachInviteName" placeholder="Sarah Meunier"></div>
+              <div class="field"><label>Email du coach</label><input type="email" id="coachInviteEmail" placeholder="prenom@restup.fr"></div>
+              <button type="button" class="btn-primary magnetic" id="coachInviteBtn">✉️ Envoyer l'accès</button>
+            </div>
+            <div class="dev-card">
+              <h3>Coachs</h3>
+              <div id="coachList"><div class="empty-state">Chargement…</div></div>
+            </div>
+          </div>
+
+          <div class="sub-view" id="sub-eleves" style="display:none;">
+            <div class="dev-card">
+              <h3>Élèves (clients)</h3>
+              <p>Attribuez chaque client à un coach et un closer. La gestion complète (audit, plan, docs) se fait depuis "Mes clients".</p>
+              <div id="elevesList"><div class="empty-state">Chargement…</div></div>
+            </div>
+          </div>
+
+          <div class="sub-view" id="sub-closer" style="display:none;">
+            <div class="dev-card">
+              <h3>Inviter un closer</h3>
+              <p>Le closer n'a pas accès au tableau de bord — c'est une fiche d'annuaire utilisée pour l'attribution des clients.</p>
+              <div class="field"><label>Nom du closer</label><input type="text" id="closerInviteName" placeholder="Julien Farge"></div>
+              <div class="field"><label>Email (optionnel)</label><input type="email" id="closerInviteEmail" placeholder="julien@restup.fr"></div>
+              <button type="button" class="btn-primary magnetic" id="closerInviteBtn">+ Ajouter le closer</button>
+            </div>
+            <div class="dev-card">
+              <h3>Closers</h3>
+              <div id="closerList"><div class="empty-state">Chargement…</div></div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   </div>
@@ -237,12 +286,94 @@ body{overflow-x:hidden;}
     if (window.toast) toast('Invitation envoyée à ' + email, 'ok');
   }
 
-  document.getElementById('coachInviteBtn').addEventListener('click', () => {
-    sendInvite(document.getElementById('coachInviteEmail').value.trim(), 'coach', document.getElementById('coachInviteBtn'));
+  // ---- Tabs / sous-onglets ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('section.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + btn.dataset.tab));
+    });
   });
-  document.getElementById('clientInviteBtn').addEventListener('click', () => {
-    sendInvite(document.getElementById('clientInviteEmail').value.trim(), 'client', document.getElementById('clientInviteBtn'));
+  document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.sub-view').forEach(v => v.style.display = (v.id === 'sub-' + btn.dataset.sub) ? 'block' : 'none');
+    });
   });
+
+  // ---- Équipe (coachs / closers) — table "team_members" ----
+  async function loadTeam(role) {
+    const { data, error } = await supabaseClient.from('team_members').select('*').eq('role', role).order('created_at', { ascending: false });
+    return error ? [] : (data || []);
+  }
+
+  async function renderCoaches() {
+    const wrap = document.getElementById('coachList');
+    const coaches = await loadTeam('coach');
+    if (!coaches.length) { wrap.innerHTML = '<div class="empty-state">Aucun coach pour l\'instant.</div>'; return; }
+    wrap.innerHTML = coaches.map(c => `<div class="team-row">
+      <span><span class="name">${esc(c.name || c.email)}</span><br><span class="email">${esc(c.email)}</span></span>
+      <span class="paid-tag ${c.user_id ? 'yes' : 'no'}">${c.user_id ? 'Actif' : 'En attente de connexion'}</span>
+    </div>`).join('');
+  }
+
+  async function renderClosers() {
+    const wrap = document.getElementById('closerList');
+    const closers = await loadTeam('closer');
+    if (!closers.length) { wrap.innerHTML = '<div class="empty-state">Aucun closer pour l\'instant.</div>'; return; }
+    wrap.innerHTML = closers.map(c => `<div class="team-row">
+      <span><span class="name">${esc(c.name || c.email || '—')}</span>${c.email ? `<br><span class="email">${esc(c.email)}</span>` : ''}</span>
+    </div>`).join('');
+  }
+
+  async function renderEleves() {
+    const wrap = document.getElementById('elevesList');
+    const [{ data: profiles }, coaches, closers] = await Promise.all([
+      supabaseClient.from('profiles').select('id, company_name, email, coach_id, closer_id'),
+      loadTeam('coach'), loadTeam('closer'),
+    ]);
+    const list = (profiles && profiles.length) ? profiles : (window.MOCK_CLIENTS || []).map(c => ({ id: c.id, company_name: c.company_name, email: c.email, coach_id: null, closer_id: null }));
+    if (!list.length) { wrap.innerHTML = '<div class="empty-state">Aucun client pour l\'instant.</div>'; return; }
+    const coachOpts = (id) => `<option value="">— Coach —</option>` + coaches.map(c => `<option value="${esc(c.id)}"${c.id === id ? ' selected' : ''}>${esc(c.name || c.email)}</option>`).join('');
+    const closerOpts = (id) => `<option value="">— Closer —</option>` + closers.map(c => `<option value="${esc(c.id)}"${c.id === id ? ' selected' : ''}>${esc(c.name || c.email)}</option>`).join('');
+    wrap.innerHTML = list.map(p => `<div class="team-row">
+      <span class="name">${esc(p.company_name || p.email)}</span>
+      <span style="display:flex;gap:8px;">
+        <select data-client="${esc(p.id)}" data-field="coach_id">${coachOpts(p.coach_id)}</select>
+        <select data-client="${esc(p.id)}" data-field="closer_id">${closerOpts(p.closer_id)}</select>
+      </span>
+    </div>`).join('');
+    wrap.querySelectorAll('select').forEach(sel => sel.addEventListener('change', async () => {
+      const { error } = await supabaseClient.from('profiles').update({ [sel.dataset.field]: sel.value || null }).eq('id', sel.dataset.client);
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      if (window.toast) toast('Mis à jour', 'ok');
+    }));
+  }
+
+  document.getElementById('coachInviteBtn').addEventListener('click', async () => {
+    const email = document.getElementById('coachInviteEmail').value.trim();
+    const name = document.getElementById('coachInviteName').value.trim();
+    if (!email) return;
+    const { error: teamErr } = await supabaseClient.from('team_members').insert({ role: 'coach', name, email });
+    if (teamErr) { if (window.toast) toast(teamErr.message, 'error'); return; }
+    await sendInvite(email, 'coach', document.getElementById('coachInviteBtn'));
+    renderCoaches();
+  });
+
+  document.getElementById('closerInviteBtn').addEventListener('click', async () => {
+    const email = document.getElementById('closerInviteEmail').value.trim();
+    const name = document.getElementById('closerInviteName').value.trim();
+    if (!name && !email) return;
+    const { error } = await supabaseClient.from('team_members').insert({ role: 'closer', name, email: email || null });
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
+    document.getElementById('closerInviteName').value = '';
+    document.getElementById('closerInviteEmail').value = '';
+    if (window.toast) toast('Closer ajouté', 'ok');
+    renderClosers();
+  });
+
+  renderCoaches();
+  renderClosers();
+  renderEleves();
 })();
 </script>
 </body>
