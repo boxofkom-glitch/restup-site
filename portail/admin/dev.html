@@ -283,7 +283,7 @@ body{overflow-x:hidden;}
     const original = btn.textContent;
     btn.disabled = true; btn.textContent = 'Envoi...';
     const { error } = await supabaseClient.auth.signInWithOtp({
-      email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=' + role }
+      email, options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html?role=' + role }
     });
     btn.disabled = false; btn.textContent = original;
     if (error) { if (window.toast) toast(error.message, 'error'); return; }

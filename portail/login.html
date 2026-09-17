@@ -233,7 +233,7 @@ document.getElementById('forgotPwBtn').addEventListener('click', async () => {
   const email = document.getElementById('loginEmail').value.trim();
   if (!email) { showMsg('Renseignez votre email ci-dessus, puis cliquez à nouveau.', 'error'); return; }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/portail/set-password.html?role=client'
+    redirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client'
   });
   if (error) { showMsg(error.message, 'error'); return; }
   showMsg('Email de réinitialisation envoyé à ' + email + '.', 'ok');

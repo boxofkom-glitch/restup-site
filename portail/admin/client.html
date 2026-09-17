@@ -1392,7 +1392,7 @@ body{overflow-x:hidden;}
     const btn = document.getElementById('sendAccessBtn');
     btn.disabled = true; btn.textContent = 'Envoi...';
     const { error } = await supabaseClient.auth.signInWithOtp({
-      email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=client' }
+      email, options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client' }
     });
     btn.disabled = false; btn.textContent = '✉️ Envoyer les accès';
     if (error) { if (window.toast) toast(error.message, 'error'); return; }

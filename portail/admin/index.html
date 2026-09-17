@@ -424,7 +424,7 @@ body{overflow-x:hidden;}
       btn.disabled = true; btn.textContent = 'Envoi...';
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: c.email,
-        options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=client' }
+        options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client' }
       });
       btn.disabled = false; btn.textContent = '✉️ Envoyer les accès du portail';
       if (error) { if (window.toast) toast(error.message, 'error'); return; }
