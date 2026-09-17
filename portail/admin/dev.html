@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" type="image/png" href="../../assets/logo-restup-wordmark.png">
-<title>Audits — Espace coach RESTUP</title>
+<title>Développeur — Espace coach RESTUP</title>
 <link rel="stylesheet" href="admin-theme.css">
 <style>
 body{overflow-x:hidden;}
@@ -39,29 +39,27 @@ body{overflow-x:hidden;}
 .main{flex:1;min-width:0;}
 
 .admin-main{max-width:1080px;margin:0 auto;padding:30px 24px 70px;}
-.page-title-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+.page-title-row{margin-bottom:22px;}
 .page-title-row h1{font-size:clamp(22px,3vw,30px);}
 .page-title-row p{margin-top:4px;font-size:14px;color:var(--muted);}
 .empty-state{font-size:13.5px;color:var(--muted-dim);text-align:center;padding:40px 0;}
-.table-scroll{overflow-x:auto;overflow-y:hidden;}
-.client-table{width:100%;border-collapse:collapse;font-size:13.5px;}
-.client-table th{text-align:left;padding:10px 14px;color:var(--muted-dim);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);}
-.client-table td{padding:14px;border-bottom:1px solid var(--line);color:#EDE4D6;vertical-align:middle;}
-.client-table tr:last-child td{border-bottom:none;}
-.client-table tr.client-row{cursor:pointer;transition:background .15s;}
-.client-table tr.client-row:hover{background:rgba(255,255,255,.03);}
-.client-name{font-weight:700;color:#fff;}
-.gen-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px;margin-bottom:18px;}
-.gen-card h3{margin-bottom:4px;}
-.gen-card p{font-size:13px;margin-bottom:16px;}
-.gen-card .field{margin-bottom:14px;}
-.gen-card .field label{display:block;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;}
-.gen-card select,.gen-card textarea{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:14px;}
-.gen-card textarea{min-height:140px;resize:vertical;}
-.gen-card select:focus,.gen-card textarea:focus{outline:none;border-color:var(--lime);}
+.dev-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px;margin-bottom:18px;}
+.dev-card h3{margin-bottom:4px;}
+.dev-card p{font-size:13px;margin-bottom:16px;}
+.dev-card .field{margin-bottom:14px;}
+.dev-card .field label{display:block;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;}
+.dev-card input,.dev-card select{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:14px;}
+.dev-card input:focus,.dev-card select:focus{outline:none;border-color:var(--lime);}
+.quick-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.quick-links a{display:flex;flex-direction:column;gap:4px;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;text-decoration:none;color:#fff;font-weight:700;font-size:13.5px;}
+.quick-links a span{color:var(--muted-dim);font-weight:500;font-size:12px;}
+.quick-links a:hover{border-color:var(--lime);}
+.invite-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);font-size:13.5px;}
+.invite-row:last-child{border-bottom:none;}
 .paid-tag{font-size:11px;font-weight:800;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
 .paid-tag.yes{background:var(--lime-dim);color:var(--lime);}
 .paid-tag.no{background:rgba(255,80,80,.12);color:#ff8a8a;}
+.warn-box{background:rgba(255,190,60,.08);border:1px solid rgba(255,190,60,.25);color:#ffc94d;border-radius:var(--r-md);padding:14px 16px;font-size:13px;margin-bottom:18px;}
 </style>
 </head>
 <body>
@@ -71,6 +69,10 @@ body{overflow-x:hidden;}
   Chargement…
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+
+<div id="deniedGate" style="display:none;min-height:100vh;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:24px;">
+  <div><h2 style="color:#fff;margin-bottom:10px;">Accès réservé</h2><p>Cette page est réservée au développeur du site.</p><a href="index.html" style="color:var(--lime);font-weight:700;">← Retour</a></div>
+</div>
 
 <div id="adminPage" style="display:none;">
 
@@ -106,7 +108,7 @@ body{overflow-x:hidden;}
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           Plans
         </a>
-        <a href="audits.html" class="side-link active">
+        <a href="audits.html" class="side-link">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></svg>
           Audits
         </a>
@@ -135,26 +137,39 @@ body{overflow-x:hidden;}
     <main class="main">
       <div class="admin-main">
         <div class="page-title-row">
-          <div><h1>Audits</h1><p>Le diagnostic financier de chaque client qui a fait son audit.</p></div>
-          <button type="button" class="btn-primary magnetic" id="openGenAudit">+ Générer un audit</button>
+          <div><h1>Développeur</h1><p>Accès et outils réservés — visible uniquement pour box.of.kom@gmail.com.</p></div>
         </div>
 
-        <div class="gen-card" id="genAuditCard" style="display:none;">
-          <h3>Générer un audit à partir d'un prompt</h3>
-          <p style="color:var(--muted);">Choisissez le client, collez vos notes ou la transcription de l'appel, puis cliquez sur Générer. Un brouillon est créé — vous le complétez et le publiez ensuite depuis la fiche du client.</p>
-          <div class="field"><label>Client</label><select id="genAuditClient"></select></div>
-          <div class="field"><label>Notes / transcription de l'appel</label><textarea id="genAuditPrompt" placeholder="Collez ici vos notes ou la transcription de l'audit avec le client..."></textarea></div>
-          <button type="button" class="btn-primary magnetic" id="genAuditSubmit">Générer</button>
-        </div>
-
-        <div class="card glow-card reveal in-view">
-          <div class="table-scroll">
-            <table class="client-table">
-              <thead><tr><th>Établissement</th><th>Statut</th><th>CA</th><th>Marge nette</th><th>Trésorerie</th></tr></thead>
-              <tbody id="auditsBody"></tbody>
-            </table>
+        <div class="dev-card">
+          <h3>Accès rapides</h3>
+          <p>Pour naviguer et tester les deux espaces sans changer de compte.</p>
+          <div class="quick-links">
+            <a href="index.html">Espace coach<span>Liste des clients</span></a>
+            <a href="../dashboard.html">Espace client<span>Aperçu démo (mock-1)</span></a>
+            <a href="../login.html">Page de connexion<span>Point d'entrée public</span></a>
+            <a href="../index.html">Site public<span>restup.solutions</span></a>
           </div>
-          <div class="empty-state" id="auditsEmpty" style="display:none;">Aucun audit pour l'instant.</div>
+        </div>
+
+        <div class="dev-card">
+          <h3>Inviter un coach</h3>
+          <p>Envoie un email au futur coach avec un lien pour créer son mot de passe. À sa première connexion, son compte est automatiquement rattaché à l'espace coach.</p>
+          <div class="warn-box">⚠️ Nécessite qu'une policy RLS Supabase autorise un utilisateur authentifié à s'ajouter lui-même dans la table <code>admins</code> — sinon l'invitation part mais le rattachement automatique échouera silencieusement (voir note en fin de page).</div>
+          <div class="field"><label>Email du coach</label><input type="email" id="coachInviteEmail" placeholder="prenom@restup.fr"></div>
+          <button type="button" class="btn-primary magnetic" id="coachInviteBtn">Envoyer l'invitation coach</button>
+        </div>
+
+        <div class="dev-card">
+          <h3>Inviter un client</h3>
+          <p>Même principe, pour un client. Vous pouvez aussi le faire directement depuis la fiche du client (bouton "Envoyer les accès").</p>
+          <div class="field"><label>Email du client</label><input type="email" id="clientInviteEmail" placeholder="contact@restaurant.fr"></div>
+          <button type="button" class="btn-primary magnetic" id="clientInviteBtn">Envoyer l'invitation client</button>
+        </div>
+
+        <div class="dev-card">
+          <h3>Invitations envoyées (historique local)</h3>
+          <p>Suivi conservé dans ce navigateur — pas encore un annuaire serveur (voir limites en bas de page).</p>
+          <div id="inviteHistory"><div class="empty-state">Aucune invitation envoyée depuis ce navigateur.</div></div>
         </div>
       </div>
     </main>
@@ -162,29 +177,22 @@ body{overflow-x:hidden;}
 </div>
 
 <script src="../../script.js"></script>
-<script src="mock-clients.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
 <script>
 (async function () {
   const { data: sessData } = await supabaseClient.auth.getSession();
-  // TEMP — connexion désactivée pour accès facile pendant les modifs.
-  // Pour la réactiver : remettre "if (!sessData.session) ..." et "if (!adminRow) ..." ci-dessous.
-  const me = sessData.session ? sessData.session.user : { id: 'preview', email: 'coach@restup.fr' };
+  const me = sessData.session ? sessData.session.user : { id: 'preview', email: 'box.of.kom@gmail.com' };
 
-  if (sessData.session) {
-    const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', me.id).maybeSingle();
-    if (!adminRow) { window.location.href = '../dashboard.html'; return; }
+  if (me.email !== 'box.of.kom@gmail.com') {
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('deniedGate').style.display = 'flex';
+    return;
   }
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';
-
-  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const fmtEuro = (n) => n == null ? '—' : Number(n).toLocaleString('fr-FR') + ' €';
-
   document.getElementById('coachEmail').textContent = me.email || '—';
-  if (me.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     await supabaseClient.auth.signOut();
@@ -193,66 +201,47 @@ body{overflow-x:hidden;}
   const mobileToggle = document.getElementById('mobileNavToggle');
   if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 
-  const [{ data: realAudits }, { data: realProfiles }] = await Promise.all([
-    supabaseClient.from('audits').select('user_id, data'),
-    supabaseClient.from('profiles').select('id, company_name, email'),
-  ]);
+  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // TEMP — audits/clients de démonstration si la base réelle est vide (voir mock-clients.js).
-  const profiles = (realProfiles && realProfiles.length) ? realProfiles : (window.MOCK_CLIENTS || []);
-  const audits = (realAudits && realAudits.length) ? realAudits : Object.entries(window.MOCK_AUDITS || {}).map(([user_id, data]) => ({ user_id, data }));
+  function logInvite(email, role) {
+    const key = 'restup_invite_history';
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    list.unshift({ email, role, at: new Date().toISOString() });
+    localStorage.setItem(key, JSON.stringify(list.slice(0, 50)));
+    renderHistory();
+  }
+  function renderHistory() {
+    const wrap = document.getElementById('inviteHistory');
+    const list = JSON.parse(localStorage.getItem('restup_invite_history') || '[]');
+    if (!list.length) { wrap.innerHTML = '<div class="empty-state">Aucune invitation envoyée depuis ce navigateur.</div>'; return; }
+    wrap.innerHTML = list.map(i => `<div class="invite-row">
+      <span>${esc(i.email)}</span>
+      <span style="display:flex;gap:10px;align-items:center;">
+        <span class="paid-tag ${i.role === 'coach' ? 'yes' : 'no'}">${i.role === 'coach' ? 'Coach' : 'Client'}</span>
+        <span style="color:var(--muted-dim);font-size:12px;">${new Date(i.at).toLocaleString('fr-FR')}</span>
+      </span>
+    </div>`).join('');
+  }
+  renderHistory();
 
-  const profileById = {};
-  (profiles || []).forEach(p => { profileById[p.id] = p; });
-
-  const body = document.getElementById('auditsBody');
-  const empty = document.getElementById('auditsEmpty');
-  if (!audits || !audits.length) {
-    empty.style.display = 'block';
-  } else {
-    body.innerHTML = audits.map(a => {
-      const p = profileById[a.user_id];
-      const name = p?.company_name || p?.email || 'Client';
-      const ov = a.data?.overview || {};
-      const isDraft = a.data?.status === 'draft';
-      return `<tr class="client-row" data-id="${esc(a.user_id)}">
-        <td><div class="client-name">${esc(name)}</div></td>
-        <td><span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon' : 'Publié'}</span></td>
-        <td>${fmtEuro(ov.revenue)}</td>
-        <td>${ov.margin_pct ?? '—'}%</td>
-        <td>${fmtEuro(ov.cash)}</td>
-      </tr>`;
-    }).join('');
-    body.querySelectorAll('.client-row').forEach(row => {
-      row.addEventListener('click', () => { window.location.href = 'client.html?id=' + row.dataset.id + '&tab=audit'; });
+  async function sendInvite(email, role, btn) {
+    if (!email) return;
+    const original = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=' + role }
     });
+    btn.disabled = false; btn.textContent = original;
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
+    logInvite(email, role);
+    if (window.toast) toast('Invitation envoyée à ' + email, 'ok');
   }
 
-  // ---- Génération d'un audit à partir d'un prompt (brouillon, à publier ensuite) ----
-  const genCard = document.getElementById('genAuditCard');
-  document.getElementById('openGenAudit').addEventListener('click', () => {
-    genCard.style.display = genCard.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('coachInviteBtn').addEventListener('click', () => {
+    sendInvite(document.getElementById('coachInviteEmail').value.trim(), 'coach', document.getElementById('coachInviteBtn'));
   });
-  const clientSelect = document.getElementById('genAuditClient');
-  clientSelect.innerHTML = profiles.map(p => `<option value="${esc(p.id)}">${esc(p.company_name || p.email || p.id)}</option>`).join('');
-  document.getElementById('genAuditSubmit').addEventListener('click', async () => {
-    const clientId = clientSelect.value;
-    const prompt = document.getElementById('genAuditPrompt').value.trim();
-    if (!clientId) return;
-    const draft = {
-      status: 'draft',
-      source_prompt: prompt,
-      overview: { revenue: null, margin_pct: null, employees: null, fixed_costs: null, avg_sale: null, cash: null },
-      growth_journey: { vision_12m: '', objective_4m: '', blocker: '' },
-    };
-    const { error } = await supabaseClient.from('audits').upsert({ user_id: clientId, data: draft }, { onConflict: 'user_id' });
-    if (error) {
-      // TEMP — repli localStorage pour les clients de démo (id non-UUID) que Supabase refuse en écriture.
-      const all = JSON.parse(localStorage.getItem('restup_local_audits') || '{}');
-      all[clientId] = draft;
-      localStorage.setItem('restup_local_audits', JSON.stringify(all));
-    }
-    window.location.href = 'client.html?id=' + clientId + '&tab=audit';
+  document.getElementById('clientInviteBtn').addEventListener('click', () => {
+    sendInvite(document.getElementById('clientInviteEmail').value.trim(), 'client', document.getElementById('clientInviteBtn'));
   });
 })();
 </script>

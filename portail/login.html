@@ -97,6 +97,7 @@
       <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" required autocomplete="email"></div>
       <div class="field pw-field"><label for="loginPass">Mot de passe</label><input id="loginPass" type="password" required autocomplete="current-password"><button type="button" class="pw-toggle" data-target="loginPass">Afficher</button></div>
       <button class="button lime" type="submit" id="loginBtn" style="width:100%;">Se connecter</button>
+      <button type="button" id="forgotPwBtn" style="background:none;border:none;color:var(--muted);font-size:12.5px;font-weight:600;margin-top:14px;cursor:pointer;width:100%;text-align:center;">Mot de passe oublié ?</button>
     </form>
 
     <form id="signupForm" class="form-swap" style="display:none;">
@@ -221,6 +222,16 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   btn.disabled = false; btn.textContent = 'Se connecter';
   if (error) { showMsg(error.message, 'error'); return; }
   await redirectAfterAuth();
+});
+
+document.getElementById('forgotPwBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showMsg('Renseignez votre email ci-dessus, puis cliquez à nouveau.', 'error'); return; }
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/portail/set-password.html?role=client'
+  });
+  if (error) { showMsg(error.message, 'error'); return; }
+  showMsg('Email de réinitialisation envoyé à ' + email + '.', 'ok');
 });
 
 document.getElementById('signupForm').addEventListener('submit', async (e) => {

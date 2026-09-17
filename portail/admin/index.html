@@ -237,6 +237,7 @@ body{overflow-x:hidden;}
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   document.getElementById('coachEmail').textContent = user.email || '—';
+  if (user.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (user.email || 'C').slice(0, 2).toUpperCase();
 
   document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -380,6 +381,7 @@ body{overflow-x:hidden;}
     const entree = c.createdAt ? new Date(c.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
     const waNumber = (c.phone || '').replace(/[^\d]/g, '');
     document.getElementById('quickviewBody').innerHTML = `
+      <button type="button" class="btn-primary" id="qvSendAccess" style="width:100%;margin-bottom:18px;">✉️ Envoyer les accès du portail</button>
       <h2 class="qv-name">${esc(c.company)}</h2>
       <p class="qv-sub">Client depuis le ${esc(entree)}</p>
       <div class="qv-row"><span>Statut</span><span>${c.active ? 'Actif' : 'Inactif'}</span></div>
@@ -397,6 +399,18 @@ body{overflow-x:hidden;}
         <button type="button" class="btn-secondary" id="qvLogCall">Enregistrer un appel</button>
       </div>
     `;
+    document.getElementById('qvSendAccess').addEventListener('click', async () => {
+      if (!c.email) { if (window.toast) toast('Ce client n\'a pas d\'email renseigné.', 'error'); return; }
+      const btn = document.getElementById('qvSendAccess');
+      btn.disabled = true; btn.textContent = 'Envoi...';
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email: c.email,
+        options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=client' }
+      });
+      btn.disabled = false; btn.textContent = '✉️ Envoyer les accès du portail';
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      if (window.toast) toast('Email d\'accès envoyé à ' + c.email, 'ok');
+    });
     document.getElementById('qvLogCall').addEventListener('click', async () => {
       const when = prompt('Créneau du call (ex : Jeudi 14h) :');
       if (!when) return;

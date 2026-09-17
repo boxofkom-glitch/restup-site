@@ -284,6 +284,7 @@ body{overflow-x:hidden;}
       <div class="client-hero-name" id="clientHeroName">Chargement…</div>
       <div class="client-hero-badges" id="clientBadges"></div>
     </div>
+    <button type="button" class="btn-primary magnetic" id="sendAccessBtn" style="white-space:nowrap;">✉️ Envoyer les accès</button>
     <a class="btn-secondary" id="waRecapBtn" href="#" target="_blank" rel="noopener" style="display:none;white-space:nowrap;">📋 Récap semaine WhatsApp</a>
   </div>
 
@@ -438,6 +439,7 @@ body{overflow-x:hidden;}
   document.getElementById('logoutBtn').addEventListener('click', doLogout);
   document.getElementById('sidebarLogoutBtn').addEventListener('click', doLogout);
   document.getElementById('coachEmail').textContent = me.email || '—';
+  if (me.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
   const mobileToggle = document.getElementById('mobileNavToggle');
   if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
@@ -569,7 +571,10 @@ body{overflow-x:hidden;}
         <span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon — non visible par le client' : 'Publié — visible par le client'}</span>
         <button type="button" class="btn-primary magnetic" id="togglePublishAudit" style="padding:9px 18px;">${isDraft ? 'Publier au client' : 'Repasser en brouillon'}</button>
       </div>
-      <button type="button" class="doc-jump" id="jumpToPlan">Voir le plan d'action →</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <button type="button" class="doc-jump" id="jumpToPlan">Voir le plan d'action →</button>
+        <button type="button" class="btn-primary magnetic" id="genPlanFromAudit" style="padding:9px 18px;">⚡ Générer le plan automatiquement à partir de cet audit</button>
+      </div>
       ${a.source_prompt ? `<div class="journey-mini" style="border-color:rgba(155,77,255,.3);"><h5>📝 Notes / transcription utilisées pour générer ce brouillon</h5><p style="white-space:pre-wrap;">${esc(a.source_prompt)}</p></div>` : ''}
       <div class="stat-grid">
         <div class="stat-card"><span>Chiffre d'affaires</span><b>${fmtEuro(ov.revenue)}</b></div>
@@ -589,6 +594,14 @@ body{overflow-x:hidden;}
       </div>
     `;
     document.getElementById('jumpToPlan').addEventListener('click', () => switchTab('plan'));
+    document.getElementById('genPlanFromAudit').addEventListener('click', async () => {
+      if (planData && !confirm('Un plan existe déjà pour ce client. Le remplacer par un brouillon généré depuis l\'audit ?')) return;
+      planData = generatePlanFromAudit(a);
+      await savePlan(true);
+      if (window.toast) toast('Plan généré depuis l\'audit — à relire puis publier', 'ok');
+      switchTab('plan');
+      renderPlanEditor();
+    });
     document.getElementById('togglePublishAudit').addEventListener('click', async () => {
       const next = { ...a, status: isDraft ? 'published' : 'draft' };
       await upsertWithFallback('audits', clientId, next);
@@ -874,6 +887,50 @@ body{overflow-x:hidden;}
   }
   function blankMonth(n) { return { name: 'Mois ' + n, current: n === 1, objective: '', weeks: [], kpis: [] }; }
   function blankWeek(n) { return { label: 'Semaine ' + n, locked: n > 1, tasks: [] }; }
+
+  // Construit un brouillon de plan à partir des chiffres et paroles du client recueillis dans l'audit.
+  function generatePlanFromAudit(a) {
+    const ov = a.overview || {};
+    const gj = a.growth_journey || {};
+    const priorities = [];
+    const week1Tasks = [];
+    if (ov.margin_pct != null && ov.margin_pct < 15) {
+      priorities.push('Redresser la marge nette (actuellement ' + ov.margin_pct + '%) : revoir la carte et les fournisseurs');
+      week1Tasks.push('Lister les 10 produits les moins rentables de la carte');
+      week1Tasks.push('Renégocier au moins un contrat fournisseur');
+    }
+    if (ov.cash != null && ov.fixed_costs != null && ov.fixed_costs > 0 && ov.cash < ov.fixed_costs) {
+      priorities.push('Reconstituer une trésorerie de sécurité (au moins 1 mois de charges fixes)');
+      week1Tasks.push('Mettre en place un suivi de trésorerie hebdomadaire');
+    }
+    if (ov.employees != null) {
+      priorities.push('Structurer l\'équipe (' + ov.employees + ' collaborateurs) : plannings et rôles clairs');
+      week1Tasks.push('Formaliser les plannings et fiches de poste');
+    }
+    if (gj.blocker) { priorities.push('Lever le blocage identifié : ' + gj.blocker); week1Tasks.push('Attaquer le blocage : ' + gj.blocker); }
+    if (!priorities.length) { priorities.push('Structurer les bases (finances, équipe, offre) avant d\'accélérer'); week1Tasks.push('Cadrer les 3 priorités du mois avec le coach'); }
+    while (week1Tasks.length < 5) week1Tasks.push('Point de suivi avec le coach');
+
+    const months = [1, 2, 3, 4].map(blankMonth);
+    months[0].objective = priorities[0] || '';
+    months[0].weeks = [1, 2, 3, 4].map(blankWeek);
+    months[0].weeks[0].tasks = week1Tasks.slice(0, 7).map(text => ({ text, done: false }));
+    for (let i = 1; i < 4; i++) months[i].weeks = [1, 2, 3, 4].map(blankWeek);
+
+    return {
+      status: 'draft',
+      source_prompt: 'Généré automatiquement à partir de l\'audit (CA ' + fmtEuro(ov.revenue) + ', marge ' + (ov.margin_pct ?? '—') + '%, trésorerie ' + fmtEuro(ov.cash) + ').',
+      contract_months: 4,
+      vision_12m: { title: 'Objectifs pour les 12 prochains mois', items: gj.vision_12m ? [{ text: gj.vision_12m, done: false }] : [] },
+      priorities_4m: { title: 'Objectifs pour les 4 prochains mois', items: priorities.map(text => ({ text, done: false })) },
+      axes: [],
+      cycles: [
+        { name: 'Cycle 1', active: true, months },
+        { name: 'Cycle 2', active: false, months: [] },
+        { name: 'Cycle 3', active: false, months: [] },
+      ],
+    };
+  }
 
   async function loadPlan() {
     const { data } = await supabaseClient.from('plans').select('*').eq('user_id', clientId).maybeSingle();
@@ -1261,6 +1318,18 @@ body{overflow-x:hidden;}
   await loadAudit(); renderAuditTab();
   await loadPlan(); renderPlanEditor();
   renderWaRecap();
+  document.getElementById('sendAccessBtn').addEventListener('click', async () => {
+    const email = profile?.email;
+    if (!email) { if (window.toast) toast('Ce client n\'a pas d\'email renseigné.', 'error'); return; }
+    const btn = document.getElementById('sendAccessBtn');
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + '/portail/set-password.html?role=client' }
+    });
+    btn.disabled = false; btn.textContent = '✉️ Envoyer les accès';
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
+    if (window.toast) toast('Email d\'accès envoyé à ' + email, 'ok');
+  });
   renderChronologie();
   renderGeneral();
   renderFinancier();
