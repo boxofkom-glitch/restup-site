@@ -895,33 +895,64 @@ body{overflow-x:hidden;}
   function blankWeek(n) { return { label: 'Semaine ' + n, locked: n > 1, tasks: [] }; }
 
   // Construit un brouillon de plan à partir des chiffres et paroles du client recueillis dans l'audit.
+  // Banque de tâches par thème, piochée pour remplir les 16 semaines du plan (4 mois x 4 semaines).
+  function taskBankFromAudit(ov, gj) {
+    const banks = [];
+    if (ov.margin_pct != null && ov.margin_pct < 15) {
+      banks.push({
+        priority: 'Redresser la marge nette (actuellement ' + ov.margin_pct + '%) : revoir la carte et les fournisseurs',
+        tasks: ['Lister les 10 produits les moins rentables de la carte', 'Renégocier au moins un contrat fournisseur', 'Recalculer le coût matière de 5 plats phares', 'Ajuster les prix des plats les moins rentables', 'Retirer ou remplacer les 2 plats les moins rentables', 'Standardiser les fiches techniques restantes', 'Vérifier les grammages en cuisine sur une semaine'],
+      });
+    }
+    if (ov.cash != null && ov.fixed_costs != null && ov.fixed_costs > 0 && ov.cash < ov.fixed_costs) {
+      banks.push({
+        priority: 'Reconstituer une trésorerie de sécurité (au moins 1 mois de charges fixes)',
+        tasks: ['Mettre en place un suivi de trésorerie hebdomadaire', 'Identifier 3 postes de charges variables à réduire', 'Étaler ou renégocier une échéance si besoin', 'Fixer un seuil d\'alerte trésorerie', 'Revoir les délais de paiement fournisseurs', 'Constituer une réserve automatique chaque semaine'],
+      });
+    }
+    if (ov.employees != null) {
+      banks.push({
+        priority: 'Structurer l\'équipe (' + ov.employees + ' collaborateurs) : plannings et rôles clairs',
+        tasks: ['Formaliser les plannings et fiches de poste', 'Cadrer un point d\'équipe hebdomadaire', 'Clarifier les rôles en cuisine et en salle', 'Mettre en place un onboarding pour les nouveaux', 'Identifier un second capable de gérer un service', 'Formaliser les procédures d\'ouverture/fermeture'],
+      });
+    }
+    if (gj.blocker) {
+      banks.push({ priority: 'Lever le blocage identifié : ' + gj.blocker, tasks: ['Attaquer le blocage : ' + gj.blocker, 'Découper le blocage en 3 actions concrètes', 'Faire un point dédié avec le coach sur ce sujet'] });
+    }
+    if (!banks.length) {
+      banks.push({ priority: 'Structurer les bases (finances, équipe, offre) avant d\'accélérer', tasks: ['Cadrer les 3 priorités du mois avec le coach', 'Mettre à plat les chiffres clés de la semaine', 'Clarifier les rôles de chacun', 'Formaliser un premier plan d\'action'] });
+    }
+    // Complète toujours avec des actions transverses pour garantir 7 tâches/semaine sur 16 semaines.
+    banks.push({
+      priority: 'Piloter l\'activité au quotidien',
+      tasks: ['Mettre à jour le tableau de bord hebdomadaire', 'Analyser les ventes de la semaine avec l\'équipe', 'Recueillir 3 avis clients et en tirer une action', 'Vérifier la satisfaction de l\'équipe', 'Faire un point sur les stocks', 'Ajuster la communication (réseaux, carte du jour)'],
+    });
+    return banks;
+  }
+
   function generatePlanFromAudit(a) {
     const ov = a.overview || {};
     const gj = a.growth_journey || {};
-    const priorities = [];
-    const week1Tasks = [];
-    if (ov.margin_pct != null && ov.margin_pct < 15) {
-      priorities.push('Redresser la marge nette (actuellement ' + ov.margin_pct + '%) : revoir la carte et les fournisseurs');
-      week1Tasks.push('Lister les 10 produits les moins rentables de la carte');
-      week1Tasks.push('Renégocier au moins un contrat fournisseur');
-    }
-    if (ov.cash != null && ov.fixed_costs != null && ov.fixed_costs > 0 && ov.cash < ov.fixed_costs) {
-      priorities.push('Reconstituer une trésorerie de sécurité (au moins 1 mois de charges fixes)');
-      week1Tasks.push('Mettre en place un suivi de trésorerie hebdomadaire');
-    }
-    if (ov.employees != null) {
-      priorities.push('Structurer l\'équipe (' + ov.employees + ' collaborateurs) : plannings et rôles clairs');
-      week1Tasks.push('Formaliser les plannings et fiches de poste');
-    }
-    if (gj.blocker) { priorities.push('Lever le blocage identifié : ' + gj.blocker); week1Tasks.push('Attaquer le blocage : ' + gj.blocker); }
-    if (!priorities.length) { priorities.push('Structurer les bases (finances, équipe, offre) avant d\'accélérer'); week1Tasks.push('Cadrer les 3 priorités du mois avec le coach'); }
-    while (week1Tasks.length < 5) week1Tasks.push('Point de suivi avec le coach');
+    const banks = taskBankFromAudit(ov, gj);
+    const priorities = banks.map(b => b.priority);
+    const allTasks = banks.flatMap(b => b.tasks);
+    let taskCursor = 0;
+    const nextTask = () => allTasks[(taskCursor++) % allTasks.length];
 
     const months = [1, 2, 3, 4].map(blankMonth);
     months[0].objective = priorities[0] || '';
-    months[0].weeks = [1, 2, 3, 4].map(blankWeek);
-    months[0].weeks[0].tasks = week1Tasks.slice(0, 7).map(text => ({ text, done: false }));
-    for (let i = 1; i < 4; i++) months[i].weeks = [1, 2, 3, 4].map(blankWeek);
+    for (let mi = 0; mi < 4; mi++) {
+      months[mi].weeks = [1, 2, 3, 4].map(wn => {
+        const w = blankWeek(wn);
+        // Seule la toute première semaine du plan reste débloquée : le reste se révèle semaine après
+        // semaine avec le coach (LTV), pas donné d'un coup au client.
+        w.locked = !(mi === 0 && wn === 1);
+        const weekTasks = [];
+        while (weekTasks.length < 7) weekTasks.push(nextTask());
+        w.tasks = weekTasks.map(text => ({ text, done: false }));
+        return w;
+      });
+    }
 
     return {
       status: 'draft',
@@ -1181,8 +1212,11 @@ body{overflow-x:hidden;}
     if (!found) { if (window.toast) toast('Toutes les semaines sont déjà débloquées', 'ok'); return; }
     found.locked = false;
     await savePlan(true);
-    if (window.toast) toast('Semaine débloquée : ' + found.label, 'ok');
+    // Une semaine débloquée = un call de suivi à programmer (une semaine = un call).
+    await supabaseClient.from('calls').insert({ user_id: clientId, status: 'requested', notes: 'Call de suivi — ' + found.label });
+    if (window.toast) toast('Semaine débloquée : ' + found.label + ' (call de suivi créé)', 'ok');
     renderPlanEditor();
+    renderCalls(await loadCalls());
   });
 
   document.getElementById('activateCycleBtn').addEventListener('click', async () => {
