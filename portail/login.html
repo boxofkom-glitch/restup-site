@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Espace client — RESTUP</title>
+<title>Connexion — RESTUP</title>
 <meta name="theme-color" content="#0B0D0C">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230B0D0C'/%3E%3Ctext x='8' y='29' font-family='Arial' font-size='29' font-weight='bold' fill='%239B4DFF'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.json">
@@ -13,55 +13,32 @@
 <link rel="stylesheet" href="../style.css">
 <style>
 .portal-hero{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:radial-gradient(120% 130% at 22% 18%,#4a2482 0%,#1c0e33 45%,var(--ink) 78%)}
-.portal-topbar{display:flex;justify-content:space-between;align-items:center;padding:32px 56px}
+.portal-topbar{display:flex;justify-content:space-between;align-items:center;padding:28px 56px}
 .portal-back{color:#fff;font-size:14px;font-weight:600;opacity:.75;transition:opacity .2s}
 .portal-back:hover{opacity:1}
-.portal-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
-.portal-main h1{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:clamp(44px,7.5vw,100px);line-height:1.02;letter-spacing:-1px;color:#fff;margin:0}
-.portal-main h1 span{display:block;color:var(--lime)}
-.portal-cta{margin-top:48px;padding:22px 40px;font-size:17px;border-radius:12px}
-.coach-link{position:fixed;right:28px;bottom:26px;color:#fff;opacity:.55;font-size:13px;font-weight:700;letter-spacing:.3px;z-index:5;text-transform:uppercase}
-.coach-link:hover{opacity:1}
-
-.portal-overlay{position:fixed;inset:0;background:rgba(11,13,12,.88);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}
-.portal-overlay.is-open{display:flex}
-.login-card{width:100%;max-width:400px;background:#fff;border-top:6px solid var(--lime);border-radius:var(--radius);padding:40px 32px 32px;position:relative}
-.login-card .close-btn{position:absolute;top:14px;right:14px;background:none;border:0;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);padding:6px}
-.login-card .close-btn:hover{color:var(--ink)}
-.portal-mode-label{font-size:11px;font-weight:700;letter-spacing:1.7px;color:var(--lime);margin:0 0 8px}
-.login-card h2{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:26px;letter-spacing:-.5px;margin:0 0 22px}
-
-.tabs{position:relative;display:flex;gap:0;margin-bottom:22px;background:var(--ink);border-radius:999px;padding:5px}
-.tab-indicator{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:var(--lime);border-radius:999px;transition:transform .3s cubic-bezier(.2,.9,.2,1);z-index:0}
-.tab{position:relative;z-index:1;flex:1;text-align:center;padding:10px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;color:#B7BDB4;transition:color .25s}
-.tab.active{color:#fff}
-
-.field{margin-bottom:16px;text-align:left}
+.portal-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px 56px}
+.portal-main h1{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:clamp(34px,6vw,64px);line-height:1.02;letter-spacing:-1px;color:#fff;margin:0 0 30px}
+.portal-main h1 span{display:block;color:#9B4DFF}
+.login-card{width:100%;max-width:400px;background:#fff;border-top:6px solid #9B4DFF;border-radius:var(--radius);padding:34px 30px 28px;text-align:left}
+.login-card h2{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:24px;letter-spacing:-.5px;margin:0 0 6px}
+.login-card p.sub{color:var(--muted);font-size:13.5px;margin:0 0 22px}
+.field{margin-bottom:16px}
 .field label{display:block;font-size:12px;font-weight:650;margin-bottom:6px;color:var(--ink)}
 .field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;font-size:15px}
-.field input:focus-visible{outline:2px solid var(--lime);outline-offset:1px}
+.field input:focus-visible{outline:2px solid #9B4DFF;outline-offset:1px}
 .pw-field{position:relative}
 .pw-toggle{position:absolute;right:6px;top:29px;background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;font-size:11px;font-weight:700}
 .pw-toggle:hover{color:var(--ink)}
-.form-swap{transition:opacity .25s ease}
-
-.oauth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:var(--ink);font-weight:700;font-size:14px;padding:12px 16px;border-radius:999px;border:1px solid var(--line);cursor:pointer;margin-bottom:18px;transition:transform .18s,box-shadow .18s}
-.oauth-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(0,0,0,.35)}
-.oauth-btn svg{width:18px;height:18px;flex:0 0 auto}
-.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .msg{font-size:13px;margin:0 0 14px;min-height:1px}
 .msg.error{color:#c0392b}
 .msg.ok{color:#1f8a4c}
-.pac-container{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 14px 35px rgba(11,13,12,.15);font-family:'DM Sans',Arial,sans-serif;overflow:hidden;margin-top:4px}
-.pac-item{color:var(--muted);border-color:var(--line);padding:9px 12px;font-size:13.5px}
-.pac-item:hover{background:#F0F1EC}
-.pac-item-query{color:var(--ink)}
-
-@media(max-width:760px){
-  .portal-topbar{padding:22px 20px}
-  .login-card{padding:32px 24px 26px}
-}
+.login-btn{width:100%;background:#9B4DFF;color:#fff;border:0;border-radius:999px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(155,77,255,.8)}
+.login-btn:disabled{opacity:.6;cursor:default;transform:none}
+.link-btn{background:none;border:none;color:var(--muted);font-size:12.5px;font-weight:600;margin-top:14px;cursor:pointer;width:100%;text-align:center}
+.link-btn:hover{color:var(--ink)}
+.invite-note{margin-top:18px;font-size:12.5px;color:rgba(255,255,255,.65);max-width:400px}
+@media(max-width:760px){.portal-topbar{padding:20px}.login-card{padding:28px 22px 24px}}
 </style>
 </head>
 <body>
@@ -73,45 +50,18 @@
   </div>
   <div class="portal-main">
     <h1>Tu vas enfin<span>pouvoir respirer.</span></h1>
-    <button class="button lime portal-cta" id="openClientLogin" type="button">Accès client <span>↗</span></button>
-  </div>
-</div>
-<a class="coach-link" id="openCoachLogin" href="#">Espace coach</a>
-
-<div class="portal-overlay" id="formOverlay">
-  <div class="login-card">
-    <button class="close-btn" id="closeOverlay" type="button" aria-label="Fermer">×</button>
-    <p class="portal-mode-label" id="modeLabel">ESPACE CLIENT</p>
-    <h2 id="modeTitle">Connexion</h2>
-
-    <div class="tabs">
-      <div class="tab-indicator" id="tabIndicator"></div>
-      <div class="tab active" data-tab="login">Connexion</div>
-      <div class="tab" data-tab="signup">Créer un compte</div>
+    <div class="login-card">
+      <h2>Connexion</h2>
+      <p class="sub">Accède à ton espace RestUp.</p>
+      <div id="formMsg" class="msg" role="status"></div>
+      <form id="loginForm" novalidate>
+        <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" required autocomplete="email" inputmode="email"></div>
+        <div class="field pw-field"><label for="loginPass">Mot de passe</label><input id="loginPass" type="password" required autocomplete="current-password"><button type="button" class="pw-toggle" id="pwToggle">Afficher</button></div>
+        <button class="login-btn" type="submit" id="loginBtn">Se connecter</button>
+        <button type="button" class="link-btn" id="forgotPwBtn">Mot de passe oublié ?</button>
+      </form>
     </div>
-
-    <button type="button" class="oauth-btn" id="googleBtn">
-      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 7.1 29.5 5 24 5c-7.7 0-14.4 4.4-17.7 9.7z"/><path fill="#4CAF50" d="M24 43c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.3 34.4 26.8 35 24 35c-5.3 0-9.7-3.6-11.3-8.4l-6.5 5C9.5 38.5 16.2 43 24 43z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.3 5.3C40.7 36.6 43 30.9 43 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
-      Continuer avec Google
-    </button>
-    <div class="divider">ou</div>
-
-    <div id="formMsg" class="msg"></div>
-
-    <form id="loginForm" class="form-swap">
-      <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" required autocomplete="email"></div>
-      <div class="field pw-field"><label for="loginPass">Mot de passe</label><input id="loginPass" type="password" required autocomplete="current-password"><button type="button" class="pw-toggle" data-target="loginPass">Afficher</button></div>
-      <button class="button lime" type="submit" id="loginBtn" style="width:100%;">Se connecter</button>
-      <button type="button" id="forgotPwBtn" style="background:none;border:none;color:var(--muted);font-size:12.5px;font-weight:600;margin-top:14px;cursor:pointer;width:100%;text-align:center;">Mot de passe oublié ?</button>
-    </form>
-
-    <form id="signupForm" class="form-swap" style="display:none;">
-      <div class="field"><label for="signupName">Nom de l'établissement</label><input id="signupName" required autocomplete="organization"></div>
-      <div class="field"><label for="signupBusiness">Établissement (adresse)</label><input id="signupBusiness" placeholder="Commencez à taper une adresse..." autocomplete="off"></div>
-      <div class="field"><label for="signupEmail">Email</label><input id="signupEmail" type="email" required autocomplete="email"></div>
-      <div class="field pw-field"><label for="signupPass">Mot de passe (min. 6 caractères)</label><input id="signupPass" type="password" required minlength="6" autocomplete="new-password"><button type="button" class="pw-toggle" data-target="signupPass">Afficher</button></div>
-      <button class="button lime" type="submit" id="signupBtn" style="width:100%;">Créer mon compte</button>
-    </form>
+    <p class="invite-note">L'accès à RestUp se fait sur invitation. Tu n'as pas reçu ton email d'invitation ? Contacte ton coach.</p>
   </div>
 </div>
 
@@ -119,152 +69,56 @@
 <script src="vendor/supabase.js"></script>
 <script src="supabase-client.js"></script>
 <script>
-// ---- Overlay : deux points d'entrée (client / coach), même formulaire ----
-const formOverlay = document.getElementById('formOverlay');
-const modeLabel = document.getElementById('modeLabel');
-
-function openOverlay(mode) {
-  modeLabel.textContent = mode === 'coach' ? 'ESPACE COACH' : 'ESPACE CLIENT';
-  formOverlay.classList.add('is-open');
-}
-// TEMP — connexion désactivée pour accès facile pendant les modifs : les deux
-// boutons mènent directement aux espaces au lieu d'ouvrir le formulaire.
-// Pour réactiver le login : remettre "openOverlay('client')" / "openOverlay('coach')".
-document.getElementById('openClientLogin').addEventListener('click', () => window.location.href = 'dashboard.html');
-document.getElementById('openCoachLogin').addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'admin/index.html'; });
-document.getElementById('closeOverlay').addEventListener('click', () => formOverlay.classList.remove('is-open'));
-formOverlay.addEventListener('click', (e) => { if (e.target === formOverlay) formOverlay.classList.remove('is-open'); });
-
-// ---- Redirection selon le rôle : coach (admin) ou client ----
-async function redirectAfterAuth() {
-  try {
-    const { data: sess } = await supabaseClient.auth.getSession();
-    if (!sess.session) return;
-    const { data: adminRow } = await supabaseClient
-      .from('admins').select('user_id').eq('user_id', sess.session.user.id).maybeSingle();
-    window.location.href = adminRow ? 'admin/index.html' : 'dashboard.html';
-  } catch (e) {
-    window.location.href = 'dashboard.html';
-  }
-}
-
-// ---- Auto-complétion d'adresse d'établissement (optionnelle, voir config.js) ----
-let selectedBusiness = null;
-if (GOOGLE_MAPS_API_KEY && GOOGLE_MAPS_API_KEY.indexOf('REMPLACEZ') !== 0) {
-  const gmapsScript = document.createElement('script');
-  gmapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`;
-  gmapsScript.async = true;
-  gmapsScript.onload = () => {
-    const input = document.getElementById('signupBusiness');
-    const autocomplete = new google.maps.places.Autocomplete(input, { fields: ['name', 'formatted_address', 'geometry', 'place_id'] });
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      selectedBusiness = {
-        name: place.name || input.value,
-        address: place.formatted_address || '',
-        lat: place.geometry?.location?.lat() ?? null,
-        lng: place.geometry?.location?.lng() ?? null,
-        place_id: place.place_id || ''
-      };
-    });
-  };
-  document.head.appendChild(gmapsScript);
-}
-
-// ---- Connexion Google (via Supabase Auth) ----
-document.getElementById('googleBtn').addEventListener('click', async () => {
-  const { error } = await supabaseClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
-  });
-  if (error) showMsg(error.message, 'error');
-});
-
-// Bascule connexion / inscription (avec indicateur glissant)
-const tabIndicator = document.getElementById('tabIndicator');
-const modeTitle = document.getElementById('modeTitle');
-document.querySelectorAll('.tab').forEach((t, i) => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    tabIndicator.style.transform = i === 0 ? 'translateX(0)' : 'translateX(100%)';
-    const isLogin = t.dataset.tab === 'login';
-    document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
-    document.getElementById('signupForm').style.display = isLogin ? 'none' : 'block';
-    modeTitle.textContent = isLogin ? 'Connexion' : 'Créer un compte';
-    document.getElementById('formMsg').className = 'msg';
-  });
-});
-
-// Afficher / masquer le mot de passe
-document.querySelectorAll('.pw-toggle').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const input = document.getElementById(btn.dataset.target);
-    const show = input.type === 'password';
-    input.type = show ? 'text' : 'password';
-    btn.textContent = show ? 'Masquer' : 'Afficher';
-  });
-});
-
 function showMsg(text, type) {
   const el = document.getElementById('formMsg');
   el.textContent = text;
   el.className = 'msg ' + type;
 }
 
-// Si déjà connecté, direction le bon espace (coach ou client)
-supabaseClient.auth.getSession().then(({ data }) => {
-  if (data.session) redirectAfterAuth();
+// Le rôle vient du compte : équipe → cockpit ; client → onboarding ou accueil.
+async function redirectAfterAuth() {
+  const { data } = await supabaseClient.auth.getSession();
+  if (!data.session) return;
+  const role = await restupRole(data.session.user);
+  if (role === 'admin' || role === 'coach') { window.location.href = 'admin/index.html'; return; }
+  window.location.href = 'dashboard.html'; // dashboard.html redirige vers l'onboarding si incomplet
+}
+
+supabaseClient.auth.getSession().then(({ data }) => { if (data.session) redirectAfterAuth(); });
+
+document.getElementById('pwToggle').addEventListener('click', (e) => {
+  const input = document.getElementById('loginPass');
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  e.target.textContent = show ? 'Masquer' : 'Afficher';
 });
 
+let submitting = false;
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (submitting) return; // anti double-submit
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!email || !password) { showMsg('Renseigne ton email et ton mot de passe.', 'error'); return; }
+  submitting = true;
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'Connexion...';
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPass').value;
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  submitting = false;
   btn.disabled = false; btn.textContent = 'Se connecter';
-  if (error) { showMsg(error.message, 'error'); return; }
+  if (error) {
+    showMsg(/invalid login/i.test(error.message) ? 'Email ou mot de passe incorrect.' : 'Connexion impossible : ' + error.message, 'error');
+    return;
+  }
   await redirectAfterAuth();
 });
 
 document.getElementById('forgotPwBtn').addEventListener('click', async () => {
   const email = document.getElementById('loginEmail').value.trim();
-  if (!email) { showMsg('Renseignez votre email ci-dessus, puis cliquez à nouveau.', 'error'); return; }
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client'
-  });
-  if (error) { showMsg(error.message, 'error'); return; }
-  showMsg('Email de réinitialisation envoyé à ' + email + '.', 'ok');
-});
-
-document.getElementById('signupForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('signupBtn');
-  btn.disabled = true; btn.textContent = 'Création...';
-  const company = document.getElementById('signupName').value;
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPass').value;
-  const businessInput = document.getElementById('signupBusiness').value;
-  const metadata = { company_name: company };
-  if (selectedBusiness) {
-    metadata.business_name = selectedBusiness.name;
-    metadata.business_address = selectedBusiness.address;
-    metadata.business_lat = selectedBusiness.lat;
-    metadata.business_lng = selectedBusiness.lng;
-    metadata.business_place_id = selectedBusiness.place_id;
-  } else if (businessInput) {
-    metadata.business_address = businessInput;
-  }
-  const { data, error } = await supabaseClient.auth.signUp({
-    email, password,
-    options: { data: metadata }
-  });
-  btn.disabled = false; btn.textContent = 'Créer mon compte';
-  if (error) { showMsg(error.message, 'error'); return; }
-  showMsg('Compte créé ! Si la confirmation par email est activée, vérifiez votre boîte mail. Sinon vous êtes connecté.', 'ok');
-  if (data.session) setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  if (!email) { showMsg('Renseigne ton email ci-dessus, puis clique à nouveau.', 'error'); return; }
+  // Ne révèle pas si le compte existe.
+  await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: PROD_ORIGIN + '/portail/set-password.html?mode=reset' });
+  showMsg('Si un compte existe pour ' + email + ', un email de réinitialisation vient d\'être envoyé.', 'ok');
 });
 </script>
 </body>

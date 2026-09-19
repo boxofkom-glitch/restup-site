@@ -1,7 +1,10 @@
-// TEMP — jeu de données de démonstration pour l'espace coach pendant les modifs.
-// Utilisé uniquement quand la base réelle ne renvoie aucun client / aucune donnée.
-// Pour retirer : supprimer ce fichier et les <script src="mock-clients.js"> qui le chargent.
+// Jeu de données de démonstration — chargé UNIQUEMENT en local (localhost). Vide en production.
 (function () {
+  window.RESTUP_DEMO = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  if (!window.RESTUP_DEMO) {
+    window.MOCK_CLIENTS = []; window.MOCK_AUDITS = {}; window.MOCK_PLANS = {}; window.MOCK_CALLS = {}; window.MOCK_MESSAGES = {};
+    return;
+  }
   window.MOCK_CLIENTS = [
     { id: 'mock-1', company_name: 'Le Petit Bouchon', email: 'contact@lepetitbouchon.fr', phone: '06 12 34 56 78', address: '14 rue des Tanneurs, 69005 Lyon', active: true, created_at: '2026-04-12T09:00:00Z',
       coach: 'Sarah Meunier', closer: 'Julien Farge', paid: true, amount_paid: 3000, months_paid: 6, calls_used: 5, calls_total: 12 },

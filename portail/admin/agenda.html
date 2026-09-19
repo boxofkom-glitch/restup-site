@@ -178,15 +178,8 @@ body{overflow-x:hidden;}
 <script src="mock-clients.js"></script>
 <script>
 (async function () {
-  const { data: sessData } = await supabaseClient.auth.getSession();
-  // TEMP — connexion désactivée pour accès facile pendant les modifs.
-  // Pour la réactiver : remettre "if (!sessData.session) ..." et "if (!adminRow) ..." ci-dessous.
-  const me = sessData.session ? sessData.session.user : { id: 'preview', email: 'coach@restup.fr' };
-
-  if (sessData.session) {
-    const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', me.id).maybeSingle();
-    if (!adminRow) { window.location.href = '../dashboard.html'; return; }
-  }
+  const me = await restupRequireStaff();
+  if (!me) return;
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';

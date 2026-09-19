@@ -235,8 +235,8 @@ body{overflow-x:hidden;}
 <script src="../supabase-client.js"></script>
 <script>
 (async function () {
-  const { data: sessData } = await supabaseClient.auth.getSession();
-  const me = sessData.session ? sessData.session.user : { id: 'preview', email: 'box.of.kom@gmail.com' };
+  const me = await restupRequireStaff();
+  if (!me) return;
 
   if (me.email !== 'box.of.kom@gmail.com') {
     document.getElementById('authGate').style.display = 'none';

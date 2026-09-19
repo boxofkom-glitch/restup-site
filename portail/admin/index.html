@@ -83,7 +83,31 @@ body{overflow-x:hidden;}
 .qv-actions .btn-primary{width:100%;}
 .qv-actions .btn-secondary{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);color:#fff;font-weight:700;font-size:13.5px;padding:11px 16px;border-radius:999px;cursor:pointer;text-decoration:none;}
 .qv-actions .btn-secondary:hover{border-color:var(--muted);}
-.client-table tr:last-child td{border-bottom:none;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:95;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal-card{position:relative;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px 24px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-card .field{margin-bottom:14px;}
+.modal-card .field label{display:block;font-size:12.5px;font-weight:600;color:#fff;margin-bottom:6px;}
+.modal-card .field input,.modal-card .field select{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:15px;}
+.modal-card .field input:focus,.modal-card .field select:focus{outline:none;border-color:var(--lime);}
+.modal-msg{font-size:13px;min-height:18px;margin-bottom:10px;color:#ff8a8a;}
+.modal-msg.ok{color:var(--lime);}
+.pill{font-size:11px;font-weight:800;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;background:rgba(255,255,255,.06);color:var(--muted);}
+.pill.ok{background:var(--lime-dim);color:var(--lime);}
+.pill.warn{background:rgba(255,190,60,.12);color:#ffc94d;}
+.pill.bad{background:rgba(255,80,80,.12);color:#ff8a8a;}
+@media (max-width:520px){.modal-grid{grid-template-columns:1fr;}}
+@media (max-width:700px){
+  .client-table.wide{min-width:0;}
+  .client-table thead{display:none;}
+  .client-table,.client-table tbody{display:block;}
+  .client-table tr.client-row{display:block;padding:14px 4px;border-bottom:1px solid var(--line);}
+  .client-table td{display:flex;justify-content:space-between;align-items:center;gap:10px;border:none;padding:4px 10px;white-space:normal;}
+  .client-table td[data-label]::before{content:attr(data-label);color:var(--muted-dim);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .client-table td.hide-m{display:none;}
+  .client-table td:first-child{padding-bottom:8px;}
+}.client-table tr:last-child td{border-bottom:none;}
 .client-table tr.client-row{cursor:pointer;transition:background .15s;}
 .client-table tr.client-row:hover{background:rgba(255,255,255,.03);}
 .client-name{font-weight:700;color:#fff;}
@@ -173,12 +197,13 @@ body{overflow-x:hidden;}
       <div class="admin-main">
         <div class="page-title-row">
           <div><h1>Vos clients</h1><p>Cliquez sur un client pour voir son audit, construire son plan, répondre à ses messages.</p></div>
+          <button type="button" class="btn-primary magnetic" id="addClientBtn">+ Ajouter un client</button>
         </div>
 
         <div class="filter-tabs" id="filterTabs">
           <button type="button" class="filter-tab active" data-filter="all">Tous</button>
           <button type="button" class="filter-tab" data-filter="active">Actifs</button>
-          <button type="button" class="filter-tab" data-filter="inactive">Inactifs</button>
+          <button type="button" class="filter-tab" data-filter="inactive">Invités</button>
         </div>
 
         <div class="search-row">
@@ -200,7 +225,7 @@ body{overflow-x:hidden;}
           <div class="table-scroll">
             <table class="client-table wide">
               <thead>
-                <tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Statut</th><th>Payé</th><th>Montant payé</th><th>Entrée</th><th>Mois payés</th><th>Calls</th><th>Coach</th><th>Closer</th></tr>
+                <tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Accès</th><th>Onboarding</th><th>Audit</th><th>Prochaine action</th><th>Coach</th><th>Entrée</th></tr>
               </thead>
               <tbody id="clientsBody"></tbody>
             </table>
@@ -209,6 +234,36 @@ body{overflow-x:hidden;}
         </div>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- Ajout d'un client -->
+<div class="modal-overlay" id="addClientOverlay" role="dialog" aria-modal="true" aria-labelledby="addClientTitle">
+  <div class="modal-card">
+    <button class="quickview-close" id="addClientClose" aria-label="Fermer" type="button">×</button>
+    <div id="addClientForm">
+      <h2 class="qv-name" id="addClientTitle">Ajouter un client</h2>
+      <p class="qv-sub">Il reçoit un email RestUp pour activer son accès, puis remplit son onboarding.</p>
+      <div class="modal-grid">
+        <div class="field"><label for="acFirst">Prénom *</label><input id="acFirst" autocomplete="off"></div>
+        <div class="field"><label for="acLast">Nom *</label><input id="acLast" autocomplete="off"></div>
+      </div>
+      <div class="field"><label for="acEmail">Email *</label><input id="acEmail" type="email" inputmode="email" autocomplete="off"></div>
+      <div class="field"><label for="acPhone">Téléphone (WhatsApp) *</label><input id="acPhone" type="tel" inputmode="tel" placeholder="06 12 34 56 78" autocomplete="off"></div>
+      <div class="field"><label for="acCompany">Établissement *</label><input id="acCompany" autocomplete="off"></div>
+      <div class="field" id="acCoachField" style="display:none;"><label for="acCoach">Coach</label><select id="acCoach"></select></div>
+      <div id="acMsg" class="modal-msg" role="status"></div>
+      <button type="button" class="btn-primary" id="acSubmit" style="width:100%;">✉️ Envoyer l'invitation</button>
+    </div>
+    <div id="addClientDone" style="display:none;">
+      <h2 class="qv-name">Invitation envoyée ✔</h2>
+      <p class="qv-sub" id="acDoneText"></p>
+      <div class="qv-actions">
+        <a class="btn-secondary" id="acWhatsApp" href="#" target="_blank" rel="noopener">👋 Envoyer aussi la bienvenue WhatsApp</a>
+        <button type="button" class="btn-primary" id="acAnother">+ Ajouter un autre client</button>
+        <button type="button" class="btn-secondary" id="acClose2">Fermer</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -225,16 +280,8 @@ body{overflow-x:hidden;}
 <script src="mock-clients.js"></script>
 <script>
 (async function () {
-  const { data: sessData } = await supabaseClient.auth.getSession();
-  // TEMP — connexion désactivée pour accès facile pendant les modifs.
-  // Pour la réactiver : remettre les deux redirections ci-dessous
-  // ("if (!sessData.session) ..." et "if (!adminRow) ...").
-  const user = sessData.session ? sessData.session.user : { id: 'preview', email: 'coach@restup.fr' };
-
-  if (sessData.session) {
-    const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
-    if (!adminRow) { window.location.href = '../dashboard.html'; return; }
-  }
+  const user = await restupRequireStaff();
+  if (!user) return;
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';
@@ -254,63 +301,72 @@ body{overflow-x:hidden;}
 
   let clients = [];
 
+  let teamById = {};
+  let coachOptions = [];
+
   async function loadClients() {
-    // Un coach (autre que le développeur) ne voit que les clients qui lui sont attribués.
-    let myTeamId = null;
-    if (user.email !== 'box.of.kom@gmail.com') {
-      const { data: myTeamRow } = await supabaseClient.from('team_members').select('id').eq('user_id', user.id).eq('role', 'coach').maybeSingle();
-      myTeamId = myTeamRow ? myTeamRow.id : null;
-    }
-    let profilesQuery = supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-    if (myTeamId) profilesQuery = profilesQuery.eq('coach_id', myTeamId);
-    const [{ data: profiles }, { data: plans }, { data: calls }] = await Promise.all([
-      profilesQuery,
-      supabaseClient.from('plans').select('user_id, data'),
-      supabaseClient.from('calls').select('user_id, status'),
+    // RLS côté serveur garantit l'isolation : un coach ne reçoit QUE ses clients.
+    const [{ data: profiles }, { data: invitations }, { data: team }] = await Promise.all([
+      supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }),
+      supabaseClient.from('client_invitations').select('*').eq('status', 'invited').order('invited_at', { ascending: false }),
+      supabaseClient.from('team_members').select('id, name, email, role').eq('role', 'coach'),
     ]);
+    teamById = {};
+    (team || []).forEach(t => { teamById[t.id] = t; });
+    coachOptions = team || [];
 
-    // TEMP — données de démonstration si aucun client réel n'existe encore.
-    const useMock = !profiles || !profiles.length;
-    const profileRows = useMock ? (window.MOCK_CLIENTS || []) : profiles;
-    const planRows = useMock ? Object.entries(window.MOCK_PLANS || {}).map(([user_id, data]) => ({ user_id, data })) : (plans || []);
-    const callRows = useMock ? Object.entries(window.MOCK_CALLS || {}).flatMap(([user_id, list]) => list.map(c => ({ user_id, status: c.status }))) : (calls || []);
+    const profileRows = (profiles && profiles.length) ? profiles : (window.MOCK_CLIENTS || []);
+    const isMock = !(profiles && profiles.length);
 
-    const planByUser = {};
-    planRows.forEach(p => { planByUser[p.user_id] = p.data; });
-    const doneCallsByUser = {};
-    callRows.forEach(c => {
-      if (c.status !== 'done') return;
-      doneCallsByUser[c.user_id] = (doneCallsByUser[c.user_id] || 0) + 1;
-    });
-
-    clients = profileRows.map(p => {
-      const plan = planByUser[p.id];
-      const cycle = plan ? (plan.cycles || []).find(c => c.active) : null;
-      const months = cycle ? (cycle.months || []) : [];
-      const currentMonthIdx = months.findIndex(m => m.current);
-      const monthLabel = plan ? `M${currentMonthIdx !== -1 ? currentMonthIdx + 1 : (months.length ? 1 : '—')}` : '—';
-      const totalCalls = p.calls_total || 12;
-      const doneCalls = p.calls_used != null ? p.calls_used : (doneCallsByUser[p.id] || 0);
-      return {
+    const rows = profileRows
+      .filter(p => isMock || p.access_granted !== false)   // les comptes non invités n'apparaissent pas
+      .map(p => ({
         id: p.id,
+        pending: false,
         company: p.company_name || '(sans nom)',
+        name: [p.first_name, p.last_name].filter(Boolean).join(' '),
         email: p.email || '',
         phone: p.phone || '—',
-        address: p.address || '—',
         active: p.active !== false,
         createdAt: p.created_at,
-        monthLabel,
-        doneCalls,
-        totalCalls,
-        paid: !!p.paid,
-        amountPaid: p.amount_paid || 0,
-        monthsPaid: p.months_paid || 0,
-        coach: p.coach || '—',
-        closer: p.closer || '—',
-        plan,
-      };
-    });
+        onboarding: p.onboarding_status || 'completed',
+        auditAt: p.audit_scheduled_at || null,
+        coachId: p.coach_id || null,
+        coach: p.coach_id && teamById[p.coach_id] ? (teamById[p.coach_id].name || teamById[p.coach_id].email) : (p.coach || '—'),
+      }));
+
+    const pendingRows = (invitations || []).map(i => ({
+      id: 'inv:' + i.id,
+      invitationId: i.id,
+      pending: true,
+      company: i.company_name || '(sans nom)',
+      name: [i.first_name, i.last_name].filter(Boolean).join(' '),
+      email: i.email,
+      phone: i.phone || '—',
+      active: false,
+      createdAt: i.invited_at,
+      lastSentAt: i.last_sent_at,
+      sendCount: i.send_count,
+      onboarding: 'not_started',
+      auditAt: null,
+      coachId: i.coach_id || null,
+      coach: i.coach_id && teamById[i.coach_id] ? (teamById[i.coach_id].name || teamById[i.coach_id].email) : '—',
+    }));
+
+    clients = pendingRows.concat(rows);
   }
+
+  // Next Action : qui fait quoi, et pourquoi (règles déterministes V1).
+  function nextAction(c) {
+    if (c.pending) return { label: 'Attendre l\'activation', tone: 'warn', why: 'Invitation envoyée' };
+    if (c.onboarding !== 'completed') return { label: 'Attendre l\'onboarding', tone: 'warn', why: 'Client à relancer si > 48 h' };
+    if (!c.coachId && !c.coach) return { label: 'Assigner un coach', tone: 'bad', why: '' };
+    if (!c.auditAt) return { label: 'Programmer l\'audit', tone: 'bad', why: 'Onboarding terminé' };
+    return { label: 'Préparer l\'audit', tone: 'ok', why: '' };
+  }
+
+  const ONBOARDING_LABEL = { not_started: 'À faire', in_progress: 'En cours', completed: 'Terminé' };
+  const ONBOARDING_TONE = { not_started: 'warn', in_progress: 'warn', completed: 'ok' };
 
   // Message de bienvenue personnalisé, à envoyer avant l'audit (onboarding).
   function welcomeMessage(c) {
@@ -347,12 +403,6 @@ body{overflow-x:hidden;}
     return msg;
   }
 
-  function callDots(done, total) {
-    return `<span class="call-dots-frac">${done}/${total}</span>`;
-  }
-
-  const fmtEuro = (n) => (n || 0).toLocaleString('fr-FR') + ' €';
-
   function render(list) {
     const body = document.getElementById('clientsBody');
     const empty = document.getElementById('clientsEmpty');
@@ -364,18 +414,18 @@ body{overflow-x:hidden;}
     empty.style.display = 'none';
     body.innerHTML = list.map(c => {
       const entree = c.createdAt ? new Date(c.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '—';
+      const na = nextAction(c);
+      const audit = c.auditAt ? new Date(c.auditAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
       return `<tr class="client-row" data-id="${esc(c.id)}">
-        <td><div class="client-name">${esc(c.company)}</div></td>
-        <td>${esc(c.email)}</td>
-        <td>${esc(c.phone)}</td>
-        <td><span class="status-dot ${c.active ? 'on' : 'off'}">${c.active ? 'Actif' : 'Inactif'}</span></td>
-        <td><span class="paid-tag ${c.paid ? 'yes' : 'no'}">${c.paid ? 'Payé' : 'Non payé'}</span></td>
-        <td>${fmtEuro(c.amountPaid)}</td>
-        <td>${esc(entree)}</td>
-        <td>${c.monthsPaid} mois</td>
-        <td>${callDots(c.doneCalls, c.totalCalls)}</td>
-        <td>${esc(c.coach)}</td>
-        <td>${esc(c.closer)}</td>
+        <td><div class="client-name">${esc(c.company)}</div>${c.name ? `<div class="client-email">${esc(c.name)}</div>` : ''}</td>
+        <td class="hide-m" data-label="Email">${esc(c.email)}</td>
+        <td class="hide-m" data-label="Téléphone">${esc(c.phone)}</td>
+        <td data-label="Accès"><span class="pill ${c.pending ? 'warn' : 'ok'}">${c.pending ? 'Invité' : 'Actif'}</span></td>
+        <td data-label="Onboarding"><span class="pill ${ONBOARDING_TONE[c.onboarding] || ''}">${ONBOARDING_LABEL[c.onboarding] || '—'}</span></td>
+        <td class="hide-m" data-label="Audit">${esc(audit)}</td>
+        <td data-label="À faire"><span class="pill ${na.tone}">${esc(na.label)}</span></td>
+        <td class="hide-m" data-label="Coach">${esc(c.coach)}</td>
+        <td class="hide-m" data-label="Entrée">${esc(entree)}</td>
       </tr>`;
     }).join('');
     body.querySelectorAll('.client-row').forEach(row => {
@@ -398,57 +448,100 @@ body{overflow-x:hidden;}
     if (!c) return;
     const entree = c.createdAt ? new Date(c.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
     const waNumber = (c.phone || '').replace(/[^\d]/g, '');
+    const na = nextAction(c);
     document.getElementById('quickviewBody').innerHTML = `
-      <button type="button" class="btn-primary" id="qvSendAccess" style="width:100%;margin-bottom:18px;">✉️ Envoyer les accès du portail</button>
       <h2 class="qv-name">${esc(c.company)}</h2>
-      <p class="qv-sub">Client depuis le ${esc(entree)}</p>
-      <div class="qv-row"><span>Statut</span><span>${c.active ? 'Actif' : 'Inactif'}</span></div>
-      <div class="qv-row"><span>Paiement</span><span>${c.paid ? 'Payé' : 'Non payé'}</span></div>
-      <div class="qv-row"><span>Montant payé</span><span>${fmtEuro(c.amountPaid)}</span></div>
-      <div class="qv-row"><span>Mois payés</span><span>${c.monthsPaid} mois</span></div>
-      <div class="qv-row"><span>Calls</span><span>${c.doneCalls} / ${c.totalCalls}</span></div>
+      <p class="qv-sub">${c.pending ? 'Invité le' : 'Client depuis le'} ${esc(entree)}${c.name ? ' · ' + esc(c.name) : ''}</p>
+      <div class="qv-row"><span>Prochaine action</span><span>${esc(na.label)}</span></div>
+      <div class="qv-row"><span>Accès</span><span>${c.pending ? 'Invitation envoyée' + (c.sendCount > 1 ? ' (' + c.sendCount + '×)' : '') : 'Actif'}</span></div>
+      <div class="qv-row"><span>Onboarding</span><span>${esc(ONBOARDING_LABEL[c.onboarding] || '—')}</span></div>
       <div class="qv-row"><span>Coach</span><span>${esc(c.coach)}</span></div>
-      <div class="qv-row"><span>Closer</span><span>${esc(c.closer)}</span></div>
       <div class="qv-row"><span>Email</span><span>${esc(c.email)}</span></div>
       <div class="qv-row"><span>Téléphone</span><span>${esc(c.phone)}</span></div>
       <div class="qv-actions">
-        <a class="btn-primary" href="client.html?id=${esc(c.id)}">Afficher sa page →</a>
+        ${c.pending ? '' : `<a class="btn-primary" href="client.html?id=${esc(c.id)}">Ouvrir le dossier →</a>`}
+        ${c.pending ? `<button type="button" class="btn-primary" id="qvResend">✉️ Renvoyer l'invitation</button>` : ''}
         ${waNumber ? `<a class="btn-secondary" href="https://wa.me/${esc(waNumber)}?text=${encodeURIComponent(welcomeMessage(c))}" target="_blank" rel="noopener">👋 Message de bienvenue WhatsApp</a>` : ''}
-        ${waNumber ? `<a class="btn-secondary" href="https://wa.me/${esc(waNumber)}?text=${encodeURIComponent(weeklyRecapMessage(c))}" target="_blank" rel="noopener">📋 Récap semaine WhatsApp</a>` : ''}
-        <button type="button" class="btn-secondary" id="qvLogCall">Enregistrer un appel</button>
+        ${!c.pending && waNumber ? `<a class="btn-secondary" href="https://wa.me/${esc(waNumber)}?text=${encodeURIComponent(weeklyRecapMessage(c))}" target="_blank" rel="noopener">📋 Récap semaine WhatsApp</a>` : ''}
+        ${c.pending ? `<button type="button" class="btn-secondary" id="qvRevoke">Révoquer l'invitation</button>` : ''}
       </div>
     `;
-    document.getElementById('qvSendAccess').addEventListener('click', async () => {
-      if (!c.email) { if (window.toast) toast('Ce client n\'a pas d\'email renseigné.', 'error'); return; }
-      const btn = document.getElementById('qvSendAccess');
-      btn.disabled = true; btn.textContent = 'Envoi...';
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        email: c.email,
-        options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client' }
-      });
-      btn.disabled = false; btn.textContent = '✉️ Envoyer les accès du portail';
-      if (error) { if (window.toast) toast(error.message, 'error'); return; }
-      if (window.toast) toast('Email d\'accès envoyé à ' + c.email, 'ok');
-      const waNumber = (c.phone || '').replace(/[^\d]/g, '');
-      if (waNumber) window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(welcomeMessage(c))}`, '_blank');
+    const resend = document.getElementById('qvResend');
+    if (resend) resend.addEventListener('click', async () => {
+      resend.disabled = true; resend.textContent = 'Envoi...';
+      const r = await restupInviteClient({ email: c.email, company_name: c.company });
+      resend.disabled = false; resend.textContent = '✉️ Renvoyer l\'invitation';
+      if (r.error) { if (window.toast) toast(r.error, 'error'); return; }
+      if (window.toast) toast('Invitation renvoyée à ' + c.email, 'ok');
+      await loadClients(); applyFilters();
     });
-    document.getElementById('qvLogCall').addEventListener('click', async () => {
-      const when = prompt('Créneau du call (ex : Jeudi 14h) :');
-      if (!when) return;
-      await supabaseClient.from('calls').insert({ user_id: c.id, status: 'done', notes: when });
-      if (window.toast) toast('Call enregistré.', 'ok');
+    const revoke = document.getElementById('qvRevoke');
+    if (revoke) revoke.addEventListener('click', async () => {
+      if (!confirm('Révoquer cette invitation ? Le lien reçu ne donnera plus accès.')) return;
+      const { error } = await supabaseClient.from('client_invitations').update({ status: 'revoked' }).eq('id', c.invitationId);
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      if (window.toast) toast('Invitation révoquée.', 'ok');
+      closeQuickview(); await loadClients(); applyFilters();
     });
     qvOverlay.classList.add('open');
     qvPanel.classList.add('open');
   }
 
+  // ---- Ajout d'un client ----
+  const acOverlay = document.getElementById('addClientOverlay');
+  const acMsg = document.getElementById('acMsg');
+  const acFields = ['acFirst', 'acLast', 'acEmail', 'acPhone', 'acCompany'];
+  function openAddClient() {
+    acFields.forEach(f => { document.getElementById(f).value = ''; });
+    acMsg.textContent = ''; acMsg.className = 'modal-msg';
+    document.getElementById('addClientForm').style.display = 'block';
+    document.getElementById('addClientDone').style.display = 'none';
+    // Le développeur choisit le coach ; un coach s'auto-assigne (côté serveur via RLS).
+    const sel = document.getElementById('acCoach');
+    const isDev = (user.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+    document.getElementById('acCoachField').style.display = isDev ? 'block' : 'none';
+    if (isDev) sel.innerHTML = '<option value="">— Assigner plus tard —</option>' + coachOptions.map(t => `<option value="${esc(t.id)}">${esc(t.name || t.email)}</option>`).join('');
+    acOverlay.classList.add('open');
+    document.getElementById('acFirst').focus();
+  }
+  function closeAddClient() { acOverlay.classList.remove('open'); }
+  document.getElementById('addClientBtn').addEventListener('click', openAddClient);
+  document.getElementById('addClientClose').addEventListener('click', closeAddClient);
+  document.getElementById('acClose2').addEventListener('click', closeAddClient);
+  document.getElementById('acAnother').addEventListener('click', openAddClient);
+  acOverlay.addEventListener('click', (e) => { if (e.target === acOverlay) closeAddClient(); });
+
+  let acBusy = false;
+  document.getElementById('acSubmit').addEventListener('click', async () => {
+    if (acBusy) return;   // anti double-submit
+    const v = (id) => document.getElementById(id).value.trim();
+    const f = { first_name: v('acFirst'), last_name: v('acLast'), email: v('acEmail'), phone: v('acPhone'), company_name: v('acCompany') };
+    if (!f.first_name || !f.last_name || !f.email || !f.phone || !f.company_name) { acMsg.className = 'modal-msg'; acMsg.textContent = 'Tous les champs sont obligatoires.'; return; }
+    const isDev = (user.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+    f.coach_id = isDev ? (document.getElementById('acCoach').value || null) : (coachOptions[0] ? coachOptions[0].id : null);
+    acBusy = true;
+    const btn = document.getElementById('acSubmit');
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    const r = await restupInviteClient(f);
+    acBusy = false; btn.disabled = false; btn.textContent = '✉️ Envoyer l\'invitation';
+    if (r.error) { acMsg.className = 'modal-msg'; acMsg.textContent = r.error; return; }
+    document.getElementById('addClientForm').style.display = 'none';
+    document.getElementById('addClientDone').style.display = 'block';
+    document.getElementById('acDoneText').textContent = (r.resent ? 'Invitation renvoyée à ' : 'Un email RestUp a été envoyé à ') + f.email + '.';
+    const wa = (f.phone || '').replace(/[^\d]/g, '');
+    const waLink = document.getElementById('acWhatsApp');
+    waLink.style.display = wa ? 'inline-flex' : 'none';
+    waLink.href = 'https://wa.me/' + wa.replace(/^0/, '33') + '?text=' + encodeURIComponent(welcomeMessage({ company: f.first_name }));
+    await loadClients(); applyFilters();
+  });
+
   let currentFilter = 'all';
   function applyFilters() {
     const q = document.getElementById('searchInput').value.trim().toLowerCase();
     let list = clients;
-    if (currentFilter === 'active') list = list.filter(c => c.active);
-    if (currentFilter === 'inactive') list = list.filter(c => !c.active);
-    if (q) list = list.filter(c => c.company.toLowerCase().includes(q) || c.email.toLowerCase().includes(q));
+    if (currentFilter === 'active') list = list.filter(c => !c.pending);
+    if (currentFilter === 'inactive') list = list.filter(c => c.pending);
+    if (q) list = list.filter(c => (c.company || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.name || '').toLowerCase().includes(q));
     const pageSize = Number(document.getElementById('pageSizeSelect').value);
     render(list.slice(0, pageSize));
   }

@@ -404,7 +404,21 @@ p{margin:0 0 10px;color:var(--muted);}
 *::-webkit-scrollbar-thumb{background:rgba(0,0,0,.55);border-radius:999px;}
 *::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.75);}
 *::-webkit-scrollbar-corner{background:transparent;}
-</style>
+.home-card{padding:22px;}
+.home-steps{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.home-step{flex:1 1 90px;font-size:11.5px;font-weight:700;color:var(--muted-dim);border-top:3px solid var(--line);padding-top:8px;}
+.home-step.done{color:#fff;border-color:#9B4DFF;}
+.home-step.now{color:#fff;border-color:#fff;}
+.home-one{background:linear-gradient(135deg,rgba(155,77,255,.18),rgba(155,77,255,.04));border:1px solid rgba(155,77,255,.35);border-radius:var(--r-md);padding:18px;margin-bottom:16px;}
+.home-one .home-k{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c9a8ff;margin-bottom:8px;}
+.home-one p{color:#fff;font-size:17px;font-weight:700;margin:0;line-height:1.35;}
+.home-one small{display:block;color:var(--muted);font-size:13px;margin-top:8px;}
+.home-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.home-tile{background:var(--ink);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;}
+.home-tile .home-k{display:block;font-size:11px;color:var(--muted-dim);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.home-tile b{color:#fff;font-size:15px;display:block;}
+.home-wa{display:inline-block;margin-top:8px;font-size:12.5px;font-weight:700;color:#c9a8ff;text-decoration:none;}
+@media(max-width:520px){.home-meta{grid-template-columns:1fr;}}</style>
 </head>
 <body>
 
@@ -493,7 +507,15 @@ p{margin:0 0 10px;color:var(--muted);}
           <div class="grid-2">
             <div class="dash-col" style="display:flex;flex-direction:column;gap:20px;">
 
-              <div class="card glow-card ring-card reveal">
+              <div class="card glow-card home-card reveal" id="homeCard">
+                <div class="home-steps" id="homeSteps"></div>
+                <div class="home-one" id="homeOne"></div>
+                <div class="home-meta">
+                  <div class="home-tile"><span class="home-k">Prochain rendez-vous</span><b id="homeNext">—</b></div>
+                  <div class="home-tile"><span class="home-k">Ton coach</span><b id="homeCoach">—</b><a id="homeCoachWa" class="home-wa" href="#" target="_blank" rel="noopener" style="display:none;">WhatsApp →</a></div>
+                </div>
+              </div>
+              <div class="card glow-card ring-card reveal" id="ringCard" style="display:none;">
                 <div class="ring-wrap">
                   <svg viewBox="0 0 132 132" width="132" height="132">
                     <circle class="ring-track" cx="66" cy="66" r="60"/>
@@ -513,7 +535,7 @@ p{margin:0 0 10px;color:var(--muted);}
                 </div>
               </div>
 
-              <div class="card glow-card reveal">
+              <div class="card glow-card reveal" id="finCard" style="display:none;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
                   <h3 style="margin:0;">Vos chiffres</h3>
                   <div class="period-tabs" id="periodTabs">
@@ -574,8 +596,7 @@ p{margin:0 0 10px;color:var(--muted);}
         <section class="view" id="view-audit">
           <div class="page-title-row"><div><h1>Votre audit</h1><p>Le diagnostic complet de votre activité.</p></div></div>
           <div class="empty-state" id="auditEmpty" style="padding:60px 0;">
-            <p style="margin-bottom:18px;">Pas encore d'audit ? Répondez à quelques questions sur votre restaurant, on s'occupe du reste.</p>
-            <a href="audit-form.html" class="btn-primary magnetic">Faire mon auto-audit →</a>
+            <p style="margin-bottom:6px;">Ton audit se fait avec ton coach lors de votre premier rendez-vous.</p><p style="color:var(--muted-dim);font-size:13px;">Il apparaîtra ici dès qu'il sera validé.</p>
           </div>
           <div id="auditContent" style="display:none;"></div>
         </section>
@@ -584,8 +605,7 @@ p{margin:0 0 10px;color:var(--muted);}
         <section class="view" id="view-plan">
           <div class="page-title-row"><div><h1>Plan d'action</h1><p>Vos objectifs et vos tâches, semaine par semaine.</p></div></div>
           <div class="empty-state" id="planEmpty" style="padding:60px 0;">
-            <p style="margin-bottom:18px;">Votre plan se génère automatiquement dès que vous avez complété votre auto-audit.</p>
-            <a href="audit-form.html" class="btn-primary magnetic">Faire mon auto-audit →</a>
+            <p style="margin-bottom:6px;">Ton plan d'action est construit avec ton coach après ton audit.</p><p style="color:var(--muted-dim);font-size:13px;">Tu y verras ta première priorité, puis la suite au fil des rendez-vous.</p>
           </div>
           <div id="planContent" style="display:none;"></div>
         </section>
@@ -658,14 +678,25 @@ p{margin:0 0 10px;color:var(--muted);}
 <script src="admin/mock-clients.js"></script>
 <script>
 (async function () {
-  const { data } = await supabaseClient.auth.getSession();
-  // TEMP — connexion désactivée pour accès facile pendant les modifs.
-  // Pour la réactiver : remettre "if (!data.session) { window.location.href = 'login.html'; return; }"
-  // Aperçu réglé sur le faux client "Le Petit Bouchon" (mock-1) — change l'id ci-dessous
-  // pour prévisualiser un autre faux client (voir admin/mock-clients.js).
-  const PREVIEW_CLIENT_ID = 'mock-1';
-  const mockProfile = (window.MOCK_CLIENTS || []).find(c => c.id === PREVIEW_CLIENT_ID);
-  const user = data.session ? data.session.user : { id: PREVIEW_CLIENT_ID, email: mockProfile?.email || 'apercu@restup.fr', user_metadata: { company_name: mockProfile?.company_name || 'Aperçu (non connecté)' } };
+  // Session obligatoire (l'aperçu de démo n'existe qu'en local). Le rôle vient du compte.
+  const user = await restupRequireClient();
+  if (!user) return;
+  const mockProfile = user._preview ? (window.MOCK_CLIENTS || []).find(c => c.id === user.id) : null;
+  if (mockProfile) user.user_metadata = { company_name: mockProfile.company_name };
+
+  // Accès par invitation uniquement ; onboarding incomplet → onboarding ; terminé → accueil client.
+  let prof = null;
+  if (!user._preview) {
+    const { data: profData } = await supabaseClient.from('profiles').select('onboarding_status, company_name, first_name, last_name, phone, audit_scheduled_at, access_granted').eq('id', user.id).maybeSingle();
+    prof = profData;
+    if (!prof || prof.access_granted === false) {
+      document.getElementById('authGate').innerHTML = '<div style="text-align:center;max-width:380px;padding:24px;"><h2 style="color:#fff;margin-bottom:8px;">Ton accès n\'est pas encore activé</h2><p style="color:var(--muted);font-size:14px;">RestUp fonctionne sur invitation. Contacte ton coach pour recevoir ton lien d\'accès.</p><p style="margin-top:16px;"><a href="#" id="noAccessOut" style="color:var(--lime);font-weight:700;">Se déconnecter</a></p></div>';
+      document.getElementById('noAccessOut').addEventListener('click', async (e) => { e.preventDefault(); await supabaseClient.auth.signOut(); window.location.href = 'login.html'; });
+      return;
+    }
+    if (prof.onboarding_status && prof.onboarding_status !== 'completed') { window.location.href = 'onboarding.html'; return; }
+    if (prof && prof.company_name) user.user_metadata = Object.assign({}, user.user_metadata, { company_name: prof.company_name });
+  }
   const company = user.user_metadata?.company_name || 'votre établissement';
 
   document.getElementById('companyName').textContent = company;
@@ -795,6 +826,7 @@ p{margin:0 0 10px;color:var(--muted);}
       if (!error && row && row.data && row.data.status !== 'draft') return row.data;
     } catch (e) { /* fall through to mock */ }
     // TEMP — repli sur un brouillon local (clients de démo) puis sur l'audit de démonstration.
+    if (!user._preview) return null;   // démo uniquement en local
     const local = JSON.parse(localStorage.getItem('restup_local_audits') || '{}')[user.id];
     if (local) return local.status !== 'draft' ? local : null;
     return (window.MOCK_AUDITS || {})[user.id] || null;
@@ -961,6 +993,7 @@ p{margin:0 0 10px;color:var(--muted);}
       if (!error && row && row.data && row.data.status !== 'draft') return row;
     } catch (e) { /* fall through to mock */ }
     // TEMP — repli sur un brouillon local (clients de démo) puis sur un plan de démonstration.
+    if (!user._preview) return null;   // démo uniquement en local
     const local = JSON.parse(localStorage.getItem('restup_local_plans') || '{}')[user.id];
     if (local) return local.status !== 'draft' ? { id: 'local-plan-' + user.id, user_id: user.id, data: local } : null;
     const mockPlan = (window.MOCK_PLANS || {})[user.id];
@@ -970,13 +1003,14 @@ p{margin:0 0 10px;color:var(--muted);}
 
   async function savePlan() {
     if (!planRow) return;
-    const { error } = await supabaseClient.from('plans').upsert({ user_id: user.id, data: planRow.data }, { onConflict: 'user_id' });
-    if (error) {
-      // TEMP — repli localStorage pour les clients de démo (id non-UUID) que Supabase refuse en écriture.
+    if (user._preview) {
       const all = JSON.parse(localStorage.getItem('restup_local_plans') || '{}');
       all[user.id] = planRow.data;
       localStorage.setItem('restup_local_plans', JSON.stringify(all));
+      return;
     }
+    const { error } = await supabaseClient.from('plans').update({ data: planRow.data }).eq('user_id', user.id);
+    if (error && window.toast) toast('Enregistrement impossible pour le moment. Réessaie.', 'error');
   }
 
   function allTasksFlat(plan) {
@@ -1354,10 +1388,10 @@ p{margin:0 0 10px;color:var(--muted);}
     const steps = [
       {
         icon: '<path d="M9 17l3-3 3 3M9 11l3-3 3 3"/><rect x="3" y="3" width="18" height="18" rx="2"/>',
-        title: 'Auto-audit',
+        title: 'Audit avec ton coach',
         sub: 'Le diagnostic complet de votre activité.',
         status: audit ? 'done' : 'todo',
-        cta: audit ? null : { label: 'Faire mon auto-audit', href: 'audit-form.html' },
+        cta: null,
       },
       {
         icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
@@ -1398,19 +1432,58 @@ p{margin:0 0 10px;color:var(--muted);}
     root.querySelectorAll('[data-goto]').forEach(btn => btn.addEventListener('click', () => goto(btn.dataset.goto)));
   }
 
+  // ---- Accueil client : où j'en suis · ma priorité · mon prochain rendez-vous · mon coach ----
+  async function renderHome(audit, planRow, calls) {
+    const now = Date.now();
+    const fmtWhen = (iso) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+    const upcoming = (calls || []).filter(c => c.scheduled_at && new Date(c.scheduled_at).getTime() > now && c.status !== 'done' && c.status !== 'cancelled')
+      .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))[0];
+    const auditAt = prof && prof.audit_scheduled_at && new Date(prof.audit_scheduled_at).getTime() > now ? prof.audit_scheduled_at : null;
+    const nextIso = upcoming ? upcoming.scheduled_at : auditAt;
+    document.getElementById('homeNext').textContent = nextIso ? fmtWhen(nextIso) : 'À programmer avec ton coach';
+
+    const hasAudit = !!audit, hasPlan = !!planRow;
+    const steps = [
+      { l: 'Accès activé', s: 'done' },
+      { l: 'Onboarding', s: 'done' },
+      { l: 'Audit', s: hasAudit ? 'done' : 'now' },
+      { l: 'Plan d\'action', s: hasPlan ? 'done' : (hasAudit ? 'now' : '') },
+      { l: 'Suivi', s: '' },
+    ];
+    document.getElementById('homeSteps').innerHTML = steps.map(x => `<div class="home-step ${x.s}">${esc(x.l)}</div>`).join('');
+
+    // One Thing : une seule priorité à la fois.
+    let title = '', text = '', sub = '';
+    const qw = audit && audit.quick_win;
+    if (qw && qw.action) { title = 'Ta priorité maintenant'; text = qw.action; sub = qw.delay ? 'À voir d\'ici ' + qw.delay + (qw.proof ? ' — preuve : ' + qw.proof : '') : (qw.proof ? 'Preuve : ' + qw.proof : ''); }
+    else if (!hasAudit) {
+      title = 'Prochaine étape';
+      text = nextIso ? 'Ton audit est programmé : ' + fmtWhen(nextIso) + '.' : 'Ton coach prépare ton audit et te propose un rendez-vous très vite.';
+      sub = 'Tes réponses d\'onboarding sont déjà enregistrées : tu n\'as rien à refaire.';
+    } else { title = 'Prochaine étape'; text = 'Ton coach finalise ta première priorité.'; }
+    document.getElementById('homeOne').innerHTML = `<span class="home-k">${esc(title)}</span><p>${esc(text)}</p>${sub ? `<small>${esc(sub)}</small>` : ''}`;
+
+    // Coach
+    let coach = null;
+    if (!user._preview) { try { const { data } = await supabaseClient.rpc('restup_my_coach'); coach = data; } catch (e) {} }
+    document.getElementById('homeCoach').textContent = coach && coach.name ? coach.name : 'En cours d\'attribution';
+    const wa = coach && coach.phone ? String(coach.phone).replace(/[^\d]/g, '').replace(/^0/, '33') : '';
+    const waEl = document.getElementById('homeCoachWa');
+    if (wa) { waEl.href = 'https://wa.me/' + wa; waEl.style.display = 'inline-block'; }
+  }
+
   // Animate progress bars + ring + counters now that the page is visible
   requestAnimationFrame(async () => {
     document.querySelectorAll('.progress-bar-fill').forEach(el => {
       if (el.dataset.fill) el.style.width = el.dataset.fill + '%';
     });
-    setRing(document.getElementById('ringFill'), 56);
-    document.getElementById('ringPct').textContent = '56%';
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('in-view'));
 
     const audit = await loadAudit();
     if (audit) {
       renderAudit(audit);
       currentFinancials = audit.financials || null;
+      if (currentFinancials) document.getElementById('finCard').style.display = '';
       renderFinGrid(currentPeriod);
       if ((audit.pillars || []).length) {
         const rows = document.getElementById('overviewRows');
@@ -1428,6 +1501,7 @@ p{margin:0 0 10px;color:var(--muted);}
       renderPlan(planRow.data);
       const all = allTasksFlat(planRow.data);
       const done = all.filter(t => t.done).length;
+      document.getElementById('ringCard').style.display = '';
       setRing(document.getElementById('ringFill'), all.length ? done / all.length * 100 : 0);
       document.getElementById('ringPct').textContent = (all.length ? Math.round(done / all.length * 100) : 0) + '%';
       document.getElementById('tasksDoneKpi').textContent = done;
@@ -1440,6 +1514,7 @@ p{margin:0 0 10px;color:var(--muted);}
     renderCalls(calls);
     renderBooking();
     renderParcours(audit, planRow, calls);
+    renderHome(audit, planRow, calls);
     renderDocs(await loadDocs());
     renderDocRequestsClient();
   });

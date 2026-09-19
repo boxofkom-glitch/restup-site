@@ -398,21 +398,15 @@ body{overflow-x:hidden;}
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script src="../supabase-client.js"></script>
+<script src="../audit-engine.js"></script>
 <script src="mock-clients.js"></script>
 <script>
 (async function () {
   const params = new URLSearchParams(window.location.search);
   const clientId = params.get('id');
 
-  const { data: sessData } = await supabaseClient.auth.getSession();
-  // TEMP — connexion désactivée pour accès facile pendant les modifs.
-  // Pour la réactiver : remettre "if (!sessData.session) ..." et "if (!adminRow) ..." ci-dessous.
-  const me = sessData.session ? sessData.session.user : { id: 'preview', email: 'coach@restup.fr' };
-
-  if (sessData.session) {
-    const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', me.id).maybeSingle();
-    if (!adminRow) { window.location.href = '../dashboard.html'; return; }
-  }
+  const me = await restupRequireStaff();
+  if (!me) return;
   if (!clientId) { window.location.href = 'index.html'; return; }
 
   document.getElementById('authGate').style.display = 'none';
@@ -432,9 +426,15 @@ body{overflow-x:hidden;}
     const all = JSON.parse(localStorage.getItem('restup_local_' + table) || '{}');
     return all[userId] || null;
   }
+  const isUuid = (s) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s || '');
+  // Le repli local ne sert qu'aux clients de démo (id non-UUID, en local). Sinon l'erreur remonte.
   async function upsertWithFallback(table, userId, data) {
     const { error } = await supabaseClient.from(table).upsert({ user_id: userId, data }, { onConflict: 'user_id' });
-    if (error) localSave(table, userId, data);
+    if (error) {
+      if (!isUuid(userId) && IS_LOCAL) { localSave(table, userId, data); return { error: null }; }
+      if (window.toast) toast('Enregistrement impossible : ' + error.message, 'error');
+      return { error };
+    }
     return { error: null };
   }
   const fmtEuro = (n) => n == null ? '—' : Number(n).toLocaleString('fr-FR') + ' €';
@@ -483,6 +483,242 @@ body{overflow-x:hidden;}
   badgesWrap.innerHTML = badges.join('');
 
   // =========================================================
+  // PARCOURS D'ACCUEIL : assignation · audit programmé · résumé onboarding · timeline
+  // =========================================================
+  async function logEvent(type, payload) {
+    if (!isUuid(clientId)) return;
+    try { await supabaseClient.from('events').insert({ client_id: clientId, type, actor_id: me.id, payload: payload || {} }); } catch (e) { /* ne bloque jamais l'action */ }
+  }
+  const isDevUser = (me.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+  let teamCoaches = [];
+  async function loadCoaches() {
+    try { const { data } = await supabaseClient.from('team_members').select('id, name, email').eq('role', 'coach'); teamCoaches = data || []; } catch (e) {}
+  }
+  const ONB_LABEL = { not_started: 'À faire', in_progress: 'En cours', completed: 'Terminé' };
+  const fmtN = (n) => (n == null || n === '') ? '—' : Number(n).toLocaleString('fr-FR');
+
+  function onboardingSummaryHtml() {
+    const o = profile && profile.onboarding;
+    if (!o || !(o.answers || o.f)) return '<div class="empty-state" style="padding:14px 0;">Le client n\'a pas encore renseigné son onboarding.</div>';
+    const rows = [];
+    if (o.v === 2 && o.answers) {
+      const x = o.answers, list = (v) => Array.isArray(v) ? v.join(', ') : v;
+      const add = (k, v) => { if (v !== undefined && v !== null && v !== '') rows.push([k, list(v)]); };
+      add('Établissement', [x.company, x.kind, x.city].filter(Boolean).join(' · '));
+      add('Ouvert depuis', x.age); add('Rôle', x.role); add('Équipe', x.team); add('Heures / semaine', x.hours);
+      add('Situation (1-5)', x.situation); add('Énergie du dirigeant (1-5)', x.energy);
+      add('Pourquoi maintenant', x.why_now); add('Sujets qui pèsent', x.themes); add('Difficulté principale', x.problem);
+      add('Depuis', x.since); add('Déjà tenté', x.tried); add('Résultat', x.tried_result);
+      add('Objectif 4 mois', x.goal_4m); add('Objectif 12 mois', x.goal_12m); add('Critère de réussite', x.success);
+      add('CA mensuel (approx.)', x.revenue_month ? fmtN(x.revenue_month) + ' €' : ''); add('Marge ressentie', x.margin_feel); add('Suivi des chiffres', x.tracks);
+      add('Préférence de contact', [x.channel, x.best_time].filter(Boolean).join(' · ')); add('Contrainte', x.constraints);
+    } else if (o.f) {
+      const f = o.f;
+      rows.push(['Établissement', [f.type, f.seats ? f.seats + ' couverts' : ''].filter(Boolean).join(' · ')], ['CA annuel', f.revenue ? fmtN(f.revenue) + ' €' : '—'], ['Objectif 4 mois', f.obj4m || '—'], ['Blocage déclaré', f.blocker || '—'], ['Vision 12 mois', f.vision || '—']);
+    }
+    return rows.map(r => `<div class="info-row"><span>${esc(r[0])}</span><span style="max-width:62%;text-align:right;white-space:pre-wrap;">${esc(r[1])}</span></div>`).join('');
+  }
+  function startCardHtml() {
+    const ob = (profile && profile.onboarding_status) || 'completed';
+    const coach = teamCoaches.find(t => t.id === (profile && profile.coach_id));
+    const coachCell = isDevUser
+      ? `<select id="assignCoach" style="background:var(--ink);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:8px 10px;font-family:inherit;"><option value="">— Non assigné —</option>${teamCoaches.map(t => `<option value="${esc(t.id)}"${t.id === (profile && profile.coach_id) ? ' selected' : ''}>${esc(t.name || t.email)}</option>`).join('')}</select>`
+      : esc(coach ? (coach.name || coach.email) : '—');
+    const at = profile && profile.audit_scheduled_at;
+    return `
+      <div class="info-card" id="startCard">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Démarrage</span><span class="paid-tag ${ob === 'completed' ? 'yes' : 'no'}">Onboarding : ${esc(ONB_LABEL[ob] || ob)}</span></div>
+        <div class="info-row"><span>Coach</span><span>${coachCell}</span></div>
+        <div class="info-row"><span>Audit programmé</span><span>${at ? esc(new Date(at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })) : '<em style="color:var(--muted-dim);">Non programmé</em>'}</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;">
+          <input type="datetime-local" id="auditWhen" value="${at ? esc(toLocalInputValue(at)) : ''}" style="background:var(--ink);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:9px 12px;font-family:inherit;">
+          <button type="button" class="btn-secondary" id="scheduleAuditBtn" style="padding:9px 16px;">${at ? 'Modifier le rendez-vous' : 'Programmer l\'audit'}</button>
+          <button type="button" class="btn-primary magnetic" id="openModeAudit" style="padding:9px 18px;">🎯 Ouvrir le Mode Audit</button>
+        </div>
+        <a id="auditWaConfirm" class="doc-jump" href="#" target="_blank" rel="noopener" style="display:none;margin-top:10px;">👋 Confirmer le rendez-vous par WhatsApp →</a>
+      </div>
+      <div class="info-card">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Ce que le client a renseigné</span></div>
+        ${onboardingSummaryHtml()}
+      </div>
+      <div class="info-card" id="timelineCard">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Historique</span></div>
+        <div id="timelineList"><div class="empty-state" style="padding:14px 0;">Chargement…</div></div>
+      </div>`;
+  }
+
+  const EVENT_LABEL = {
+    'account.activated': 'Compte activé', 'onboarding.completed': 'Onboarding terminé', 'coach.assigned': 'Coach assigné',
+    'audit.scheduled': 'Audit programmé', 'audit.draft_created': 'Brouillon d\'audit créé', 'audit.published': 'Audit validé et publié',
+    'audit.unpublished': 'Audit repassé en brouillon', 'quickwin.selected': 'Première priorité (Quick Win) choisie', 'plan.draft_created': 'Brouillon de plan créé',
+  };
+  async function renderTimeline() {
+    const wrap = document.getElementById('timelineList');
+    if (!wrap) return;
+    if (!isUuid(clientId)) { wrap.innerHTML = '<div class="empty-state" style="padding:14px 0;">Pas d\'historique pour un client de démonstration.</div>'; return; }
+    const { data } = await supabaseClient.from('events').select('*').eq('client_id', clientId).order('created_at', { ascending: false }).limit(30);
+    if (!data || !data.length) { wrap.innerHTML = '<div class="empty-state" style="padding:14px 0;">Aucun événement pour l\'instant.</div>'; return; }
+    wrap.innerHTML = data.map(e => `<div class="info-row"><span>${esc(EVENT_LABEL[e.type] || e.type)}</span><span>${esc(new Date(e.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}</span></div>`).join('');
+  }
+
+  function mountStartCard() {
+    const sel = document.getElementById('assignCoach');
+    if (sel) sel.addEventListener('change', async () => {
+      const { error } = await supabaseClient.from('profiles').update({ coach_id: sel.value || null }).eq('id', clientId);
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      profile.coach_id = sel.value || null;
+      await logEvent('coach.assigned', { coach_id: sel.value || null });
+      if (window.toast) toast('Coach mis à jour', 'ok');
+      renderTimeline();
+    });
+    document.getElementById('openModeAudit').addEventListener('click', () => switchTab('audit'));
+    let scheduling = false;
+    document.getElementById('scheduleAuditBtn').addEventListener('click', async () => {
+      if (scheduling) return;
+      const v = document.getElementById('auditWhen').value;
+      if (!v) { if (window.toast) toast('Choisis une date et une heure.', 'error'); return; }
+      scheduling = true;
+      const iso = new Date(v).toISOString();
+      const { error } = await supabaseClient.from('profiles').update({ audit_scheduled_at: iso }).eq('id', clientId);
+      if (error) { scheduling = false; if (window.toast) toast(error.message, 'error'); return; }
+      const { data: existing } = await supabaseClient.from('calls').select('id').eq('user_id', clientId).eq('kind', 'audit').maybeSingle();
+      if (existing) await supabaseClient.from('calls').update({ scheduled_at: iso, status: 'confirmed' }).eq('id', existing.id);
+      else await supabaseClient.from('calls').insert({ user_id: clientId, kind: 'audit', status: 'confirmed', scheduled_at: iso, notes: 'Audit' });
+      profile.audit_scheduled_at = iso;
+      await logEvent('audit.scheduled', { at: iso });
+      scheduling = false;
+      if (window.toast) toast('Audit programmé — visible dans l\'espace du client', 'ok');
+      renderGeneral();
+      const when = new Date(iso).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+      const wa = (profile.phone || '').replace(/[^\d]/g, '').replace(/^0/, '33');
+      const link = document.getElementById('auditWaConfirm');
+      if (wa && link) { link.href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('Bonjour ' + (profile.first_name || '') + ' 👋 Ton audit RestUp est confirmé : ' + when + '. À très vite !'); link.style.display = 'inline-block'; }
+    });
+    renderTimeline();
+  }
+
+  // =========================================================
+  // MODE AUDIT : notes/transcription (autosave) → brouillon → correction → validation → Quick Win
+  // =========================================================
+  const notesKey = 'restup_audit_notes_' + clientId;
+  function buildAuditDraft(notes) {
+    const o = profile && profile.onboarding, x = (o && o.v === 2 && o.answers) ? o.answers : null;
+    let d;
+    if (o && o.f && window.restupBuildDraft) { try { d = JSON.parse(JSON.stringify(window.restupBuildDraft(o).audit)); } catch (e) { d = null; } }
+    if (!d) {
+      d = {
+        overview: { revenue: x && x.revenue_month ? x.revenue_month * 12 : null, margin_pct: null, employees: null, fixed_costs: null, avg_sale: null, cash: null },
+        growth_journey: { vision_12m: x ? (x.goal_12m || '') : '', objective_4m: x ? (x.goal_4m || '') : '', blocker: x ? (x.problem || '') : '' },
+      };
+      if (x) d.onboarding_context = { themes: x.themes || [], since: x.since || '', situation: x.situation || null, energy: x.energy || null, why_now: x.why_now || '' };
+    }
+    d.status = 'draft';
+    d.version = 1;
+    d.audit_notes = notes || '';
+    if (notes) d.source_prompt = notes;
+    d.generation = { method: (o ? 'onboarding' : 'manual') + (notes ? '+notes' : ''), generated_at: new Date().toISOString(), human_validated: false };
+    return d;
+  }
+  function modeAuditStartHtml() {
+    const hasOnb = !!(profile && profile.onboarding && (profile.onboarding.answers || profile.onboarding.f));
+    const saved = (() => { try { return localStorage.getItem(notesKey) || ''; } catch (e) { return ''; } })();
+    return `
+      <div class="info-card">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Mode Audit</span></div>
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:12px;">Prends tes notes (ou colle la transcription) pendant l'appel. Tout est sauvegardé automatiquement. Ensuite, génère un brouillon : tu le corriges, puis tu le valides.</p>
+        <textarea id="auditNotes" rows="10" placeholder="Notes / transcription du call d'audit…" style="width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:14px;">${esc(saved)}</textarea>
+        <div id="auditNotesState" style="font-size:12px;color:var(--muted-dim);margin:6px 0 12px;">${saved ? 'Notes récupérées.' : ''}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary magnetic" id="genAuditBtn" style="padding:10px 18px;">⚡ Générer le brouillon d'audit</button>
+          <button type="button" class="btn-secondary" id="blankAuditBtn" style="padding:10px 18px;">Commencer sans génération</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted-dim);margin-top:10px;">${hasOnb ? 'Le brouillon reprend ce que le client a dit dans son onboarding (objectifs, difficulté). Les chiffres se précisent pendant l\'audit.' : 'Le client n\'a pas encore terminé son onboarding : le brouillon sera vide, à compléter.'} La génération ne dépend d'aucun service externe : elle fonctionne toujours.</p>
+      </div>`;
+  }
+
+  function mountModeAuditStart() {
+    const ta = document.getElementById('auditNotes');
+    let t = null;
+    ta.addEventListener('input', () => {
+      document.getElementById('auditNotesState').textContent = 'Enregistrement…';
+      clearTimeout(t);
+      t = setTimeout(() => { try { localStorage.setItem(notesKey, ta.value); } catch (e) {} document.getElementById('auditNotesState').textContent = 'Enregistré ✔'; }, 500);
+    });
+    let creating = false;
+    const create = async (withNotes) => {
+      if (creating) return; creating = true;
+      const d = buildAuditDraft(withNotes ? ta.value.trim() : '');
+      const { error } = await upsertWithFallback('audits', clientId, d);
+      creating = false;
+      if (error) return;
+      await logEvent('audit.draft_created', { method: d.generation.method });
+      try { localStorage.removeItem(notesKey); } catch (e) {}
+      if (window.toast) toast('Brouillon d\'audit créé — à corriger puis valider', 'ok');
+      await loadAudit(); renderAuditTab();
+    };
+    document.getElementById('genAuditBtn').addEventListener('click', () => create(true));
+    document.getElementById('blankAuditBtn').addEventListener('click', () => create(false));
+  }
+
+  // ---- Quick Win : une seule Première priorité pour le client ----
+  function quickWinSuggestion(a) {
+    let action = '', problem = '';
+    try {
+      const pillars = a.pillars || [];
+      const all = pillars.flatMap(p => p.criteria || []);
+      const weak = all.sort((x, y) => x.pct - y.pct)[0];
+      if (weak) problem = weak.label + ' — ' + weak.status;
+      if (profile && profile.onboarding && window.restupBuildDraft) {
+        const plan = window.restupBuildDraft(profile.onboarding).plan;
+        const t = plan.cycles[0].months[0].weeks[0].tasks[0];
+        if (t) action = t.text;
+      }
+    } catch (e) {}
+    const ob = profile && profile.onboarding;
+    if (!problem && ob && ob.v === 2 && ob.answers) problem = ob.answers.problem || '';
+    return { problem, action };
+  }
+  function quickWinHtml(a) {
+    const qw = a.quick_win || null;
+    const sug = quickWinSuggestion(a);
+    const v = (k) => esc(qw ? (qw[k] || '') : (sug[k] || ''));
+    return `
+      <div class="info-card" id="quickWinCard">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Quick Win — première priorité du client</span>${qw && qw.selected_at ? '<span class="paid-tag yes">Choisi</span>' : '<span class="paid-tag no">À choisir</span>'}</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Une seule action claire, concrète et mesurable. Le client ne verra que celle-ci en priorité. ${qw ? '' : 'Proposition pré-remplie : modifie-la librement.'}</p>
+        <div class="field"><label>Problème (issu de l'audit)</label><input type="text" id="qwProblem" value="${v('problem')}"></div>
+        <div class="field"><label>Action (une seule, exécutable)</label><input type="text" id="qwAction" value="${v('action')}"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <div class="field"><label>Effort</label><select id="qwEffort" style="width:100%;background:var(--ink);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:10px;">${['S', 'M', 'L'].map(x => `<option${qw && qw.effort === x ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
+          <div class="field"><label>Délai</label><input type="text" id="qwDelay" placeholder="72 h" value="${esc(qw ? (qw.delay || '') : '72 h')}"></div>
+          <div class="field"><label>Preuve attendue</label><input type="text" id="qwProof" placeholder="KPI / document" value="${esc(qw ? (qw.proof || '') : '')}"></div>
+        </div>
+        <button type="button" class="btn-primary magnetic" id="selectQuickWin" style="padding:10px 18px;">${qw && qw.selected_at ? 'Mettre à jour la première priorité' : 'Choisir comme première priorité'}</button>
+        <p style="font-size:12px;color:var(--muted-dim);margin-top:8px;">Le client la voit dès que l'audit est publié.</p>
+      </div>`;
+  }
+  function mountQuickWin(a) {
+    let saving = false;
+    document.getElementById('selectQuickWin').addEventListener('click', async () => {
+      if (saving) return;
+      const action = document.getElementById('qwAction').value.trim();
+      if (!action) { if (window.toast) toast('Décris l\'action à mener.', 'error'); return; }
+      saving = true;
+      const qw = {
+        problem: document.getElementById('qwProblem').value.trim(), action,
+        effort: document.getElementById('qwEffort').value, delay: document.getElementById('qwDelay').value.trim(),
+        proof: document.getElementById('qwProof').value.trim(), selected_at: new Date().toISOString(), selected_by: me.id, decision: 'selected',
+      };
+      const { error } = await upsertWithFallback('audits', clientId, { ...a, quick_win: qw });
+      saving = false;
+      if (error) return;
+      await logEvent('quickwin.selected', { action });
+      if (window.toast) toast('Première priorité enregistrée', 'ok');
+      await loadAudit(); renderAuditTab();
+    });
+  }
+
+  // =========================================================
   // GÉNÉRAL
   // =========================================================
   let generalEditing = false;
@@ -494,6 +730,7 @@ body{overflow-x:hidden;}
 
     if (!generalEditing) {
       root.innerHTML = `
+        ${startCardHtml()}
         <div class="info-card">
           <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Informations</span><button type="button" class="doc-jump" id="editInfoBtn" style="margin-bottom:0;">Modifier</button></div>
           <div class="info-row"><span>Établissement</span><span>${esc(displayName)}</span></div>
@@ -512,6 +749,7 @@ body{overflow-x:hidden;}
             <button type="button" class="doc-jump" id="viewAuditBtn" style="margin-bottom:0;">Voir l'audit</button>
           </div>
         </div>`;
+      mountStartCard();
       document.getElementById('openPlanBtn').addEventListener('click', () => switchTab('plan'));
       document.getElementById('viewAuditBtn').addEventListener('click', () => switchTab('audit'));
       document.getElementById('editInfoBtn').addEventListener('click', () => { generalEditing = true; renderGeneral(); });
@@ -558,15 +796,16 @@ body{overflow-x:hidden;}
   async function loadAudit() {
     const { data } = await supabaseClient.from('audits').select('*').eq('user_id', clientId).maybeSingle();
     // TEMP — bascule sur un brouillon local puis sur l'audit de démonstration si aucune ligne réelle n'existe.
-    const localAudit = localLoad('audits', clientId);
-    const mockAudit = (window.MOCK_AUDITS || {})[clientId];
+    const localAudit = isUuid(clientId) ? null : localLoad('audits', clientId);
+    const mockAudit = isUuid(clientId) ? null : (window.MOCK_AUDITS || {})[clientId];
     auditRow = data || (localAudit ? { user_id: clientId, data: localAudit } : null) || (mockAudit ? { user_id: clientId, data: mockAudit } : null);
   }
 
   function renderAuditTab() {
     const root = document.getElementById('auditRoot');
     if (!auditRow) {
-      root.innerHTML = '<div class="empty-state">Ce client n\'a pas encore fait son audit.</div>';
+      root.innerHTML = modeAuditStartHtml();
+      mountModeAuditStart();
       return;
     }
     const a = auditRow.data || {};
@@ -582,6 +821,7 @@ body{overflow-x:hidden;}
         <button type="button" class="doc-jump" id="jumpToPlan">Voir le plan d'action →</button>
         <button type="button" class="btn-primary magnetic" id="genPlanFromAudit" style="padding:9px 18px;">⚡ Générer le plan automatiquement à partir de cet audit</button>
       </div>
+      ${quickWinHtml(a)}
       ${a.source_prompt ? `<div class="journey-mini" style="border-color:rgba(155,77,255,.3);"><h5>📝 Notes / transcription utilisées pour générer ce brouillon</h5><p style="white-space:pre-wrap;">${esc(a.source_prompt)}</p></div>` : ''}
       <div class="stat-grid">
         <div class="stat-card"><span>Chiffre d'affaires</span><b>${fmtEuro(ov.revenue)}</b></div>
@@ -600,6 +840,7 @@ body{overflow-x:hidden;}
         <div style="margin-top:10px;"><button type="button" class="btn-primary magnetic" id="saveRawAudit">Enregistrer ce JSON</button></div>
       </div>
     `;
+    mountQuickWin(a);
     document.getElementById('jumpToPlan').addEventListener('click', () => switchTab('plan'));
     document.getElementById('genPlanFromAudit').addEventListener('click', async () => {
       if (planData && !confirm('Un plan existe déjà pour ce client. Le remplacer par un brouillon généré depuis l\'audit ?')) return;
@@ -610,9 +851,13 @@ body{overflow-x:hidden;}
       renderPlanEditor();
     });
     document.getElementById('togglePublishAudit').addEventListener('click', async () => {
+      if (isDraft && !(a.quick_win && a.quick_win.action) && !confirm('Aucune première priorité (Quick Win) n\'est choisie : le client ne verra pas de priorité. Publier quand même ?')) return;
       const next = { ...a, status: isDraft ? 'published' : 'draft' };
-      await upsertWithFallback('audits', clientId, next);
-      if (window.toast) toast(isDraft ? 'Audit publié au client' : 'Audit repassé en brouillon', 'ok');
+      if (isDraft) { next.generation = { ...(a.generation || {}), human_validated: true, validated_at: new Date().toISOString(), validated_by: me.id }; next.version = (a.version || 1) + 1; }
+      const { error } = await upsertWithFallback('audits', clientId, next);
+      if (error) return;
+      await logEvent(isDraft ? 'audit.published' : 'audit.unpublished', {});
+      if (window.toast) toast(isDraft ? 'Audit validé et publié au client' : 'Audit repassé en brouillon', 'ok');
       await loadAudit();
       renderAuditTab();
     });
@@ -977,7 +1222,7 @@ body{overflow-x:hidden;}
   async function loadPlan() {
     const { data } = await supabaseClient.from('plans').select('*').eq('user_id', clientId).maybeSingle();
     // TEMP — bascule sur un brouillon local puis sur un plan de démonstration si aucune ligne réelle n'existe.
-    planData = data ? data.data : (localLoad('plans', clientId) || (window.MOCK_PLANS || {})[clientId] || null);
+    planData = data ? data.data : (isUuid(clientId) ? null : (localLoad('plans', clientId) || (window.MOCK_PLANS || {})[clientId] || null));
   }
 
   async function savePlan(silent) {
@@ -1383,6 +1628,7 @@ body{overflow-x:hidden;}
   }
 
   // ---- Init ----
+  await loadCoaches();
   await loadAudit(); renderAuditTab();
   await loadPlan(); renderPlanEditor();
   renderWaRecap();
@@ -1391,8 +1637,9 @@ body{overflow-x:hidden;}
     if (!email) { if (window.toast) toast('Ce client n\'a pas d\'email renseigné.', 'error'); return; }
     const btn = document.getElementById('sendAccessBtn');
     btn.disabled = true; btn.textContent = 'Envoi...';
+    // Compte existant : renvoi du lien (ne crée jamais de compte).
     const { error } = await supabaseClient.auth.signInWithOtp({
-      email, options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html?role=client' }
+      email, options: { shouldCreateUser: false, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html' }
     });
     btn.disabled = false; btn.textContent = '✉️ Envoyer les accès';
     if (error) { if (window.toast) toast(error.message, 'error'); return; }

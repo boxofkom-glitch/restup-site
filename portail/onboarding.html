@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0D0C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230B0D0C'/%3E%3Ctext x='8' y='29' font-family='Arial' font-size='29' font-weight='bold' fill='%239B4DFF'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Faisons connaissance — RestUp</title>
+<link rel="stylesheet" href="admin/admin-theme.css">
+<style>
+body{overflow-x:hidden;background:radial-gradient(120% 60% at 20% 0%,#2a1550 0%,#0B0D0C 55%) fixed;}
+.wrap{max-width:620px;margin:0 auto;padding:26px 18px 90px;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.wordmark{display:inline-flex;align-items:baseline;line-height:1;font-family:var(--font-display);text-transform:uppercase;font-size:24px;letter-spacing:-.5px;color:#fff;text-decoration:none;}
+.wordmark .up{color:#9B4DFF;margin-left:1px;}
+.saved{font-size:12px;color:var(--muted-dim);min-height:16px;}
+.track{height:5px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:10px;}
+.fill{height:100%;background:linear-gradient(90deg,#9B4DFF,#B37BFF);border-radius:999px;transition:width .4s cubic-bezier(.16,.9,.3,1);}
+.steplabel{font-size:12px;color:var(--muted-dim);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:26px;}
+.step{display:none;}
+.step.active{display:block;animation:stepIn .3s ease both;}
+@keyframes stepIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.step h1{font-family:var(--font-display);text-transform:uppercase;font-weight:400;font-size:clamp(26px,6vw,34px);line-height:1.08;letter-spacing:-.4px;margin:0 0 8px;color:#fff;}
+.step .lead{color:var(--muted);font-size:15px;margin:0 0 26px;}
+.q{margin-bottom:24px;}
+.q>label,.q>.ql{display:block;font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;}
+.q .hint{font-size:12.5px;color:var(--muted-dim);margin:0 0 10px;}
+.q input[type=text],.q input[type=tel],.q input[type=number],.q textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px 15px;color:#fff;font-family:inherit;font-size:16px;min-height:48px;}
+.q textarea{min-height:110px;resize:vertical;}
+.q input:focus,.q textarea:focus{outline:none;border-color:#9B4DFF;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-weight:600;font-size:14.5px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s,color .15s;}
+.chip:hover{border-color:#9B4DFF;}
+.chip.on{background:rgba(155,77,255,.2);border-color:#9B4DFF;color:#fff;}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.scale .chip{border-radius:12px;padding:14px 0;text-align:center;font-size:17px;}
+.scale-legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted-dim);margin-top:6px;}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:32px;}
+.back{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:14px;padding:14px 22px;border-radius:999px;cursor:pointer;font-family:inherit;}
+.back:hover{color:#fff;}
+.skip{background:none;border:none;color:var(--muted-dim);font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit;}
+.err{color:#ff8a8a;font-size:13px;min-height:18px;margin-top:10px;}
+.done{text-align:center;padding:30px 6px;}
+.done .tick{width:64px;height:64px;border-radius:50%;background:rgba(155,77,255,.2);border:1px solid #9B4DFF;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.done .tick svg{width:30px;height:30px;stroke:#c9a8ff;}
+</style>
+</head>
+<body>
+
+<div id="authGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);">
+  <span style="width:16px;height:16px;border:2px solid var(--line);border-top-color:#9B4DFF;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span>
+  Chargement…
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+
+<div id="content" style="display:none;">
+  <div class="wrap">
+    <div class="top">
+      <a href="dashboard.html" class="wordmark" aria-label="RESTUP">REST<span class="up">UP</span></a>
+      <span class="saved" id="savedState"></span>
+    </div>
+    <div class="track"><div class="fill" id="fill" style="width:0%"></div></div>
+    <div class="steplabel" id="stepLabel"></div>
+    <form id="form" novalidate onsubmit="return false"><div id="steps"></div>
+      <div class="err" id="err" role="alert"></div>
+      <div class="nav">
+        <button type="button" class="back" id="backBtn" style="visibility:hidden;">← Retour</button>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button type="button" class="skip" id="skipBtn" style="display:none;">Passer</button>
+          <button type="button" class="btn-primary" id="nextBtn">Continuer →</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../script.js"></script>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+// Entonnoir : du général (qui es-tu, comment ça va) vers le précis (ce qui pèse, objectifs), chiffres optionnels en fin.
+const FUNNEL = [
+  { title: 'Faisons connaissance', lead: 'Quelques questions pour comprendre ta situation. Il n\'y a pas de bonne réponse.', qs: [
+    { id: 'first_name', type: 'text', label: 'Ton prénom', req: true, auto: 'given-name' },
+    { id: 'company', type: 'text', label: 'Le nom de ton établissement', req: true, auto: 'organization' },
+    { id: 'city', type: 'text', label: 'Dans quelle ville ?', req: true },
+    { id: 'kind', type: 'choice', label: 'Quel type d\'établissement ?', req: true, options: ['Restaurant', 'Brasserie / bistrot', 'Gastronomique', 'Restauration rapide', 'Bar', 'Traiteur / food truck', 'Autre'] },
+    { id: 'age', type: 'choice', label: 'Depuis combien de temps est-il ouvert ?', req: true, options: ['Moins d\'un an', '1 à 3 ans', '3 à 10 ans', 'Plus de 10 ans'] },
+  ] },
+  { title: 'Ton quotidien', lead: 'Pour voir comment tu travailles aujourd\'hui.', qs: [
+    { id: 'role', type: 'choice', label: 'Quel est ton rôle ?', req: true, options: ['Propriétaire, sur place', 'Propriétaire, peu présent', 'Gérant', 'Autre'] },
+    { id: 'team', type: 'choice', label: 'Combien de personnes dans l\'équipe (toi compris) ?', req: true, options: ['Seul', '2 à 5', '6 à 10', '11 à 20', 'Plus de 20'] },
+    { id: 'hours', type: 'choice', label: 'Combien d\'heures travailles-tu par semaine ?', req: true, options: ['Moins de 40 h', '40 à 55 h', '55 à 70 h', 'Plus de 70 h'] },
+  ] },
+  { title: 'Comment ça va, vraiment ?', lead: 'Sois honnête, c\'est ce qui rend l\'accompagnement utile.', qs: [
+    { id: 'situation', type: 'scale', label: 'Comment décrirais-tu la situation de ton établissement aujourd\'hui ?', req: true, lo: 'En difficulté', hi: 'Ça roule' },
+    { id: 'energy', type: 'scale', label: 'Et toi, comment te sens-tu en ce moment ?', req: true, lo: 'Épuisé', hi: 'Serein' },
+    { id: 'why_now', type: 'text-long', label: 'Qu\'est-ce qui t\'a donné envie d\'être accompagné maintenant ?', req: true },
+  ] },
+  { title: 'Ce qui te pèse le plus', lead: 'Choisis jusqu\'à trois sujets, puis dis-le avec tes mots.', qs: [
+    { id: 'themes', type: 'multi', max: 3, label: 'Qu\'est-ce qui te préoccupe le plus ?', req: true, options: ['Rentabilité / marge', 'Charges trop élevées', 'Remplir la salle', 'Équipe (recrutement, turnover)', 'Organisation / manque de temps', 'Trésorerie', 'Visibilité / image', 'Fidéliser les clients', 'Régularité / qualité', 'Autre'] },
+    { id: 'problem', type: 'text-long', label: 'Décris ta principale difficulté avec tes mots', hint: 'Un exemple concret vaut mieux qu\'une longue explication.', req: true },
+  ] },
+  { title: 'Depuis quand, et qu\'as-tu tenté ?', lead: 'Pour ne pas te proposer ce qui a déjà été essayé.', qs: [
+    { id: 'since', type: 'choice', label: 'Ça dure depuis…', req: true, options: ['Quelques semaines', 'Quelques mois', 'Plus d\'un an', 'Depuis toujours'] },
+    { id: 'tried', type: 'text-long', label: 'Qu\'as-tu déjà essayé pour améliorer les choses ?', req: false },
+    { id: 'tried_result', type: 'choice', label: 'Résultat', req: false, options: ['Rien n\'a changé', 'Un peu mieux', 'Ça marche, mais pas assez'] },
+  ] },
+  { title: 'Là où tu veux aller', lead: 'On construira le plan à partir de là.', qs: [
+    { id: 'goal_4m', type: 'text-long', label: 'D\'ici 4 mois, qu\'aimerais-tu avoir changé ?', req: true },
+    { id: 'goal_12m', type: 'text-long', label: 'Et dans 12 mois, où veux-tu en être ?', req: true },
+    { id: 'success', type: 'text-long', label: 'À quoi verras-tu que ça fonctionne ?', req: false },
+  ] },
+  { title: 'Un premier repère chiffré', lead: 'Facultatif : des ordres de grandeur suffisent. On les affinera ensemble pendant l\'audit.', optional: true, qs: [
+    { id: 'revenue_month', type: 'number', label: 'Ton chiffre d\'affaires mensuel, à peu près (€)', req: false },
+    { id: 'margin_feel', type: 'choice', label: 'Ta marge, tu dirais qu\'elle est…', req: false, options: ['Je ne sais pas', 'Faible', 'Correcte', 'Bonne'] },
+    { id: 'tracks', type: 'choice', label: 'Comment suis-tu tes chiffres ?', req: false, options: ['Je ne les suis pas', 'De tête', 'Tableur', 'Logiciel'] },
+  ] },
+  { title: 'Pour bien travailler ensemble', lead: 'Dernière étape.', qs: [
+    { id: 'phone', type: 'tel', label: 'Ton numéro (WhatsApp si possible)', req: true, auto: 'tel' },
+    { id: 'channel', type: 'choice', label: 'Comment préfères-tu qu\'on échange ?', req: true, options: ['WhatsApp', 'Appel', 'Email'] },
+    { id: 'best_time', type: 'choice', label: 'Quel moment te convient le mieux pour un appel ?', req: true, options: ['Matin', 'Entre deux services', 'Après le service', 'Soir'] },
+    { id: 'constraints', type: 'text-long', label: 'Une contrainte dont on doit tenir compte ?', req: false },
+  ] },
+];
+
+(async function () {
+  const user = await restupRequireClient();
+  if (!user) return;
+  const draftKey = 'restup_onboarding_v2_' + user.id;
+
+  const { data: prof } = await supabaseClient.from('profiles').select('access_granted, onboarding_status, onboarding, company_name, first_name, phone').eq('id', user.id).maybeSingle();
+  if (!user._preview && (!prof || prof.access_granted === false)) {
+    document.getElementById('authGate').innerHTML = '<div style="text-align:center;max-width:380px;padding:24px;"><h2 style="color:#fff;margin-bottom:8px;">Ton accès n\'est pas encore activé</h2><p style="color:var(--muted);font-size:14px;">RestUp fonctionne sur invitation. Contacte ton coach pour recevoir ton lien d\'accès.</p><p style="margin-top:16px;"><a href="#" id="out" style="color:#c9a8ff;font-weight:700;">Se déconnecter</a></p></div>';
+    document.getElementById('out').addEventListener('click', async (e) => { e.preventDefault(); await supabaseClient.auth.signOut(); window.location.href = 'login.html'; });
+    return;
+  }
+  if (!user._preview && prof.onboarding_status === 'completed' && !new URLSearchParams(location.search).has('edit')) { window.location.href = 'dashboard.html'; return; }
+
+  // Réponses : brouillon serveur / local le plus récent, sinon pré-remplissage depuis l'invitation.
+  const ans = {};
+  const server = prof && prof.onboarding && prof.onboarding.v === 2 ? prof.onboarding : null;
+  let local = null; try { local = JSON.parse(localStorage.getItem(draftKey) || 'null'); } catch (e) {}
+  const pick = (server && local) ? (new Date(local.savedAt) > new Date(server.savedAt || 0) ? local : server) : (server || local);
+  if (pick && pick.answers) Object.assign(ans, pick.answers);
+  if (!ans.first_name && prof && prof.first_name) ans.first_name = prof.first_name;
+  if (!ans.company) ans.company = (prof && prof.company_name) || user.user_metadata?.company_name || '';
+  if (!ans.phone && prof && prof.phone) ans.phone = prof.phone;
+
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+
+  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const stepsEl = document.getElementById('steps');
+
+  function qHtml(q) {
+    const v = ans[q.id];
+    const head = `<label${['choice', 'multi', 'scale'].includes(q.type) ? ' class="ql"' : ` for="q_${q.id}"`}>${esc(q.label)}${q.req ? '' : ' <span style="color:var(--muted-dim);font-weight:500;">(facultatif)</span>'}</label>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}`;
+    if (q.type === 'text' || q.type === 'tel' || q.type === 'number') {
+      const t = q.type === 'text' ? 'text' : q.type;
+      return `<div class="q" data-q="${q.id}">${head}<input id="q_${q.id}" type="${t}" ${q.type === 'number' ? 'inputmode="numeric" min="0"' : ''} ${q.type === 'tel' ? 'inputmode="tel"' : ''} autocomplete="${q.auto || 'off'}" value="${esc(v == null ? '' : v)}"></div>`;
+    }
+    if (q.type === 'text-long') return `<div class="q" data-q="${q.id}">${head}<textarea id="q_${q.id}">${esc(v || '')}</textarea></div>`;
+    if (q.type === 'choice') return `<div class="q" data-q="${q.id}">${head}<div class="chips">${q.options.map(o => `<button type="button" class="chip${v === o ? ' on' : ''}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+    if (q.type === 'multi') { const arr = Array.isArray(v) ? v : []; return `<div class="q" data-q="${q.id}">${head}<div class="chips">${q.options.map(o => `<button type="button" class="chip${arr.includes(o) ? ' on' : ''}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`; }
+    if (q.type === 'scale') return `<div class="q" data-q="${q.id}">${head}<div class="scale">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="chip${Number(v) === n ? ' on' : ''}" data-v="${n}">${n}</button>`).join('')}</div><div class="scale-legend"><span>${esc(q.lo)}</span><span>${esc(q.hi)}</span></div></div>`;
+    return '';
+  }
+  stepsEl.innerHTML = FUNNEL.map((s, i) => `<section class="step" data-step="${i}"><h1>${esc(s.title)}</h1><p class="lead">${esc(s.lead)}</p>${s.qs.map(qHtml).join('')}</section>`).join('') +
+    `<section class="step" data-step="${FUNNEL.length}"><div class="done"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div><h1>Merci, c'est noté</h1><p class="lead">Ton coach relit tes réponses avant votre premier rendez-vous : tu n'auras rien à répéter.</p><a class="btn-primary" href="dashboard.html">Accéder à mon espace</a></div></section>`;
+
+  // Lecture / écriture des réponses
+  function readStep(i) {
+    FUNNEL[i].qs.forEach(q => {
+      const el = stepsEl.querySelector(`.q[data-q="${q.id}"]`);
+      if (['text', 'tel', 'text-long'].includes(q.type)) ans[q.id] = el.querySelector('input,textarea').value.trim();
+      else if (q.type === 'number') { const n = el.querySelector('input').value.trim(); ans[q.id] = n === '' ? '' : Number(n); }
+    });
+  }
+  stepsEl.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip'); if (!chip) return;
+    const qEl = chip.closest('.q'); const id = qEl.dataset.q;
+    const q = FUNNEL.flatMap(s => s.qs).find(x => x.id === id);
+    const v = chip.dataset.v;
+    if (q.type === 'multi') {
+      const arr = Array.isArray(ans[id]) ? ans[id].slice() : [];
+      const k = arr.indexOf(v);
+      if (k >= 0) arr.splice(k, 1); else if (arr.length < (q.max || 99)) arr.push(v); else { showErr('Choisis trois sujets au maximum.'); return; }
+      ans[id] = arr; chip.classList.toggle('on', arr.includes(v));
+    } else {
+      ans[id] = q.type === 'scale' ? Number(v) : v;
+      qEl.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === chip));
+    }
+    showErr(''); scheduleSave();
+  });
+  stepsEl.addEventListener('input', () => { readStep(cur); scheduleSave(); });
+
+  // Sauvegarde automatique : locale immédiate, serveur en différé. Ne bloque jamais la saisie.
+  const savedState = document.getElementById('savedState');
+  let timer = null, lastSnap = '';
+  function payload() { return { v: 2, company: ans.company || '', answers: ans, savedAt: new Date().toISOString() }; }
+  function scheduleSave() { savedState.textContent = ''; clearTimeout(timer); timer = setTimeout(saveDraft, 900); }
+  async function saveDraft() {
+    const p = payload();
+    try { localStorage.setItem(draftKey, JSON.stringify(p)); } catch (e) {}
+    if (user._preview) return;
+    const snap = JSON.stringify(p.answers); if (snap === lastSnap) return; lastSnap = snap;
+    const { error } = await supabaseClient.rpc('restup_save_onboarding', { answers: p, complete: false });
+    savedState.textContent = error ? 'Non synchronisé (réessai automatique)' : 'Enregistré ✔';
+    if (error) lastSnap = '';
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { readStep(Math.min(cur, FUNNEL.length - 1)); saveDraft(); } });
+
+  // Navigation
+  const err = document.getElementById('err');
+  const showErr = (m) => { err.textContent = m || ''; };
+  const nextBtn = document.getElementById('nextBtn'), backBtn = document.getElementById('backBtn'), skipBtn = document.getElementById('skipBtn');
+  let cur = 0;
+  function show(i) {
+    cur = i;
+    stepsEl.querySelectorAll('.step').forEach(s => s.classList.toggle('active', s.dataset.step === String(i)));
+    const isDone = i >= FUNNEL.length;
+    document.getElementById('fill').style.width = Math.round(((isDone ? FUNNEL.length : i) / FUNNEL.length) * 100) + '%';
+    document.getElementById('stepLabel').textContent = isDone ? '' : `Étape ${i + 1} sur ${FUNNEL.length}`;
+    backBtn.style.visibility = (i === 0 || isDone) ? 'hidden' : 'visible';
+    skipBtn.style.display = (!isDone && FUNNEL[i].optional) ? 'inline' : 'none';
+    document.querySelector('.nav').style.display = isDone ? 'none' : 'flex';
+    nextBtn.textContent = i === FUNNEL.length - 1 ? 'Terminer' : 'Continuer →';
+    showErr(''); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function valid(i) {
+    readStep(i);
+    for (const q of FUNNEL[i].qs) {
+      if (!q.req) continue;
+      const v = ans[q.id];
+      if (v == null || v === '' || (Array.isArray(v) && !v.length)) { showErr('Merci de répondre à : « ' + q.label + ' »'); return false; }
+    }
+    return true;
+  }
+  let finishing = false;
+  async function finish() {
+    if (finishing) return;   // anti double-submit
+    finishing = true; nextBtn.disabled = true; nextBtn.textContent = 'Envoi…';
+    const p = payload();
+    try { localStorage.setItem(draftKey, JSON.stringify(p)); } catch (e) {}
+    if (!user._preview) {
+      const { error } = await supabaseClient.rpc('restup_save_onboarding', { answers: p, complete: true });
+      if (error) { finishing = false; nextBtn.disabled = false; nextBtn.textContent = 'Terminer'; showErr('Envoi impossible pour le moment. Tes réponses sont conservées : réessaie dans un instant.'); return; }
+    }
+    try { localStorage.removeItem(draftKey); } catch (e) {}
+    show(FUNNEL.length);
+  }
+  nextBtn.addEventListener('click', () => { if (!valid(cur)) return; saveDraft(); if (cur === FUNNEL.length - 1) finish(); else show(cur + 1); });
+  skipBtn.addEventListener('click', () => { readStep(cur); saveDraft(); show(cur + 1); });
+  backBtn.addEventListener('click', () => { readStep(cur); if (cur > 0) show(cur - 1); });
+
+  // Reprise : premier écran incomplet
+  let start = 0;
+  for (let i = 0; i < FUNNEL.length; i++) { const ok = FUNNEL[i].qs.every(q => !q.req || (ans[q.id] != null && ans[q.id] !== '' && !(Array.isArray(ans[q.id]) && !ans[q.id].length))); if (ok) start = i + 1; else break; }
+  show(Math.min(start, FUNNEL.length - 1));
+})();
+</script>
+</body>
+</html>
