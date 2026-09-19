@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<link rel="icon" type="image/png" href="assets/logo-restup-wordmark.png">
+<link rel="icon" type="image/png" href="portail/icon-192.png">
 <title>Le Livre du Restaurateur — RestUp</title>
 <meta name="description" content="10 domaines, 100 situations réelles de restaurateurs, chacune avec un diagnostic et un plan d'action clair. Le livre qui grandit avec chaque restaurant accompagné.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
 .chapter-nav a:hover{color:#fff;border-color:var(--lime);}
 
 .chapter{scroll-margin-top:90px;max-width:1000px;margin:0 auto 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:22px 26px;box-shadow:var(--shadow);transition:border-color .2s;}
-.chapter.open{border-color:rgba(34,197,94,.35);}
+.chapter.open{border-color:rgba(155,77,255,.35);}
 .chapter-head{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;}
 .chapter-num{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--lime-dim);color:var(--lime);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
 .chapter-head h2{font-size:clamp(17px,2.2vw,21px);color:#fff;}
@@ -41,7 +41,7 @@
 
 .situation-grid{display:flex;flex-direction:column;gap:10px;}
 .situation-item{background:var(--ink);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;transition:border-color .2s;}
-.situation-item.open{border-color:rgba(34,197,94,.4);}
+.situation-item.open{border-color:rgba(155,77,255,.4);}
 .situation-q{display:flex;align-items:center;gap:14px;padding:15px 18px;cursor:pointer;user-select:none;}
 .situation-q .sit-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:var(--muted-dim);}
 .situation-q .sit-head{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;row-gap:2px;}
@@ -61,15 +61,21 @@
 .book-cta{max-width:1000px;margin:36px auto 0;background:linear-gradient(120deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-xl);padding:36px 30px;text-align:center;}
 .book-cta h3{font-size:clamp(20px,2.8vw,28px);color:#fff;margin-bottom:12px;}
 .book-cta p{max-width:600px;margin:0 auto 22px;font-size:14.5px;}
-.book-cta .price-tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--lime-dim);border:1px solid rgba(34,197,94,.35);border-radius:999px;padding:8px 18px;margin-bottom:20px;}
+.book-cta .price-tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--lime-dim);border:1px solid rgba(155,77,255,.35);border-radius:999px;padding:8px 18px;margin-bottom:20px;}
 .book-cta .price-tag b{font-size:19px;font-weight:900;color:var(--lime);}
 .book-cta .price-tag span{font-size:12px;color:var(--muted);}
 </style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body class="immersive">
 <div class="nav-outer">
   <nav class="nav">
-    <a href="index.html" class="nav-logo"><img src="assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
     <div class="nav-links">
       <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
     </div>
@@ -1285,5 +1291,6 @@ document.querySelectorAll('#chapterNav a').forEach(link => {
   });
 })();
 </script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
 </body>
 </html>

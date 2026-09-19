@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<link rel="icon" type="image/png" href="assets/logo-restup-wordmark.png">
+<link rel="icon" type="image/png" href="portail/icon-192.png">
 <title>Réalisations — RestUp, l'accompagnement stratégique des restaurateurs</title>
 <meta name="description" content="Les réalisations concrètes de RestUp : transformations, inaugurations, vidéos UGC, analyses — 12 ans d'expérience au service d'enseignes comme Streat Burger, Pitaya, Crousty Game ou Chamas Tacos.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,12 +37,18 @@
 
 
 </style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
 <div class="nav-outer">
   <nav class="nav">
-    <a href="index.html" class="nav-logo"><img src="assets/logo-restup-wordmark.png" alt="RestUp" class="logo-wordmark"></a>
+    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
     <div class="nav-links">
       <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html" class="active">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
     </div>
@@ -122,5 +128,6 @@
 
 <footer>RestUp — Pilotez. Optimisez. Développez. · 12 ans d'expérience terrain</footer>
 <script src="script.js"></script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
 </body>
 </html>

@@ -66,6 +66,12 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 @media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:56px}}
 @media (prefers-reduced-motion:reduce){video,.from-depth,.glow,.rays{transition:none}}
 </style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 <a class="mark" href="index.html" aria-label="RESTUP, accueil">REST<span>UP</span></a>
@@ -83,6 +89,10 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 </main>
 <script>
 (function(){
+  // Appli installée : un client déjà connecté va directement dans son espace
+  try{ var app=(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true); var has=false;
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(/^sb-.*-auth-token$/.test(k)){has=true;break;}}
+    if(app&&has){location.replace('portail/login.html');return;} }catch(e){}
   var stage=document.getElementById('stage'), v=document.getElementById('v'), on=false;
   function arrive(){ if(on) return; on=true; stage.classList.add('arrived'); }
   // Le titre arrive du fond dès que les étiquettes sont bien proches de l'écran
@@ -94,5 +104,6 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
   setTimeout(arrive,9000);
 })();
 </script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
 </body>
 </html>

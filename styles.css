@@ -1,31 +1,31 @@
 :root{
   /* ---- palette ---- */
-  --bg:#F4F6EF;
-  --bg-2:#EAF0E2;
-  --surface:#FFFFFF;
-  --text:#172015;
-  --text-2:#566150;
-  --muted:#566150;       /* alias kept for existing components */
-  --muted-dim:#566150;   /* alias kept for existing components */
-  --lime:#C5F23B;
-  --lime-hover:#B5E329;
-  --lime-2:#B5E329;      /* alias kept for existing gradients */
-  --lime-dim:rgba(197,242,59,.22);
-  --green-deep:#365314;
-  --border:#DCE3D3;
-  --line:#DCE3D3;        /* alias kept for existing components */
-  --ink:#172015;         /* alias: dark text used on lime fills */
-  --text-strong:#172015; /* alias kept for existing components */
+  --bg:#0B0D0C;
+  --bg-2:#151515;
+  --surface:#151515;
+  --text:#FFFFFF;
+  --text-2:#C9CEC6;
+  --muted:#B7BDB4;       /* alias kept for existing components */
+  --muted-dim:#82887F;   /* alias kept for existing components */
+  --lime:#9B4DFF;
+  --lime-hover:#B37BFF;
+  --lime-2:#6d2fd0;      /* alias kept for existing gradients */
+  --lime-dim:rgba(155,77,255,.22);
+  --green-deep:#D2ADFF;
+  --border:#2B2E2A;
+  --line:#2B2E2A;        /* alias kept for existing components */
+  --ink:#FFFFFF;         /* alias: dark text used on lime fills */
+  --text-strong:#FFFFFF; /* alias kept for existing components */
   --surface-2:var(--bg-2);
 
   /* ---- shape & elevation ---- */
   --r-xl:24px; --r-lg:24px; --r-md:14px; --r-sm:10px;
   --radius-card:24px; --radius-pill:999px;
-  --shadow: 0 8px 32px rgba(23,32,21,.06);
-  --shadow-lime: 0 10px 24px -8px rgba(197,242,59,.55);
+  --shadow: 0 8px 32px rgba(0,0,0,.45);
+  --shadow-lime: 0 10px 24px -8px rgba(155,77,255,.6);
 
   /* ---- type ---- */
-  --font-heading:'Manrope', sans-serif;
+  --font-heading:'Anton','Manrope', sans-serif;
   --font-body:'Inter', sans-serif;
 
   /* ---- spacing scale ---- */
@@ -41,7 +41,7 @@ svg{stroke-width:1.75;}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px;}
 a{color:inherit;}
 
-h1,h2,h3{font-family:var(--font-heading),sans-serif;font-weight:800;color:var(--text);text-wrap:balance;}
+h1,h2,h3{font-family:var(--font-heading),sans-serif;font-weight:400;letter-spacing:.01em;color:var(--text);text-wrap:balance;}
 h1{font-size:clamp(2.25rem,1.1rem + 4.4vw,5.5rem);line-height:1.08;letter-spacing:-0.04em;max-width:20ch;}
 h2{font-size:clamp(1.875rem,1rem + 2.7vw,3.5rem);line-height:1.12;letter-spacing:-0.03em;max-width:22ch;}
 h3{font-weight:700;font-size:clamp(1.375rem,1.15rem + .7vw,1.875rem);line-height:1.2;letter-spacing:-0.01em;}
@@ -58,7 +58,7 @@ p.lead,.lead{text-wrap:pretty;max-width:60ch;}
 
 /* NAV — floating rounded bar */
 .nav-outer{position:sticky;top:16px;z-index:60;padding:0 20px;}
-.nav{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px;padding:10px 12px 10px 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:999px;box-shadow:var(--shadow);position:relative;}
+.nav{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px;padding:10px 12px 10px 20px;background:rgba(21,21,21,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:999px;box-shadow:var(--shadow);position:relative;}
 .nav-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;text-decoration:none;}
 .nav-logo svg{width:17px;height:17px;}
 .logo-img{width:24px;height:24px;border-radius:50%;object-fit:cover;flex:0 0 auto;}
@@ -171,3 +171,6 @@ body{animation:pageIn .4s ease both;}
 
 /* focus visibility (kept consistent everywhere, incl. skipped components above) */
 a:focus-visible,button:focus-visible{outline:2px solid var(--green-deep);outline-offset:2px;}
+
+.wm{font-family:'Anton',Impact,sans-serif;font-size:26px;letter-spacing:.01em;color:#fff;line-height:1;display:inline-block}
+.wm span{color:#B37BFF}
