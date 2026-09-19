@@ -27,7 +27,7 @@ html,body{overflow-x:clip}
 body{background:var(--bg);color:var(--t);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--safe-t);background:var(--bg);z-index:120;pointer-events:none}
 a{color:inherit;text-decoration:none}
-.disp{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.98}
+.disp{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.008em;line-height:1.14}
 .v{color:var(--v2)}
 section{position:relative}
 .wrap{width:min(1180px,100% - 44px);margin:0 auto}
@@ -73,7 +73,7 @@ section{position:relative}
 .hero .wrap{position:relative;z-index:3}
 .kick{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--v2);margin-bottom:22px}
 .kick::before{content:"";width:34px;height:2px;background:var(--v)}
-h1.big{font-size:clamp(50px,min(11vw,14.5vh),140px);margin-bottom:22px}
+h1.big{line-height:1.12;font-size:clamp(50px,min(11vw,14.5vh),140px);margin-bottom:22px}
 h1.big .ln{display:block}
 h1.big .ln>span{display:inline-block;opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.22,.8,.3,1)}
 h1.big.in .ln>span{opacity:1;transform:none}
@@ -103,7 +103,7 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
 .card{position:relative;background:linear-gradient(180deg,#15121d,#0c0a12);border:1px solid var(--line);border-radius:26px;padding:34px 30px 38px;overflow:hidden;transform-style:preserve-3d}
 .card::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 80% 0%,rgba(155,77,255,.22),transparent 70%);opacity:.8;pointer-events:none}
 .card svg.ic{width:70px;height:70px;margin-bottom:22px;stroke:var(--v2);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.card h3{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(26px,2.6vw,34px);text-transform:uppercase;line-height:1.04;margin-bottom:14px}
+.card h3{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(26px,2.6vw,34px);text-transform:uppercase;line-height:1.18;margin-bottom:14px}
 .card p{color:var(--m);font-size:15.5px}
 .sd path,.sd circle,.sd line,.sd polyline,.sd rect{stroke-dasharray:var(--l,260);stroke-dashoffset:var(--l,260);transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1) .25s}
 .in .sd path,.in .sd circle,.in .sd line,.in .sd polyline,.in .sd rect,.sd.in path,.sd.in circle,.sd.in line,.sd.in polyline,.sd.in rect{stroke-dashoffset:0}
@@ -149,7 +149,7 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
 @keyframes fl{50%{transform:translateY(-7px)}}
 .scr{height:100%;border-radius:28px;background:linear-gradient(180deg,#14111c,#0a0910);padding:16px 13px;overflow:hidden;display:flex;flex-direction:column;gap:9px;font-size:11px}
 .scr .k{font-size:8.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--v2)}
-.scr h5{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:17px;line-height:1.05}
+.scr h5{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:17px;line-height:1.2}
 .scr .box{background:#191622;border:1px solid var(--line);border-radius:14px;padding:11px}
 .scr .box.hot{border-color:rgba(155,77,255,.6);box-shadow:0 0 24px -6px rgba(155,77,255,.5)}
 .scr .box b{display:block;font-size:12.5px;line-height:1.25;margin:3px 0}
@@ -174,7 +174,7 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
 .sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .st{position:relative;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,2.4vw,34px) clamp(18px,2vw,28px) 26px;overflow:hidden;text-align:left}
 .st::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--v),var(--v3))}
-.st b{display:flex;align-items:baseline;gap:8px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(84px,9.2vw,150px);line-height:.95;color:#fff;letter-spacing:-.01em}
+.st b{display:flex;align-items:baseline;gap:8px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(84px,9.2vw,150px);line-height:1.05;color:#fff;letter-spacing:-.01em}
 .st b span{display:inline;font-size:inherit;color:inherit;margin:0}
 .st b small{font-size:.34em;color:var(--v2);text-transform:uppercase;letter-spacing:.02em}
 .st>span{display:block;color:var(--m);font-size:15px;line-height:1.45;margin-top:14px;max-width:24ch}
