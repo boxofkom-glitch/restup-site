@@ -40,11 +40,11 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
 .arrived .dim{opacity:.86}
 
 /* Téléphone (portrait) : mêmes étiquettes animées en direct, composées pour l'écran vertical (aucune vidéo à charger) */
-.fb{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden;transition:opacity 1.6s ease}
+.fb{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);pointer-events:none;display:none;overflow:hidden;transition:opacity 1.6s ease}
 .fallback .fb{display:block}
 .fallback .frame{display:none}
 .arrived .fb{opacity:.14}
-.fb i{position:absolute;left:50%;top:42%;font-style:normal;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+.fb i{position:absolute;left:50%;top:50%;font-style:normal;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
   font-size:clamp(11px,3vw,26px);padding:.7em 1.15em;border-radius:14px;color:#fff;rotate:var(--r,0deg);will-change:transform,opacity;
   background:linear-gradient(180deg,rgba(40,33,54,.94),rgba(18,15,26,.94));border:1px solid rgba(155,77,255,.3);box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 20px rgba(155,77,255,.2);
   opacity:0;transform:translate(-50%,-50%) scale(.2);animation:fly 4.2s cubic-bezier(.22,.7,.25,1) var(--d,0s) forwards}
@@ -53,15 +53,15 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
   100%{opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(1.18)}}
 
 .glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 2s ease .3s;
-  background:radial-gradient(50% 42% at 50% 46%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
+  background:radial-gradient(50% 42% at 50% 50%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
 .arrived .glow{opacity:1}
-.rays{position:absolute;left:50%;top:46%;width:130vmax;height:130vmax;margin:-65vmax 0 0 -65vmax;pointer-events:none;opacity:0;transition:opacity 2.2s ease .3s;
+.rays{position:absolute;left:50%;top:50%;width:130vmax;height:130vmax;margin:-65vmax 0 0 -65vmax;pointer-events:none;opacity:0;transition:opacity 2.2s ease .3s;
   background:repeating-conic-gradient(from 0deg,rgba(155,77,255,.15) 0 2deg,transparent 2deg 9deg);
   -webkit-mask-image:radial-gradient(closest-side,#000 0,transparent 62%);mask-image:radial-gradient(closest-side,#000 0,transparent 62%)}
 .arrived .rays{opacity:1}
 
 .hero{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:max(70px,env(safe-area-inset-top)) 22px max(64px,env(safe-area-inset-bottom));pointer-events:none}
+  padding:calc(env(safe-area-inset-top,0px) + 56px) 22px calc(env(safe-area-inset-bottom,0px) + 56px);pointer-events:none}
 .hero>*{pointer-events:auto}
 /* Arrivée : du fond de l'écran vers le premier plan (échelle + transparence, sans flou) */
 .from-depth{opacity:0;transform:scale(.3);will-change:transform,opacity;transition:opacity 1s ease,transform 1.7s cubic-bezier(.16,1,.3,1)}
@@ -84,7 +84,7 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 
 .mark{position:fixed;z-index:5;left:max(20px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));font-family:Anton,Impact,sans-serif;font-size:30px;letter-spacing:.01em;color:#fff;text-decoration:none;line-height:1}
 .mark span{color:#B37BFF}
-@media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:56px}}
+@media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:calc(env(safe-area-inset-top,0px) + 48px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 48px)}}
 @media (prefers-reduced-motion:reduce){.intro,video,.from-depth,.glow,.rays,.dim,.fb{transition:none}.fb i{animation:none;opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy))}}
 </style>
 </head>
@@ -98,17 +98,17 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
     </div>
     <div class="fb" id="fb">
       <i style="--dx:-24vw;--dy:-30vh;--r:-4deg;--d:0s">Fournisseurs</i>
-      <i style="--dx:20vw;--dy:-27vh;--r:3deg;--d:.12s">Marge trop faible</i>
-      <i style="--dx:-27vw;--dy:-14vh;--r:-2deg;--d:.24s">Trésorerie</i>
-      <i style="--dx:26vw;--dy:-13vh;--r:4deg;--d:.1s">Recrutement</i>
-      <i style="--dx:-18vw;--dy:-2vh;--r:-5deg;--d:.3s">Service</i>
-      <i style="--dx:22vw;--dy:3vh;--r:3deg;--d:.18s">Équipe</i>
-      <i style="--dx:-27vw;--dy:11vh;--r:2deg;--d:.36s">Stocks</i>
-      <i style="--dx:24vw;--dy:16vh;--r:-4deg;--d:.06s">Planning</i>
-      <i style="--dx:-14vw;--dy:22vh;--r:3deg;--d:.28s">Coûts qui explosent</i>
-      <i style="--dx:28vw;--dy:28vh;--r:-3deg;--d:.4s">Absences</i>
-      <i style="--dx:-24vw;--dy:32vh;--r:-2deg;--d:.16s">Pression</i>
-      <i style="--dx:12vw;--dy:35vh;--r:2deg;--d:.34s">Trop de tâches</i>
+      <i style="--dx:20vw;--dy:-30vh;--r:3deg;--d:0.12s">Marge trop faible</i>
+      <i style="--dx:-27vw;--dy:-18vh;--r:-2deg;--d:0.24s">Trésorerie</i>
+      <i style="--dx:26vw;--dy:-18vh;--r:4deg;--d:0.1s">Recrutement</i>
+      <i style="--dx:-18vw;--dy:-6vh;--r:-5deg;--d:0.3s">Service</i>
+      <i style="--dx:22vw;--dy:-6vh;--r:3deg;--d:0.18s">Équipe</i>
+      <i style="--dx:-27vw;--dy:6vh;--r:2deg;--d:0.36s">Stocks</i>
+      <i style="--dx:24vw;--dy:6vh;--r:-4deg;--d:0.06s">Planning</i>
+      <i style="--dx:-16vw;--dy:18vh;--r:3deg;--d:0.28s">Coûts qui explosent</i>
+      <i style="--dx:26vw;--dy:18vh;--r:-3deg;--d:0.4s">Absences</i>
+      <i style="--dx:-22vw;--dy:30vh;--r:-2deg;--d:0.16s">Pression</i>
+      <i style="--dx:14vw;--dy:30vh;--r:2deg;--d:0.34s">Trop de tâches</i>
     </div>
     <div class="dim"></div>
   </div>
