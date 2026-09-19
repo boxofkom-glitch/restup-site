@@ -282,3 +282,17 @@ document.addEventListener("DOMContentLoaded", function () {
   s.textContent = "body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0B0D0C;z-index:59;pointer-events:none}";
   document.head.appendChild(s);
 })();
+
+// ---- Menu mobile : un clic dans le vide (ou Échap) referme le menu ----
+(function () {
+  const s = document.createElement("style");
+  s.textContent = "@media (max-width:900px){body.nav-open::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:75;-webkit-tap-highlight-color:transparent}}";
+  document.head.appendChild(s);
+  const close = () => document.body.classList.remove("nav-open");
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("nav-open")) return;
+    if (e.target.closest && e.target.closest(".sidebar, #mobileNavToggle, #bnMore, #cbnMore")) return;
+    close();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+})();
