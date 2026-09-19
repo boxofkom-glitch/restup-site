@@ -83,6 +83,34 @@ async function restupStaffBar(me) {
     <button type="button" class="sb-out" id="staffLogout"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Déconnexion</button>`;
   const host = document.querySelector(".main") || document.body;
   host.insertBefore(bar, host.firstChild);
+
+  // Navigation basse (mobile) : 4 destinations + « Plus » qui ouvre le menu complet.
+  const inAdmin = location.pathname.includes("/admin/");
+  const base = inAdmin ? "" : "admin/";
+  const here = location.pathname.split("/").pop();
+  const ico = (d) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const items = [
+    ["index.html", "Clients", ico('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>')],
+    ["suivi.html", "Aujourd'hui", ico('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>')],
+    ["agenda.html", "Agenda", ico('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>')],
+    ["messages.html", "Messages", ico('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')],
+  ];
+  const nav = document.createElement("nav");
+  nav.id = "staffBottomNav";
+  nav.innerHTML = items.map(([h, l, i]) => `<a href="${base + h}" class="${here === h ? "on" : ""}">${i}<span>${l}</span></a>`).join("")
+    + `<button type="button" id="bnMore">${ico('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')}<span>Plus</span></button>`;
+  document.body.appendChild(nav);
+  const bs = document.createElement("style");
+  bs.textContent = `#staffBottomNav{display:none;}
+    @media (max-width:900px){
+      #staffBottomNav{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;background:rgba(11,13,12,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line,#2B2E2A);padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+      #staffBottomNav a,#staffBottomNav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:#9aa09a;text-decoration:none;background:none;border:0;font-size:10.5px;font-weight:700;line-height:1.1;font-family:inherit;cursor:pointer;border-radius:12px;}
+      #staffBottomNav a.on{color:#fff;background:rgba(155,77,255,.22);}
+      #staffBottomNav a.on svg{color:#B37BFF;}
+      body{padding-bottom:76px;}
+    }`;
+  document.head.appendChild(bs);
+  document.getElementById("bnMore").addEventListener("click", () => { const t = document.getElementById("mobileNavToggle"); if (t) t.click(); });
   document.getElementById("staffLogout").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
     window.location.href = "/portail/login.html";
@@ -156,4 +184,14 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       if (a.classList.contains("wordmark")) a.href = "/portail/login.html"; else a.style.display = "none";
     });
   });
+})();
+
+// ---- Bouton menu mobile : bien visible (violet plein + libellé), sur toutes les pages ----
+(function () {
+  const s = document.createElement("style");
+  s.textContent = `.mobile-nav-toggle{width:auto !important;height:44px !important;padding:0 16px 0 14px !important;gap:8px;border-radius:999px !important;border:0 !important;color:#fff !important;background:linear-gradient(135deg,#9B4DFF,#6d2fd0) !important;box-shadow:0 4px 16px rgba(155,77,255,.45);font-weight:800;font-size:13px;letter-spacing:.3px;}
+  .mobile-nav-toggle::after{content:"Menu";font-family:inherit;font-weight:800;font-size:13px;}
+  .mobile-nav-toggle svg{width:22px !important;height:22px !important;stroke-width:2.6 !important;}
+  .mobile-nav-toggle:active{transform:scale(.96);}`;
+  document.head.appendChild(s);
 })();

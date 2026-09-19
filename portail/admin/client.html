@@ -397,7 +397,7 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js?v=5"></script>
+<script src="../supabase-client.js?v=6"></script>
 <script src="../audit-engine.js?v=3"></script>
 <script src="mock-clients.js?v=3"></script>
 <script>
@@ -817,6 +817,7 @@ body{overflow-x:hidden;}
       <div class="status-row">
         <span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon — non visible par le client' : 'Publié — visible par le client'}</span>
         <button type="button" class="btn-primary magnetic" id="togglePublishAudit" style="padding:9px 18px;">${isDraft ? 'Publier au client' : 'Repasser en brouillon'}</button>
+        <button type="button" class="btn-danger" id="resetAuditBtn">↺ Réinitialiser l'audit</button>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
         <button type="button" class="doc-jump" id="jumpToPlan">Voir le plan d'action →</button>
@@ -859,6 +860,18 @@ body{overflow-x:hidden;}
       if (error) return;
       await logEvent(isDraft ? 'audit.published' : 'audit.unpublished', {});
       if (window.toast) toast(isDraft ? 'Audit validé et publié au client' : 'Audit repassé en brouillon', 'ok');
+      await loadAudit();
+      renderAuditTab();
+    });
+    document.getElementById('resetAuditBtn').addEventListener('click', async () => {
+      if (!confirm("Réinitialiser l'audit ? Le contenu actuel (et la première priorité) sera retiré et le client ne le verra plus ; une copie reste dans l'historique du dossier. Tu pourras en regénérer un depuis tes notes.")) return;
+      if (isUuid(clientId)) {
+        const { error } = await supabaseClient.from('audits').delete().eq('user_id', clientId);
+        if (error) { if (window.toast) toast('Réinitialisation impossible : ' + error.message, 'error'); return; }
+      } else { try { const all = JSON.parse(localStorage.getItem('restup_local_audits') || '{}'); delete all[clientId]; localStorage.setItem('restup_local_audits', JSON.stringify(all)); } catch (e) {} }
+      await logEvent('audit.reset', { snapshot: a });
+      if (window.toast) toast('Audit réinitialisé', 'ok');
+      auditRow = null;
       await loadAudit();
       renderAuditTab();
     });
@@ -1380,9 +1393,22 @@ body{overflow-x:hidden;}
       <div class="status-row">
         <span class="paid-tag ${isDraft ? 'no' : 'yes'}">${isDraft ? 'Brouillon — non visible par le client' : 'Publié — visible par le client'}</span>
         <button type="button" class="btn-primary magnetic" id="togglePublishPlan" style="padding:9px 18px;">${isDraft ? 'Publier au client' : 'Repasser en brouillon'}</button>
+        <button type="button" class="btn-danger" id="resetPlanBtn">↺ Réinitialiser le plan</button>
       </div>
       ${planData.source_prompt ? `<div class="journey-mini" style="border-color:rgba(155,77,255,.3);"><h5>📝 Notes / transcription utilisées pour générer ce brouillon</h5><p style="white-space:pre-wrap;">${esc(planData.source_prompt)}</p></div>` : ''}
     `;
+    document.getElementById('resetPlanBtn').addEventListener('click', async () => {
+      if (!confirm("Réinitialiser le plan ? Le plan actuel sera retiré et le client ne le verra plus ; une copie reste dans l'historique du dossier. Tu pourras en regénérer un depuis l'audit ou repartir d'une structure vierge.")) return;
+      if (isUuid(clientId)) {
+        const { error } = await supabaseClient.from('plans').delete().eq('user_id', clientId);
+        if (error) { if (window.toast) toast('Réinitialisation impossible : ' + error.message, 'error'); return; }
+      } else { try { const all = JSON.parse(localStorage.getItem('restup_local_plans') || '{}'); delete all[clientId]; localStorage.setItem('restup_local_plans', JSON.stringify(all)); } catch (e) {} }
+      await logEvent('plan.reset', { snapshot: planData });
+      if (window.toast) toast('Plan réinitialisé', 'ok');
+      planData = null;
+      await loadPlan();
+      renderPlanEditor();
+    });
     document.getElementById('togglePublishPlan').addEventListener('click', async () => {
       planData.status = isDraft ? 'published' : 'draft';
       await savePlan(true);
