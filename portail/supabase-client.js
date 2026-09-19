@@ -251,3 +251,10 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("click", () => setTimeout(sync, 60));
   sync();
 });
+
+// ---- Mode appli : bande unie sous la barre d'état iPhone (rien ne défile derrière l'heure / la batterie) ----
+(function () {
+  const s = document.createElement("style");
+  s.textContent = "body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0B0D0C;z-index:59;pointer-events:none}";
+  document.head.appendChild(s);
+})();

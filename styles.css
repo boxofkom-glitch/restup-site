@@ -174,3 +174,6 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--green-deep);outline
 
 .wm{font-family:'Anton',Impact,sans-serif;font-size:26px;letter-spacing:-.01em;color:#fff;line-height:1;display:inline-block}
 .wm span{color:#B37BFF}
+
+/* Mode appli : la zone de la barre d'état reste unie (rien ne défile derrière l'heure et la batterie) */
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0B0D0C;z-index:59;pointer-events:none}
