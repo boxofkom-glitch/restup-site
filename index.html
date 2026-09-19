@@ -77,7 +77,7 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 <a class="mark" href="index.html" aria-label="RESTUP, accueil">REST<span>UP</span></a>
 <main class="stage" id="stage">
   <div class="frame">
-    <video id="v" autoplay muted playsinline preload="auto" aria-hidden="true"><source src="assets/video/intro-tags.mp4" type="video/mp4"></video>
+    <video id="v" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny" tabindex="-1" aria-hidden="true"><source src="assets/video/intro-tags.mp4" type="video/mp4"></video>
   </div>
   <div class="glow"></div><div class="rays"></div>
   <div class="hero">
@@ -95,13 +95,24 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
     if(app&&has){location.replace('portail/login.html');return;} }catch(e){}
   var stage=document.getElementById('stage'), v=document.getElementById('v'), on=false;
   function arrive(){ if(on) return; on=true; stage.classList.add('arrived'); }
+  // Lancement automatique et fiable : muet obligatoire pour que les navigateurs autorisent la lecture sans clic
+  v.muted=true; v.defaultMuted=true; v.setAttribute('muted',''); v.playsInline=true;
+  var started=false;
+  function tryPlay(){ if(started) return; var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
+  v.addEventListener('playing',function(){started=true;});
+  ['loadedmetadata','loadeddata','canplay','canplaythrough'].forEach(function(e){v.addEventListener(e,tryPlay);});
+  tryPlay();
+  // Certains navigateurs (économie d'énergie) attendent un premier geste : le moindre contact lance la vidéo
+  ['touchstart','pointerdown','keydown','scroll','click'].forEach(function(e){window.addEventListener(e,tryPlay,{passive:true,once:true});});
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) tryPlay(); });
+  window.addEventListener('pageshow',tryPlay);
   // Le titre arrive du fond dès que les étiquettes sont bien proches de l'écran
   function watch(){ if(on) return; if(v.ended || (v.currentTime||0)>=4.6) arrive(); else requestAnimationFrame(watch); }
-  v.addEventListener('play',function(){requestAnimationFrame(watch)});
+  v.addEventListener('playing',function(){requestAnimationFrame(watch)});
   v.addEventListener('ended',arrive);
-  // Lecture impossible (économie d'énergie, chargement lent) : le titre arrive quand même
-  setTimeout(function(){ if(!on && (v.paused || (v.currentTime||0)<0.3)) arrive(); },3500);
-  setTimeout(arrive,9000);
+  // Vidéo vraiment impossible à lire (ou réseau très lent) : le titre arrive quand même
+  setTimeout(function(){ if(!on && !started) arrive(); },8000);
+  setTimeout(function(){ if(!on && (v.currentTime||0)<0.3) arrive(); },14000);
 })();
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
