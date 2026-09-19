@@ -204,6 +204,22 @@ body{overflow-x:hidden;}
 .call-row:last-child{margin-bottom:0;}
 .call-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
 .call-row select{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;color:#fff;font-family:inherit;font-size:13px;}
+
+/* Mobile : dossier compact (l'en-tête ne mange plus l'écran), onglets sur une seule ligne */
+@media (max-width:900px){
+  .main{display:block !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}
+  .main>.admin-main{overflow:visible !important;flex:none !important;padding:10px 14px calc(88px + env(safe-area-inset-bottom,0px)) !important}
+  .admin-topbar{padding:6px 14px !important;min-height:0 !important}
+  .admin-topbar .client-email,.admin-topbar #logoutBtn{display:none !important}
+  .client-hero{padding:8px 14px !important;gap:8px !important;flex-wrap:wrap !important;margin:0 !important}
+  .client-hero .client-avatar{width:42px !important;height:42px !important;font-size:15px !important;border-radius:12px !important}
+  .client-hero-name{font-size:18px !important}
+  .client-hero .btn-primary,.client-hero .btn-secondary{min-height:38px !important;padding:0 14px !important;font-size:12.5px !important}
+  .chrono-card{display:none !important}
+  .tab-nav{position:sticky;top:calc(50px + env(safe-area-inset-top,0px));z-index:40;background:#0B0D0C;flex-wrap:nowrap !important;overflow-x:auto;padding:8px 14px !important;margin:0 !important;gap:8px;scrollbar-width:none}
+  .tab-nav::-webkit-scrollbar{display:none}
+  .tab-nav .tab-btn{flex:0 0 auto;white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -401,7 +417,7 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js?v=10"></script>
+<script src="../supabase-client.js?v=12"></script>
 <script src="../audit-engine.js?v=3"></script>
 <script src="copilot.js?v=1"></script>
 <script src="mock-clients.js?v=3"></script>
@@ -461,7 +477,7 @@ body{overflow-x:hidden;}
   function switchTab(name) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); const am = document.querySelector('.main > .admin-main'); if (am) am.scrollTo({ top: 0 });
     if (name === 'copilot' && !window.__cpMounted && window.restupCopilot && window.__cpCtx) { window.__cpMounted = true; window.restupCopilot(window.__cpCtx); }
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {

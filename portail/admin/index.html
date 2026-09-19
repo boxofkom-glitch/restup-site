@@ -107,6 +107,18 @@ body{overflow-x:hidden;}
   .client-table td[data-label]::before{content:attr(data-label);color:var(--muted-dim);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
   .client-table td.hide-m{display:none;}
   .client-table td:first-child{padding-bottom:8px;}
+  /* Liste compacte : une ligne par client, l'essentiel d'un coup d'oeil */
+  .table-toolbar{display:none !important}
+  #addClientBtn{padding:0 14px !important;min-height:40px !important;font-size:13px !important;white-space:nowrap}
+  .filter-tabs{margin-bottom:8px !important}.search-row{margin-bottom:8px !important}
+  .client-table tr.client-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:11px 6px}
+  .client-table td{padding:0 !important;border:none;display:block;min-width:0}
+  .client-table td[data-label]::before{display:none}
+  .client-table tr.client-row>td:first-child{order:1;flex:1 1 60%;font-weight:700;font-size:15px;padding:0 !important}
+  .client-table tr.client-row>td[data-label="À faire"]{order:2;margin-left:auto}
+  .client-table tr.client-row>td[data-label="Accès"]{order:3}
+  .client-table tr.client-row>td[data-label="Onboarding"]{order:4}
+  .client-table .pill{font-size:11px;padding:3px 9px}
 }.client-table tr:last-child td{border-bottom:none;}
 .client-table tr.client-row{cursor:pointer;transition:background .15s;}
 .client-table tr.client-row:hover{background:rgba(255,255,255,.03);}
@@ -276,7 +288,7 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js?v=10"></script>
+<script src="../supabase-client.js?v=12"></script>
 <script src="mock-clients.js?v=3"></script>
 <script>
 (async function () {

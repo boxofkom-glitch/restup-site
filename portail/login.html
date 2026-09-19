@@ -39,6 +39,20 @@
 .link-btn:hover{color:var(--ink)}
 .invite-note{margin-top:18px;font-size:12.5px;color:rgba(255,255,255,.65);max-width:400px}
 @media(max-width:760px){.portal-topbar{padding:calc(14px + env(safe-area-inset-top,0px)) 20px 14px}.login-card{padding:28px 22px 24px}}
+
+/* Aucun défilement : la page s'adapte à la hauteur réelle de l'écran (Safari, appli installée) */
+@media (max-width:900px){
+  html,body{height:100%;overscroll-behavior:none}
+  .portal-hero{height:100vh;height:100dvh;min-height:0}
+  .portal-topbar{padding-bottom:clamp(6px,1.6dvh,20px)!important}
+  .portal-main{padding:clamp(6px,1.6dvh,24px) 20px clamp(10px,2.4dvh,28px)}
+  .portal-main h1{font-size:clamp(26px,5.4dvh,52px);margin-bottom:clamp(10px,2.4dvh,26px)}
+  .login-card{padding:clamp(18px,3.2dvh,32px) 24px clamp(16px,2.6dvh,26px)}
+  .login-card .sub{margin-bottom:clamp(10px,2dvh,20px)}
+  .field{margin-bottom:clamp(8px,1.7dvh,16px)}
+  .field input{padding:clamp(9px,1.5dvh,13px) 14px}
+}
+@media (min-height:561px) and (max-width:900px){html,body{overflow:hidden}}
 </style>
 </head>
 <body>
@@ -67,7 +81,7 @@
 
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js?v=10"></script>
+<script src="supabase-client.js?v=12"></script>
 <script>
 function showMsg(text, type) {
   const el = document.getElementById('formMsg');
