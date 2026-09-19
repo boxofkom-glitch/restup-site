@@ -82,7 +82,7 @@ body{overflow-x:hidden;background:radial-gradient(120% 60% at 20% 0%,#2a1550 0%,
 <script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js?v=9"></script>
+<script src="supabase-client.js?v=10"></script>
 <script>
 // Entonnoir : du général (qui es-tu, comment ça va) vers le précis (ce qui pèse, objectifs), chiffres optionnels en fin.
 const FUNNEL = [
@@ -97,6 +97,8 @@ const FUNNEL = [
     { id: 'role', type: 'choice', label: 'Quel est ton rôle ?', req: true, options: ['Propriétaire, sur place', 'Propriétaire, peu présent', 'Gérant', 'Autre'] },
     { id: 'team', type: 'choice', label: 'Combien de personnes dans l\'équipe (toi compris) ?', req: true, options: ['Seul', '2 à 5', '6 à 10', '11 à 20', 'Plus de 20'] },
     { id: 'hours', type: 'choice', label: 'Combien d\'heures travailles-tu par semaine ?', req: true, options: ['Moins de 40 h', '40 à 55 h', '55 à 70 h', 'Plus de 70 h'] },
+    { id: 'manager', type: 'choice', label: 'As-tu un responsable en salle ou en cuisine sur qui te reposer ?', req: true, options: ['Oui, les deux', 'Oui, un seul', 'Non'], showIf: a => a.team && a.team !== 'Seul' },
+    { id: 'delivery', type: 'choice', label: "Quelle part de ton chiffre d'affaires vient de la livraison ?", req: true, options: ['Aucune', 'Moins de 20 %', '20 à 50 %', 'Plus de 50 %'], showIf: a => /rapide|traiteur|food/i.test(a.kind || '') },
   ] },
   { title: 'Comment ça va, vraiment ?', lead: 'Sois honnête, c\'est ce qui rend l\'accompagnement utile.', qs: [
     { id: 'situation', type: 'scale', label: 'Comment décrirais-tu la situation de ton établissement aujourd\'hui ?', req: true, lo: 'En difficulté', hi: 'Ça roule' },
@@ -110,7 +112,7 @@ const FUNNEL = [
   { title: 'Depuis quand, et qu\'as-tu tenté ?', lead: 'Pour ne pas te proposer ce qui a déjà été essayé.', qs: [
     { id: 'since', type: 'choice', label: 'Ça dure depuis…', req: true, options: ['Quelques semaines', 'Quelques mois', 'Plus d\'un an', 'Depuis toujours'] },
     { id: 'tried', type: 'text-long', label: 'Qu\'as-tu déjà essayé pour améliorer les choses ?', req: false },
-    { id: 'tried_result', type: 'choice', label: 'Résultat', req: false, options: ['Rien n\'a changé', 'Un peu mieux', 'Ça marche, mais pas assez'] },
+    { id: 'tried_result', type: 'choice', label: 'Résultat', req: false, showIf: a => !!(a.tried && String(a.tried).trim()), options: ['Rien n\'a changé', 'Un peu mieux', 'Ça marche, mais pas assez'] },
   ] },
   { title: 'Là où tu veux aller', lead: 'On construira le plan à partir de là.', qs: [
     { id: 'goal_4m', type: 'text-long', label: 'D\'ici 4 mois, qu\'aimerais-tu avoir changé ?', req: true },
@@ -120,6 +122,10 @@ const FUNNEL = [
   { title: 'Un premier repère chiffré', lead: 'Facultatif : des ordres de grandeur suffisent. On les affinera ensemble pendant l\'audit.', optional: true, qs: [
     { id: 'revenue_month', type: 'number', label: 'Ton chiffre d\'affaires mensuel, à peu près (€)', req: false },
     { id: 'margin_feel', type: 'choice', label: 'Ta marge, tu dirais qu\'elle est…', req: false, options: ['Je ne sais pas', 'Faible', 'Correcte', 'Bonne'] },
+    { id: 'avg_ticket', type: 'number', label: 'Ton ticket moyen, à peu près (€)', req: false },
+    { id: 'covers_week', type: 'number', label: 'Nombre de couverts (ou commandes) par semaine, à peu près', req: false },
+    { id: 'food_cost', type: 'number', label: "Ton coût matière, en % du chiffre d'affaires (si tu le connais)", req: false },
+    { id: 'payroll', type: 'number', label: "Ta masse salariale, en % du chiffre d'affaires (si tu la connais)", req: false },
     { id: 'tracks', type: 'choice', label: 'Comment suis-tu tes chiffres ?', req: false, options: ['Je ne les suis pas', 'De tête', 'Tableur', 'Logiciel'] },
   ] },
   { title: 'Pour bien travailler ensemble', lead: 'Dernière étape.', qs: [
@@ -175,6 +181,8 @@ const FUNNEL = [
   stepsEl.innerHTML = FUNNEL.map((s, i) => `<section class="step" data-step="${i}"><h1>${esc(s.title)}</h1><p class="lead">${esc(s.lead)}</p>${s.qs.map(qHtml).join('')}</section>`).join('') +
     `<section class="step" data-step="${FUNNEL.length}"><div class="done"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div><h1>Merci, c'est noté</h1><p class="lead">Ton coach relit tes réponses avant votre premier rendez-vous : tu n'auras rien à répéter.</p><a class="btn-primary" href="dashboard.html">Accéder à mon espace</a></div></section>`;
 
+  applyBranches();
+
   // Lecture / écriture des réponses
   function readStep(i) {
     FUNNEL[i].qs.forEach(q => {
@@ -197,14 +205,26 @@ const FUNNEL = [
       ans[id] = q.type === 'scale' ? Number(v) : v;
       qEl.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === chip));
     }
-    showErr(''); scheduleSave();
+    applyBranches(); showErr(''); scheduleSave();
   });
   stepsEl.addEventListener('input', () => { readStep(cur); scheduleSave(); });
 
   // Sauvegarde automatique : locale immédiate, serveur en différé. Ne bloque jamais la saisie.
   const savedState = document.getElementById('savedState');
   let timer = null, lastSnap = '';
-  function payload() { return { v: 2, company: ans.company || '', answers: ans, savedAt: new Date().toISOString() }; }
+  const visibleQs = () => FUNNEL.flatMap(s => s.qs).filter(q => !q.showIf || q.showIf(ans));
+  const filled = (v) => !(v == null || v === '' || (Array.isArray(v) && !v.length));
+  function applyBranches() {
+    FUNNEL.flatMap(s => s.qs).forEach(q => { if (!q.showIf) return; const el = stepsEl.querySelector('.q[data-q="' + q.id + '"]'); if (el) el.style.display = q.showIf(ans) ? '' : 'none'; });
+  }
+  // Complétude : part des questions utiles (visibles) réellement renseignées + repères chiffrés pour les KPI de départ
+  function payload() {
+    const qs = visibleQs(), useful = qs.filter(q => q.req || ['revenue_month', 'avg_ticket', 'food_cost'].includes(q.id));
+    const missing = useful.filter(q => !filled(ans[q.id])).map(q => q.label);
+    const completeness = useful.length ? Math.round((useful.length - missing.length) / useful.length * 100) : 100;
+    const baseline = {}; ['revenue_month', 'avg_ticket', 'covers_week', 'food_cost', 'payroll'].forEach(k => { if (filled(ans[k])) baseline[k] = ans[k]; });
+    return { v: 2, company: ans.company || '', answers: ans, completeness, missing, baseline, savedAt: new Date().toISOString() };
+  }
   function scheduleSave() { savedState.textContent = ''; clearTimeout(timer); timer = setTimeout(saveDraft, 900); }
   async function saveDraft() {
     const p = payload();
@@ -237,7 +257,7 @@ const FUNNEL = [
   function valid(i) {
     readStep(i);
     for (const q of FUNNEL[i].qs) {
-      if (!q.req) continue;
+      if (!q.req || (q.showIf && !q.showIf(ans))) continue;
       const v = ans[q.id];
       if (v == null || v === '' || (Array.isArray(v) && !v.length)) { showErr('Merci de répondre à : « ' + q.label + ' »'); return false; }
     }
@@ -262,7 +282,7 @@ const FUNNEL = [
 
   // Reprise : premier écran incomplet
   let start = 0;
-  for (let i = 0; i < FUNNEL.length; i++) { const ok = FUNNEL[i].qs.every(q => !q.req || (ans[q.id] != null && ans[q.id] !== '' && !(Array.isArray(ans[q.id]) && !ans[q.id].length))); if (ok) start = i + 1; else break; }
+  for (let i = 0; i < FUNNEL.length; i++) { const ok = FUNNEL[i].qs.every(q => !q.req || (q.showIf && !q.showIf(ans)) || (ans[q.id] != null && ans[q.id] !== '' && !(Array.isArray(ans[q.id]) && !ans[q.id].length))); if (ok) start = i + 1; else break; }
   show(Math.min(start, FUNNEL.length - 1));
 })();
 </script>

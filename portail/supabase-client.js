@@ -103,14 +103,16 @@ async function restupStaffBar(me) {
   const here = location.pathname.split("/").pop();
   const ico = (d) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const items = [
-    ["index.html", "Clients", ico('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>')],
     ["suivi.html", "Aujourd'hui", ico('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>')],
+    ["index.html", "Clients", ico('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>')],
     ["agenda.html", "Agenda", ico('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>')],
-    ["messages.html", "Messages", ico('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')],
   ];
   const nav = document.createElement("nav");
   nav.id = "staffBottomNav";
-  nav.innerHTML = items.map(([h, l, i]) => `<a href="${base + h}" class="${here === h ? "on" : ""}">${i}<span>${l}</span></a>`).join("")
+  const link = ([h, l, i]) => `<a href="${base + h}" class="${here === h ? "on" : ""}">${i}<span>${l}</span></a>`;
+  nav.innerHTML = link(items[0]) + link(items[1])
+    + `<button type="button" id="bnAction" class="act" aria-label="Actions rapides"><b>${ico('<path d="M12 5v14M5 12h14"/>')}</b><span>Action</span></button>`
+    + link(items[2])
     + `<button type="button" id="bnMore">${ico('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')}<span>Plus</span></button>`;
   document.body.appendChild(nav);
   const bs = document.createElement("style");
@@ -120,9 +122,22 @@ async function restupStaffBar(me) {
       #staffBottomNav a,#staffBottomNav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:#9aa09a;text-decoration:none;background:none;border:0;font-size:10.5px;font-weight:700;line-height:1.1;font-family:inherit;cursor:pointer;border-radius:12px;}
       #staffBottomNav a.on{color:#fff;background:rgba(155,77,255,.22);}
       #staffBottomNav a.on svg{color:#B37BFF;}
+      #staffBottomNav .act b{width:46px;height:46px;margin-top:-22px;border-radius:50%;background:#fff;color:#6d2fd0;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 4px #0B0D0C;}
+      #staffBottomNav .act{color:#fff;}
+      #staffSheet{position:fixed;inset:0;z-index:90;display:none;background:rgba(0,0,0,.6);}
+      #staffSheet.open{display:block;}
+      #staffSheet .sh{position:absolute;left:0;right:0;bottom:0;background:#151515;border-top:1px solid #2B2E2A;border-radius:22px 22px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;}
+      #staffSheet .sh i{display:block;width:42px;height:4px;border-radius:4px;background:#3a3d39;margin:0 auto 10px;}
+      #staffSheet a{display:flex;align-items:center;min-height:52px;padding:0 16px;border-radius:14px;background:#1c1c1c;border:1px solid #2B2E2A;color:#fff;text-decoration:none;font-weight:700;font-size:15px;}
       body{padding-bottom:76px;}
     }`;
   document.head.appendChild(bs);
+  const sheet = document.createElement("div");
+  sheet.id = "staffSheet";
+  sheet.innerHTML = `<div class="sh"><i></i><a href="${base}index.html?new=1">Ajouter un client</a><a href="${base}suivi.html">Ce que je dois faire aujourd'hui</a><a href="${base}index.html">Choisir un client (compte rendu, brief)</a></div>`;
+  document.body.appendChild(sheet);
+  sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.classList.remove("open"); });
+  document.getElementById("bnAction").addEventListener("click", () => sheet.classList.add("open"));
   document.getElementById("bnMore").addEventListener("click", () => { const t = document.getElementById("mobileNavToggle"); if (t) t.click(); });
   document.getElementById("staffLogout").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();

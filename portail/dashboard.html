@@ -674,7 +674,7 @@ p{margin:0 0 10px;color:var(--muted);}
 <script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js?v=9"></script>
+<script src="supabase-client.js?v=10"></script>
 <script src="admin/mock-clients.js?v=3"></script>
 <script>
 (async function () {
@@ -997,9 +997,12 @@ p{margin:0 0 10px;color:var(--muted);}
 
   async function loadPlan() {
     try {
-      const { data: row, error } = await supabaseClient.from('plans').select('*').eq('user_id', user.id).maybeSingle();
-      // Tant que le coach n'a pas publié le plan (brouillon généré par IA ou en cours), le client ne le voit pas.
-      if (!error && row && row.data && row.data.status !== 'draft') return row;
+      // Le serveur ne renvoie que le plan publié, sans le contenu des semaines verrouillées.
+      if (!user._preview) {
+        const { data: pd, error } = await supabaseClient.rpc('restup_my_plan');
+        if (!error && pd && pd.status !== 'draft') return { id: 'plan-' + user.id, user_id: user.id, data: pd };
+        return null;
+      }
     } catch (e) { /* fall through to mock */ }
     // TEMP — repli sur un brouillon local (clients de démo) puis sur un plan de démonstration.
     if (!user._preview) return null;   // démo uniquement en local
@@ -1018,8 +1021,25 @@ p{margin:0 0 10px;color:var(--muted);}
       localStorage.setItem('restup_local_plans', JSON.stringify(all));
       return;
     }
-    const { error } = await supabaseClient.from('plans').update({ data: planRow.data }).eq('user_id', user.id);
-    if (error && window.toast) toast('Enregistrement impossible pour le moment. Réessaie.', 'error');
+  }
+
+  // Position d'une tâche dans le plan (le serveur ne modifie que l'état « fait » d'une tâche débloquée)
+  function taskLocate(plan, task) {
+    let i = (plan.vision_12m?.items || []).indexOf(task); if (i > -1) return { k: 'vision', ti: i };
+    i = (plan.priorities_4m?.items || []).indexOf(task); if (i > -1) return { k: 'priority', ti: i };
+    const cy = plan.cycles || [];
+    for (let ci = 0; ci < cy.length; ci++) for (let mi = 0; mi < (cy[ci].months || []).length; mi++) for (let wi = 0; wi < (cy[ci].months[mi].weeks || []).length; wi++) {
+      const ti = (cy[ci].months[mi].weeks[wi].tasks || []).indexOf(task); if (ti > -1) return { k: 'week', ci, mi, wi, ti };
+    }
+    return null;
+  }
+  async function saveTask(task) {
+    if (user._preview) return savePlan();
+    const loc = taskLocate(planRow.data, task);
+    if (!loc) return false;
+    const { error } = await supabaseClient.rpc('restup_set_task_done', { p_kind: loc.k, p_ci: loc.ci || 0, p_mi: loc.mi || 0, p_wi: loc.wi || 0, p_ti: loc.ti, p_done: !!task.done });
+    if (error) { task.done = !task.done; if (window.toast) toast('Enregistrement impossible pour le moment. Réessaie.', 'error'); return false; }
+    return true;
   }
 
   function allTasksFlat(plan) {
@@ -1044,7 +1064,9 @@ p{margin:0 0 10px;color:var(--muted);}
     [check, title].forEach(node => node.addEventListener('click', async () => {
       task.done = !task.done;
       el.classList.toggle('done', task.done);
-      await savePlan();
+      const ok = await saveTask(task);
+      el.classList.toggle('done', !!task.done);
+      if (ok === false) { if (onToggle) onToggle(); return; }
       if (onToggle) onToggle();
       if (task.done && window.toast) toast('Coché !', 'ok');
     }));
@@ -1471,7 +1493,19 @@ p{margin:0 0 10px;color:var(--muted);}
       text = nextIso ? 'Ton audit est programmé : ' + fmtWhen(nextIso) + '.' : 'Ton coach prépare ton audit et te propose un rendez-vous très vite.';
       sub = 'Tes réponses d\'onboarding sont déjà enregistrées : tu n\'as rien à refaire.';
     } else { title = 'Prochaine étape'; text = 'Ton coach finalise ta première priorité.'; }
-    document.getElementById('homeOne').innerHTML = `<span class="home-k">${esc(title)}</span><p>${esc(text)}</p>${sub ? `<small>${esc(sub)}</small>` : ''}`;
+    document.getElementById('homeOne').innerHTML = `<span class="home-k">${esc(title)}</span><p>${esc(text)}</p>${sub ? `<small>${esc(sub)}</small>` : ''}${qw && qw.won_at && qw.result ? `<small style="display:block;margin-top:10px;color:#B37BFF;font-weight:700;">Première victoire : ${esc(qw.result)}</small>` : ''}`;
+
+    // Dernier récap envoyé par le coach (uniquement après son envoi)
+    if (!user._preview) {
+      try {
+        const { data: rc } = await supabaseClient.rpc('restup_my_last_recap');
+        if (rc && rc.recap) {
+          let box = document.getElementById('homeRecap');
+          if (!box) { box = document.createElement('div'); box.id = 'homeRecap'; box.className = 'card'; box.style.cssText = 'margin-top:14px;'; document.getElementById('homeOne').parentNode.appendChild(box); }
+          box.innerHTML = `<span class="home-k">Récap de ton dernier échange · ${esc(new Date(rc.at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }))}</span><p style="white-space:pre-wrap;font-size:14px;line-height:1.55;margin-top:8px;">${esc(rc.recap)}</p>`;
+        }
+      } catch (e) {}
+    }
 
     // Coach
     let coach = null;
