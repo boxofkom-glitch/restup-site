@@ -188,7 +188,7 @@ body{overflow-x:hidden;}
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   document.getElementById('coachEmail').textContent = me.email || '—';
-  if (me.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
+  if (restupIsDev(me.email)) { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     await supabaseClient.auth.signOut();

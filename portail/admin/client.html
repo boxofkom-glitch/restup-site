@@ -447,7 +447,7 @@ body{overflow-x:hidden;}
   document.getElementById('logoutBtn').addEventListener('click', doLogout);
   document.getElementById('sidebarLogoutBtn').addEventListener('click', doLogout);
   document.getElementById('coachEmail').textContent = me.email || '—';
-  if (me.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
+  if (restupIsDev(me.email)) { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
   const mobileToggle = document.getElementById('mobileNavToggle');
   if (mobileToggle) mobileToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
@@ -490,7 +490,7 @@ body{overflow-x:hidden;}
     if (!isUuid(clientId)) return;
     try { await supabaseClient.from('events').insert({ client_id: clientId, type, actor_id: me.id, payload: payload || {} }); } catch (e) { /* ne bloque jamais l'action */ }
   }
-  const isDevUser = (me.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+  const isDevUser = restupIsDev(me.email);
   let teamCoaches = [];
   async function loadCoaches() {
     try { const { data } = await supabaseClient.from('team_members').select('id, name, email').eq('role', 'coach'); teamCoaches = data || []; } catch (e) {}

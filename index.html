@@ -1,70 +1,98 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RESTUP — Reprenez les commandes de votre restaurant</title>
-<meta name="description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine. Découvrez notre accompagnement.">
-<meta name="theme-color" content="#0B0D0C">
+<meta name="description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine.">
+<meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:title" content="RESTUP — Reprenez les commandes de votre restaurant">
 <meta property="og:description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RESTUP — Reprenez les commandes de votre restaurant">
-<meta name="twitter:description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230B0D0C'/%3E%3Ctext x='8' y='29' font-family='Arial' font-size='29' font-weight='bold' fill='%239B4DFF'%3ER%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="portail/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#000;color:#fff;font-family:Inter,system-ui,sans-serif;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%}
+.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
+
+/* Vidéo d'intro : les étiquettes avancent vers l'écran. Jamais rognée sur grand écran (contenue en 16:9),
+   recentrée sur le milieu sur téléphone. Elle passe ensuite à l'arrière-plan quand le titre arrive. */
+.frame{position:relative;flex:0 0 auto;aspect-ratio:16/9;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 8%,#000 92%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 8%,#000 92%,transparent);mask-composite:intersect}
+@media (max-aspect-ratio:1/1){.frame{width:150vw}}
+video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;background:#000;transform-origin:50% 50%;
+  transition:filter 1.8s ease,transform 2.2s cubic-bezier(.16,1,.3,1),opacity 1.8s ease}
+.arrived video{filter:blur(7px) brightness(.4) saturate(.9);transform:scale(1.18)}
+
+.glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 2s ease .3s;
+  background:radial-gradient(48% 40% at 50% 46%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
+.arrived .glow{opacity:1}
+.rays{position:absolute;left:50%;top:46%;width:150vmax;height:150vmax;transform:translate(-50%,-50%) scale(.3);pointer-events:none;opacity:0;
+  background:repeating-conic-gradient(from 0deg,rgba(155,77,255,.16) 0 2deg,transparent 2deg 9deg);
+  -webkit-mask-image:radial-gradient(closest-side,#000 0,transparent 62%);mask-image:radial-gradient(closest-side,#000 0,transparent 62%);
+  transition:opacity 2s ease .2s,transform 3s cubic-bezier(.16,1,.3,1)}
+.arrived .rays{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+.hero{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:max(70px,env(safe-area-inset-top)) 22px max(64px,env(safe-area-inset-bottom));pointer-events:none}
+.hero>*{pointer-events:auto}
+/* Arrivée : du fond de l'écran vers le premier plan */
+.from-depth{opacity:0;transform:scale(.22);filter:blur(16px);
+  transition:opacity 1.1s ease,transform 1.7s cubic-bezier(.16,1,.3,1),filter 1.4s ease}
+.arrived .from-depth{opacity:1;transform:none;filter:none}
+.arrived .d1{transition-delay:.05s}.arrived .d2{transition-delay:.35s}.arrived .d3{transition-delay:.75s}.arrived .d4{transition-delay:1.05s}
+
+h1{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:.98;letter-spacing:.005em;font-size:clamp(46px,min(15vw,15.5vh),150px);color:#fff;text-shadow:0 6px 40px rgba(0,0,0,.5)}
+h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B4DFF 70%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 28px rgba(155,77,255,.45))}
+.sub{margin-top:clamp(14px,3vh,28px);font-size:clamp(13px,min(4vw,2.6vh),20px);font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.88);line-height:1.5}
+.sub b{display:block;color:#B37BFF;font-weight:700}
+.cta{margin-top:clamp(20px,4.4vh,40px);display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 34px;border-radius:999px;
+  background:rgba(11,7,16,.86);border:1.5px solid #9B4DFF;color:#fff;text-decoration:none;font-weight:600;font-size:16px;
+  box-shadow:0 0 28px rgba(155,77,255,.5),inset 0 0 18px rgba(155,77,255,.22);transition:box-shadow .2s,transform .18s,opacity 1.1s ease,filter 1.4s ease}
+.cta:hover{box-shadow:0 0 44px rgba(179,123,255,.85),inset 0 0 22px rgba(155,77,255,.38)}
+.cta:active{transform:scale(.97)}
+.cta svg{width:18px;height:18px;flex:0 0 auto}
+.member{margin-top:clamp(12px,2.4vh,20px);color:rgba(255,255,255,.7);font-size:13.5px;font-weight:600;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.22)}
+.member:hover{color:#fff;border-color:#9B4DFF}
+.cta:focus-visible,.member:focus-visible,.mark:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+.mark{position:fixed;z-index:5;left:max(20px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));font-family:Anton,Impact,sans-serif;font-size:30px;letter-spacing:.01em;color:#fff;text-decoration:none;line-height:1}
+.mark span{color:#B37BFF}
+@media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:56px}}
+@media (prefers-reduced-motion:reduce){video,.from-depth,.glow,.rays{transition:none}}
+</style>
 </head>
 <body>
-<a class="skip" href="#contenu">Aller au contenu</a>
-<div class="header-bar"><header class="header"><a class="wordmark" href="#" aria-label="RESTUP, accueil">REST<span class="up">UP</span></a><nav id="mobile-nav" aria-label="Navigation principale"><a href="#methode">La méthode</a><a href="#accompagnement">L’accompagnement</a><a href="#questions">Vos questions</a><a href="portail/login.html">Espace client</a></nav><div class="header-actions"><a class="button small lime" href="#diagnostic">Parlons de votre restaurant <span>↗</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button></div></header></div>
-<main id="contenu">
-<section class="hero-full">
-<div class="hero-full-content">
-<p class="eyebrow">LE PARTENAIRE DE PILOTAGE DU RESTAURATEUR</p>
-<h1 class="hero-question">Tu es un restaurateur ?<br><span>Ou ton propre employé ?</span></h1>
-<p class="intro">Retrouvez de la marge, une équipe qui avance et le temps de diriger. Un coach RESTUP à vos côtés pour passer des chiffres aux décisions. <span class="accent">Puis aux actions.</span></p>
-<div class="hero-full-actions">
-<a class="hero-cta" href="#diagnostic">Je diagnostique mon restaurant<span class="arrow">↗</span></a>
-<a class="hero-cta" href="#accompagnement"><span class="icon-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg></span>Une heure de coaching par semaine<span class="arrow">↗</span></a>
-</div>
-</div>
-</section>
-<div class="promise-strip"><div class="wrap strip-inner"><span>Un cap clair.</span><span>Des actions concrètes.</span><span>Un suivi chaque semaine.</span></div></div>
-<section class="logos-strip"><div class="wrap"><p class="eyebrow">ILS M’ONT FAIT CONFIANCE</p><div class="marquee"><div class="marquee-track">
-<div class="client-logo"><img src="assets/clients/ultra-clean.png" alt="Ultra"></div>
-<div class="client-logo dark-tile"><img src="assets/clients/breakys-clean.png" alt="Breakys"></div>
-<div class="client-logo"><img src="assets/clients/coup-de-food.png" alt="Coup de Food"></div>
-<div class="client-logo fill"><img src="assets/clients/kfb.jpg" alt="KFB"></div>
-<div class="client-logo fill"><img src="assets/clients/super-kroustif-wok.jpg" alt="Super Kroustif Wok"></div>
-<div class="client-logo fill"><img src="assets/clients/my-khao.jpg" alt="My Khao"></div>
-<div class="client-logo fill"><img src="assets/clients/pitaya.png" alt="Pitaya"></div>
-<div class="client-logo"><img src="assets/clients/crousty-game-clean.png" alt="Crousty Game"></div>
-<div class="client-logo fill"><img src="assets/clients/dangerous-burger.jpg" alt="Dangerous Burger"></div>
-<div class="client-logo"><img src="assets/clients/chamas-tacos-clean.png" alt="Chamas Tacos"></div>
-<div class="client-logo"><img src="assets/clients/streat-burger-clean.png" alt="Str’Eat Burger"></div>
-<div class="client-logo fill"><img src="assets/clients/la-kazdalerie.png" alt="La Kazdalerie"></div>
-<div class="client-logo" aria-hidden="true"><img src="assets/clients/ultra-clean.png" alt=""></div>
-<div class="client-logo dark-tile" aria-hidden="true"><img src="assets/clients/breakys-clean.png" alt=""></div>
-<div class="client-logo" aria-hidden="true"><img src="assets/clients/coup-de-food.png" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/kfb.jpg" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/super-kroustif-wok.jpg" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/my-khao.jpg" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/pitaya.png" alt=""></div>
-<div class="client-logo" aria-hidden="true"><img src="assets/clients/crousty-game-clean.png" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/dangerous-burger.jpg" alt=""></div>
-<div class="client-logo" aria-hidden="true"><img src="assets/clients/chamas-tacos-clean.png" alt=""></div>
-<div class="client-logo" aria-hidden="true"><img src="assets/clients/streat-burger-clean.png" alt=""></div>
-<div class="client-logo fill" aria-hidden="true"><img src="assets/clients/la-kazdalerie.png" alt=""></div>
-</div></div></div></section>
-<section class="section wrap problem reveal"><div><p class="eyebrow">VOUS RECONNAISSEZ LE QUOTIDIEN ?</p><h2>Beaucoup d’énergie.<br>Pas assez de <em>visibilité.</em></h2></div><div class="problem-list"><article><span>01</span><div><h3>Le chiffre rentre. La marge reste floue.</h3><p>Les achats augmentent, la trésorerie est tendue et vous ne savez pas quel levier activer en premier.</p></div></article><article><span>02</span><div><h3>Tout finit par revenir vers vous.</h3><p>Les plannings, les imprévus, les décisions. Vous êtes indispensable au service, mais votre rôle de dirigeant attend.</p></div></article><article><span>03</span><div><h3>Vous savez qu’il faut changer quelque chose.</h3><p>Il vous manque le recul, un ordre de priorité et quelqu’un pour faire avancer les choses avec vous.</p></div></article></div></section>
-<section class="method" id="methode"><div class="wrap section reveal"><p class="eyebrow">DU RECUL. UN CAP. DE L’ACTION.</p><h2>Vous n’avez pas besoin de plus de chiffres.<br><span>Vous avez besoin de savoir quoi en faire.</span></h2><div class="steps"><article><b>01 / COMPRENDRE</b><h3>Voir où vous en êtes.</h3><p>Rentabilité, achats, équipe, organisation : un diagnostic de votre situation et de vos objectifs.</p></article><article><b>02 / PRIORISER</b><h3>Choisir ce qui compte.</h3><p>Une à trois priorités, avec un responsable et une échéance pour chaque action.</p></article><article><b>03 / AGIR</b><h3>Avancer ensemble.</h3><p>Chaque semaine, votre coach vous aide à décider, débloquer et tenir le cap.</p></article><article><b>04 / AJUSTER</b><h3>Vérifier les effets.</h3><p>Nous suivons les indicateurs utiles et ajustons le plan à votre réalité.</p></article></div></div></section>
-<section class="section wrap human reveal" id="accompagnement"><div><p class="eyebrow">UN VRAI COACH. UN VRAI RENDEZ-VOUS.</p><h2>Une heure par semaine.<br>Pour faire avancer<br><em>tout le reste.</em></h2><p class="body-copy">Votre comité de pilotage transforme les sujets qui s’accumulent en décisions concrètes. On regarde ce qui a avancé, ce qui bloque et ce qu’on fait ensuite.</p><ul class="clean-list"><li>Vos indicateurs, expliqués et remis en contexte.</li><li>Vos actions, suivies jusqu’à leur mise en œuvre.</li><li>Vos blocages, traités avec votre coach.</li><li>Votre prochaine semaine, avec des priorités claires.</li></ul><p class="body-copy">RESTUP analyse, structure et vous accompagne. Vous et votre équipe mettez les actions en œuvre, avec un suivi régulier.</p></div><div class="notebook"><div class="notebook-top"><span>VOTRE POINT DE PILOTAGE</span><span>Exemple illustratif</span></div><h3>Moins de pertes.<br>Plus de maîtrise.</h3><div class="note-line"><small>PRIORITÉ</small><p>Comprendre les pertes en cuisine.</p></div><div class="note-line"><small>ACTION DE LA SEMAINE</small><p>Relever les produits jetés et leurs quantités pendant 7 jours.</p></div><div class="note-grid"><div><small>RESPONSABLE</small><p>Responsable cuisine</p></div><div><small>POINT DE CONTRÔLE</small><p>Prochain comité</p></div></div><div class="note-bottom"><span>À observer</span><strong>Valeur des pertes et causes récurrentes</strong></div></div></section>
-<section class="offer-section" id="offre"><div class="wrap section offer-grid reveal"><div><p class="eyebrow">L’ACCOMPAGNEMENT RESTUP</p><h2>Un investissement<br>pour reprendre<br>les commandes.</h2><p class="body-copy">Une méthode, un interlocuteur et un rythme pour travailler sur les leviers qui comptent dans votre établissement.</p><p class="offer-quote">« Qu’est-ce qu’on change cette semaine, et comment saura-t-on si cela fonctionne ? »</p></div><div class="price-card"><span class="eyebrow">PILOTAGE & ACCOMPAGNEMENT</span><p class="price">3 000 <span>€</span></p><p class="price-note">Budget de l’accompagnement présenté.<br>Durée, fiscalité et modalités à préciser dans la proposition.</p><ul class="clean-list"><li>Audit initial de votre restaurant</li><li>Diagnostic et priorités</li><li>Plan d’action adapté à votre situation</li><li>Un coach RESTUP à vos côtés</li><li>Une heure de pilotage chaque semaine</li><li>Suivi des indicateurs et ajustements</li></ul><a class="button lime" href="#diagnostic">Parlons de vos priorités <span>↗</span></a><p class="micro">Périmètre et conditions définis avant tout engagement.</p></div></div></section>
-<section class="section wrap faq reveal" id="questions"><div><p class="eyebrow">AVANT DE NOUS RENCONTRER</p><h2>Vos questions.<br><em>Des réponses claires.</em></h2></div><div><details><summary>Je n’ai déjà pas le temps. Comment faire ?</summary><p>Une heure de pilotage par semaine et un nombre limité d’actions prioritaires. Leur mise en œuvre demande aussi votre implication : nous cadrons cette charge ensemble.</p></details><details><summary>J’ai déjà un expert-comptable.</summary><p>Il reste un partenaire essentiel. RESTUP transforme les informations disponibles en décisions opérationnelles : achats, carte, organisation, équipe et suivi des actions.</p></details><details><summary>Je ne connais pas mes ratios.</summary><p>Nous partons des données disponibles dans votre caisse, votre comptabilité et vos documents. Nous identifions ensuite les quelques indicateurs utiles à votre situation.</p></details><details><summary>Est-ce adapté à mon restaurant ?</summary><p>Le premier échange sert à comprendre votre établissement, vos difficultés et vos objectifs. Nous vérifions l’adéquation avec vos besoins et votre capacité à mettre les actions en œuvre.</p></details><details><summary>Qui réalise les actions ?</summary><p>RESTUP analyse, priorise, construit le plan avec vous et suit son exécution. Le dirigeant et son équipe réalisent les actions dans le restaurant. Les responsabilités sont clarifiées dès le départ.</p></details><details><summary>Comment mesure-t-on les progrès ?</summary><p>Nous suivons les actions chaque semaine et les indicateurs financiers au rythme pertinent : chiffre d’affaires, coût matière, masse salariale, charges et rentabilité. Les objectifs dépendent du diagnostic ; aucun résultat financier n’est garanti.</p></details><details><summary>Que comprennent les 3 000 € ?</summary><p>Audit, diagnostic, plan d’action, accompagnement, comité hebdomadaire et suivi. La durée, le traitement fiscal, le périmètre exact et les conditions de règlement sont à confirmer dans une proposition écrite avant engagement.</p></details></div></section>
-<section class="closing" id="diagnostic"><div class="wrap closing-inner reveal"><p class="eyebrow">LA PREMIÈRE DÉCISION, C’EST D’EN PARLER.</p><h2>Commençons par<br>votre restaurant.</h2><p>Votre situation. Votre principal blocage. Vos ambitions.<br>Un premier échange pour vérifier comment RESTUP peut vous aider.</p><a id="booking-link" class="button lime" hidden>Prendre rendez-vous <span>↗</span></a><div id="booking-pending" class="booking-pending"><strong>La prise de rendez-vous arrive bientôt.</strong><span>Les coordonnées de contact seront disponibles ici.</span></div><div class="closing-tags"><span>Comprendre votre situation</span><span>Identifier votre priorité</span><span>Vérifier l’adéquation</span></div></div></section>
+<a class="mark" href="index.html" aria-label="RESTUP, accueil">REST<span>UP</span></a>
+<main class="stage" id="stage">
+  <div class="frame">
+    <video id="v" autoplay muted playsinline preload="auto" aria-hidden="true"><source src="assets/video/intro-tags.mp4" type="video/mp4"></video>
+  </div>
+  <div class="glow"></div><div class="rays"></div>
+  <div class="hero">
+    <h1 class="from-depth d1">Tu gères<b>tout.</b></h1>
+    <p class="sub from-depth d2">Et si tu recommençais<b>à diriger ?</b></p>
+    <a class="cta from-depth d3" href="decouvrir.html">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="member from-depth d4" href="portail/login.html">Je suis déjà membre</a>
+  </div>
 </main>
-<footer class="footer wrap"><a class="wordmark footer-mark" href="#">REST<span class="up">UP</span></a><p>Le partenaire de pilotage du restaurateur.</p><span>© RESTUP 2026</span></footer>
-<script src="config.js"></script><script src="site.js"></script><script>if(window.RESTUP?.bookingUrl){try{const u=new URL(window.RESTUP.bookingUrl);if(['https:','mailto:','tel:'].includes(u.protocol)){const a=document.getElementById('booking-link');a.href=u.href;a.hidden=false;document.getElementById('booking-pending').hidden=true;}}catch{}}</script>
-</body></html>
-
+<script>
+(function(){
+  var stage=document.getElementById('stage'), v=document.getElementById('v'), on=false;
+  function arrive(){ if(on) return; on=true; stage.classList.add('arrived'); }
+  // Le titre arrive du fond dès que les étiquettes sont bien proches de l'écran
+  function watch(){ if(on) return; if(v.ended || (v.currentTime||0)>=4.6) arrive(); else requestAnimationFrame(watch); }
+  v.addEventListener('play',function(){requestAnimationFrame(watch)});
+  v.addEventListener('ended',arrive);
+  // Lecture impossible (économie d'énergie, chargement lent) : le titre arrive quand même
+  setTimeout(function(){ if(!on && (v.paused || (v.currentTime||0)<0.3)) arrive(); },3500);
+  setTimeout(arrive,9000);
+})();
+</script>
+</body>
+</html>

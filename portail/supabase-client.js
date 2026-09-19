@@ -21,12 +21,15 @@ const PROD_ORIGIN = "https://restup.solutions";
 
 // ---- Auth partagée : le rôle vient du compte (jamais d'un choix de l'utilisateur) ----
 const DEV_EMAIL = "box.of.kom@gmail.com";
+// Développeurs / gérants RestUp (accès complet : clients, coachs, facturation). Doit rester aligné avec is_dev() en base.
+const DEV_EMAILS = ["box.of.kom@gmail.com", "antoinebarat1@gmail.com"];
+function restupIsDev(email) { return DEV_EMAILS.indexOf(String(email || "").toLowerCase()) !== -1; }
 const IS_LOCAL = (location.hostname === "localhost" || location.hostname === "127.0.0.1");
 
 // 'admin' (développeur) | 'coach' | 'client'
 async function restupRole(user) {
   if (!user) return null;
-  if ((user.email || "").toLowerCase() === DEV_EMAIL) return "admin";
+  if (restupIsDev(user.email)) return "admin";
   try {
     const { data: a } = await supabaseClient.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
     if (a) return "coach";
@@ -55,7 +58,7 @@ async function restupStaffBar(me) {
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   let prof = null;
   try { const { data } = await supabaseClient.from("staff_profiles").select("display_name, photo_url").eq("user_id", me.id).maybeSingle(); prof = data; } catch (e) {}
-  const isDev = (me.email || "").toLowerCase() === DEV_EMAIL;
+  const isDev = restupIsDev(me.email);
   const name = (prof && prof.display_name) || (me.email || "coach").split("@")[0];
   const initials = name.trim().slice(0, 2).toUpperCase();
   const avatar = prof && prof.photo_url

@@ -155,7 +155,7 @@ body{overflow-x:hidden;}
     <main class="main">
       <div class="admin-main">
         <div class="page-title-row">
-          <div><h1>Développeur</h1><p>Accès et outils réservés — visible uniquement pour box.of.kom@gmail.com.</p></div>
+          <div><h1>Développeur</h1><p>Accès et outils réservés — réservé aux développeurs / gérants RestUp.</p></div>
         </div>
 
         <div class="tab-nav">
@@ -173,6 +173,12 @@ body{overflow-x:hidden;}
               <a href="../login.html">Page de connexion<span>Point d'entrée public</span></a>
               <a href="../index.html">Site public<span>restup.solutions</span></a>
             </div>
+          </div>
+
+          <div class="dev-card">
+            <h3>Développeurs &amp; gérants</h3>
+            <p>Accès complet à RestUp : clients, coachs, facturation et cette page. Rien n'est envoyé tant que tu ne cliques pas.</p>
+            <div id="devTeam" style="display:flex;flex-direction:column;gap:10px;margin-top:6px;"></div>
           </div>
 
           <div class="dev-card">
@@ -239,11 +245,33 @@ body{overflow-x:hidden;}
   if (!me) return;
   restupStaffBar(me);
 
-  if (me.email !== 'box.of.kom@gmail.com') {
+  if (!restupIsDev(me.email)) {
     document.getElementById('authGate').style.display = 'none';
     document.getElementById('deniedGate').style.display = 'flex';
     return;
   }
+
+  // Développeurs / gérants : l'envoi de l'accès reste un clic volontaire.
+  (function () {
+    const box = document.getElementById('devTeam');
+    if (!box) return;
+    box.innerHTML = DEV_EMAILS.map((em) => {
+      const self = (me.email || '').toLowerCase() === em;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--line);border-radius:12px;">
+        <div><b style="font-size:14px;">${em}</b><div style="font-size:12px;color:var(--muted-dim);">Développeur &amp; gérant · facturation incluse${self ? ' · toi' : ''}</div></div>
+        ${self ? '<span class="paid-tag yes">Actif</span>' : `<button type="button" class="btn-primary" data-send-dev="${em}" style="padding:9px 18px;">Envoyer l'accès</button>`}
+      </div>`;
+    }).join('');
+    box.querySelectorAll('[data-send-dev]').forEach((btn) => btn.addEventListener('click', async () => {
+      const em = btn.getAttribute('data-send-dev');
+      if (!confirm('Envoyer un email d'accès RestUp à ' + em + ' ?')) return;
+      btn.disabled = true; btn.textContent = 'Envoi…';
+      const { error } = await supabaseClient.auth.signInWithOtp({ email: em, options: { shouldCreateUser: true, emailRedirectTo: PROD_ORIGIN + '/portail/set-password.html' } });
+      if (error) { btn.disabled = false; btn.textContent = 'Envoyer l'accès'; if (window.toast) toast('Envoi impossible : ' + error.message, 'error'); else alert(error.message); return; }
+      btn.textContent = 'Accès envoyé ✓';
+      if (window.toast) toast('Email d'accès envoyé à ' + em, 'ok');
+    }));
+  })();
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';

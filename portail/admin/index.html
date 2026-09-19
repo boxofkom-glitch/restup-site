@@ -290,7 +290,7 @@ body{overflow-x:hidden;}
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   document.getElementById('coachEmail').textContent = user.email || '—';
-  if (user.email === 'box.of.kom@gmail.com') { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
+  if (restupIsDev(user.email)) { const devLink = document.createElement('a'); devLink.href = 'dev.html'; devLink.className = 'side-link'; devLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Développeur'; document.querySelector('.side-nav').appendChild(devLink); }
   document.getElementById('coachAvatar').textContent = (user.email || 'C').slice(0, 2).toUpperCase();
 
   document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -514,7 +514,7 @@ body{overflow-x:hidden;}
     document.getElementById('addClientDone').style.display = 'none';
     // Le développeur choisit le coach ; un coach s'auto-assigne (côté serveur via RLS).
     const sel = document.getElementById('acCoach');
-    const isDev = (user.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+    const isDev = restupIsDev(user.email);
     document.getElementById('acCoachField').style.display = isDev ? 'block' : 'none';
     if (isDev) sel.innerHTML = '<option value="">— Assigner plus tard —</option>' + coachOptions.map(t => `<option value="${esc(t.id)}">${esc(t.name || t.email)}</option>`).join('');
     acOverlay.classList.add('open');
@@ -533,7 +533,7 @@ body{overflow-x:hidden;}
     const v = (id) => document.getElementById(id).value.trim();
     const f = { first_name: v('acFirst'), last_name: v('acLast'), email: v('acEmail'), phone: v('acPhone'), company_name: v('acCompany') };
     if (!f.first_name || !f.last_name || !f.email || !f.phone || !f.company_name) { acMsg.className = 'modal-msg'; acMsg.textContent = 'Tous les champs sont obligatoires.'; return; }
-    const isDev = (user.email || '').toLowerCase() === 'box.of.kom@gmail.com';
+    const isDev = restupIsDev(user.email);
     f.coach_id = isDev ? (document.getElementById('acCoach').value || null) : (coachOptions[0] ? coachOptions[0].id : null);
     acBusy = true;
     const btn = document.getElementById('acSubmit');
