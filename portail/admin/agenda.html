@@ -254,7 +254,7 @@ body{overflow-x:hidden;}
             const time = new Date(c.scheduled_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             return `<div class="agenda-call">
               <span class="time">${esc(time)}</span>
-              <a class="name" href="client.html?id=${esc(c.user_id)}">${esc(name)}</a>
+              <a class="name" href="client.html?id=${esc(c.user_id)}&tab=copilot" title="Ouvrir le brief">${esc(name)}</a>
             </div>`;
           }).join('')
         : '<div class="agenda-empty">—</div>';
