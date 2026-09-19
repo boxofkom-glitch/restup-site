@@ -89,9 +89,9 @@ async function restupStaffBar(me) {
       /* Appli coach : la page ne défile plus, seul le contenu défile sous la barre du haut et le menu du bas */
       html,body{height:100%;overflow:hidden;overscroll-behavior:none}
       body{padding-bottom:0 !important}
-      .main{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+      .main{position:fixed;inset:0;height:auto;display:flex;flex-direction:column;overflow:hidden;min-width:0}
       .main>.tab-nav{flex:0 0 auto}
-      .main>.admin-main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 14px calc(88px + env(safe-area-inset-bottom,0px)) !important;max-width:none}
+      .main>.admin-main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 14px calc(70px + env(safe-area-inset-bottom,0px)) !important;max-width:none}
       .page-title-row{margin-bottom:10px !important;align-items:center !important;flex-wrap:nowrap !important}
       .page-title-row h1{font-size:22px !important}
       .page-title-row p{display:none !important}

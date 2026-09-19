@@ -208,7 +208,7 @@ body{overflow-x:hidden;}
 /* Mobile : dossier compact (l'en-tête ne mange plus l'écran), onglets sur une seule ligne */
 @media (max-width:900px){
   .main{display:block !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}
-  .main>.admin-main{overflow:visible !important;flex:none !important;padding:10px 14px calc(88px + env(safe-area-inset-bottom,0px)) !important}
+  .main>.admin-main{overflow:visible !important;flex:none !important;padding:10px 14px calc(70px + env(safe-area-inset-bottom,0px)) !important}
   .admin-topbar{padding:6px 14px !important;min-height:0 !important}
   .admin-topbar .client-email,.admin-topbar #logoutBtn{display:none !important}
   .client-hero{padding:8px 14px !important;gap:8px !important;flex-wrap:wrap !important;margin:0 !important}
@@ -417,7 +417,7 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js?v=12"></script>
+<script src="../supabase-client.js?v=13"></script>
 <script src="../audit-engine.js?v=3"></script>
 <script src="copilot.js?v=1"></script>
 <script src="mock-clients.js?v=3"></script>
