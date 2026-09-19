@@ -11,62 +11,70 @@
 <meta property="og:title" content="RESTUP — Reprenez les commandes de votre restaurant">
 <meta property="og:description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine.">
 <link rel="icon" href="portail/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#000;color:#fff;font-family:Inter,system-ui,sans-serif;overscroll-behavior:none}
+html,body{height:100%;overflow:hidden;background:#000;color:#fff;font-family:Inter,system-ui,sans-serif;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 body{position:fixed;inset:0;width:100%}
 .stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
 
-/* Vidéo d'intro : les étiquettes avancent vers l'écran. Jamais rognée sur grand écran (contenue en 16:9),
-   recentrée sur le milieu sur téléphone. Elle passe ensuite à l'arrière-plan quand le titre arrive. */
-.frame{position:relative;flex:0 0 auto;aspect-ratio:16/9;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 8%,#000 92%,transparent);-webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 8%,#000 92%,transparent);mask-composite:intersect}
-@media (max-aspect-ratio:1/1){.frame{width:150vw}}
-video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;background:#000;transform-origin:50% 50%;
-  transition:filter 1.8s ease,transform 2.2s cubic-bezier(.16,1,.3,1),opacity 1.8s ease}
-/* Jamais de bouton lecture natif (Safari) : la vidéo reste invisible tant qu'elle ne tourne pas vraiment */
-video{pointer-events:none;visibility:hidden}
-.vplay video{visibility:visible}
+/* ---------- Intro : uniquement transform / opacity (fluide, sans filtres coûteux) ---------- */
+.intro{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 2.4s cubic-bezier(.16,1,.3,1);will-change:transform}
+.arrived .intro{transform:scale(1.1)}
+
+/* Paysage / ordinateur : vidéo 16:9 entière (jamais rognée), bords fondus par un voile fixe */
+.frame{position:relative;flex:0 0 auto;aspect-ratio:16/9;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);contain:layout paint}
+video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;background:#000;pointer-events:none;visibility:hidden;opacity:0;transition:opacity 1.1s ease;transform:translateZ(0)}
+.vplay video{visibility:visible;opacity:1}
 video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button,video::-webkit-media-controls-panel,video::-webkit-media-controls-enclosure{display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
-/* Secours si le navigateur refuse de lancer la vidéo (économie d'énergie) : mêmes étiquettes, animées en direct */
-.fb{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden}
+.vig{position:absolute;inset:-1px;pointer-events:none;background:radial-gradient(ellipse 72% 78% at 50% 50%,transparent 55%,#000 100%),linear-gradient(90deg,#000,transparent 7%,transparent 93%,#000)}
+/* Le fond passe à l'arrière-plan : simple voile noir qui monte (bien plus léger qu'un flou) */
+.dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 2.2s ease}
+.arrived .dim{opacity:.86}
+
+/* Téléphone (portrait) : mêmes étiquettes animées en direct, composées pour l'écran vertical (aucune vidéo à charger) */
+.fb{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden;transition:opacity 1.6s ease}
 .fallback .fb{display:block}
-.fallback video{opacity:0}
-.arrived .fb{opacity:.14;filter:blur(6px);transition:opacity 1.6s,filter 1.6s}
-.fb i{position:absolute;font-style:normal;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(13px,3.1vw,28px);padding:.7em 1.2em;border-radius:14px;color:#fff;
-  background:linear-gradient(180deg,rgba(38,32,50,.92),rgba(18,15,26,.92));border:1px solid rgba(155,77,255,.28);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(155,77,255,.18);
-  opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(var(--r,0deg));animation:fly 4.6s cubic-bezier(.3,.1,.3,1) var(--d,0s) forwards}
-@keyframes fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(var(--r))}18%{opacity:1}100%{opacity:1;transform:translate(-50%,-50%) scale(1.3) rotate(var(--r))}}
-.arrived video{filter:blur(9px) brightness(.16) saturate(.8);transform:scale(1.18)}
+.fallback .frame{display:none}
+.arrived .fb{opacity:.14}
+.fb i{position:absolute;left:50%;top:42%;font-style:normal;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+  font-size:clamp(11px,3vw,26px);padding:.7em 1.15em;border-radius:14px;color:#fff;rotate:var(--r,0deg);will-change:transform,opacity;
+  background:linear-gradient(180deg,rgba(40,33,54,.94),rgba(18,15,26,.94));border:1px solid rgba(155,77,255,.3);box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 20px rgba(155,77,255,.2);
+  opacity:0;transform:translate(-50%,-50%) scale(.2);animation:fly 4.2s cubic-bezier(.22,.7,.25,1) var(--d,0s) forwards}
+@keyframes fly{0%{opacity:0;transform:translate(-50%,-50%) translate(calc(var(--dx)*.1),calc(var(--dy)*.1)) scale(.2)}
+  22%{opacity:1}
+  100%{opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(1.18)}}
 
 .glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 2s ease .3s;
-  background:radial-gradient(48% 40% at 50% 46%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
+  background:radial-gradient(50% 42% at 50% 46%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
 .arrived .glow{opacity:1}
-.rays{position:absolute;left:50%;top:46%;width:150vmax;height:150vmax;transform:translate(-50%,-50%) scale(.3);pointer-events:none;opacity:0;
-  background:repeating-conic-gradient(from 0deg,rgba(155,77,255,.16) 0 2deg,transparent 2deg 9deg);
-  -webkit-mask-image:radial-gradient(closest-side,#000 0,transparent 62%);mask-image:radial-gradient(closest-side,#000 0,transparent 62%);
-  transition:opacity 2s ease .2s,transform 3s cubic-bezier(.16,1,.3,1)}
-.arrived .rays{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.rays{position:absolute;left:50%;top:46%;width:130vmax;height:130vmax;margin:-65vmax 0 0 -65vmax;pointer-events:none;opacity:0;transition:opacity 2.2s ease .3s;
+  background:repeating-conic-gradient(from 0deg,rgba(155,77,255,.15) 0 2deg,transparent 2deg 9deg);
+  -webkit-mask-image:radial-gradient(closest-side,#000 0,transparent 62%);mask-image:radial-gradient(closest-side,#000 0,transparent 62%)}
+.arrived .rays{opacity:1}
 
 .hero{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   padding:max(70px,env(safe-area-inset-top)) 22px max(64px,env(safe-area-inset-bottom));pointer-events:none}
 .hero>*{pointer-events:auto}
-/* Arrivée : du fond de l'écran vers le premier plan */
-.from-depth{opacity:0;transform:scale(.22);filter:blur(16px);
-  transition:opacity 1.1s ease,transform 1.7s cubic-bezier(.16,1,.3,1),filter 1.4s ease}
-.arrived .from-depth{opacity:1;transform:none;filter:none}
+/* Arrivée : du fond de l'écran vers le premier plan (échelle + transparence, sans flou) */
+.from-depth{opacity:0;transform:scale(.3);will-change:transform,opacity;transition:opacity 1s ease,transform 1.7s cubic-bezier(.16,1,.3,1)}
+.arrived .from-depth{opacity:1;transform:none}
 .arrived .d1{transition-delay:.05s}.arrived .d2{transition-delay:.35s}.arrived .d3{transition-delay:.75s}.arrived .d4{transition-delay:1.05s}
 
 h1{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:.98;letter-spacing:.005em;font-size:clamp(46px,min(15vw,15.5vh),150px);color:#fff;text-shadow:0 6px 40px rgba(0,0,0,.5)}
-h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B4DFF 70%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 28px rgba(155,77,255,.45))}
+h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B4DFF 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sub{margin-top:clamp(14px,3vh,28px);font-size:clamp(13px,min(4vw,2.6vh),20px);font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.88);line-height:1.5}
 .sub b{display:block;color:#B37BFF;font-weight:700}
 .cta{margin-top:clamp(20px,4.4vh,40px);display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 34px;border-radius:999px;
   background:rgba(11,7,16,.86);border:1.5px solid #9B4DFF;color:#fff;text-decoration:none;font-weight:600;font-size:16px;
-  box-shadow:0 0 28px rgba(155,77,255,.5),inset 0 0 18px rgba(155,77,255,.22);transition:box-shadow .2s,transform .18s,opacity 1.1s ease,filter 1.4s ease}
+  box-shadow:0 0 28px rgba(155,77,255,.5),inset 0 0 18px rgba(155,77,255,.22)}
 .cta:hover{box-shadow:0 0 44px rgba(179,123,255,.85),inset 0 0 22px rgba(155,77,255,.38)}
 .cta:active{transform:scale(.97)}
 .cta svg{width:18px;height:18px;flex:0 0 auto}
@@ -77,21 +85,32 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 .mark{position:fixed;z-index:5;left:max(20px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));font-family:Anton,Impact,sans-serif;font-size:30px;letter-spacing:.01em;color:#fff;text-decoration:none;line-height:1}
 .mark span{color:#B37BFF}
 @media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:56px}}
-@media (prefers-reduced-motion:reduce){video,.from-depth,.glow,.rays{transition:none}}
+@media (prefers-reduced-motion:reduce){.intro,video,.from-depth,.glow,.rays,.dim,.fb{transition:none}.fb i{animation:none;opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy))}}
 </style>
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="RESTUP">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 <a class="mark" href="index.html" aria-label="RESTUP, accueil">REST<span>UP</span></a>
 <main class="stage" id="stage">
-  <div class="frame">
-    <video id="v" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny" tabindex="-1" aria-hidden="true"><source src="assets/video/intro-tags.mp4" type="video/mp4"></video>
-    <div class="fb" id="fb"><i style="left:28%;top:24%;--r:-4deg;--d:0s">Service</i><i style="left:56%;top:16%;--r:3deg;--d:0.15s">Équipe</i><i style="left:70%;top:27%;--r:-6deg;--d:0.3s">Planning</i><i style="left:28%;top:50%;--r:2deg;--d:0.2s">Stocks</i><i style="left:66%;top:47%;--r:-3deg;--d:0.1s">Marge</i><i style="left:32%;top:72%;--r:4deg;--d:0.35s">Coûts</i><i style="left:66%;top:70%;--r:-2deg;--d:0.25s">Pression</i></div>
+  <div class="intro">
+    <div class="frame">
+      <video id="v" muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny" tabindex="-1" aria-hidden="true"></video>
+      <div class="vig"></div>
+    </div>
+    <div class="fb" id="fb">
+      <i style="--dx:-24vw;--dy:-30vh;--r:-4deg;--d:0s">Fournisseurs</i>
+      <i style="--dx:20vw;--dy:-27vh;--r:3deg;--d:.12s">Marge trop faible</i>
+      <i style="--dx:-27vw;--dy:-14vh;--r:-2deg;--d:.24s">Trésorerie</i>
+      <i style="--dx:26vw;--dy:-13vh;--r:4deg;--d:.1s">Recrutement</i>
+      <i style="--dx:-18vw;--dy:-2vh;--r:-5deg;--d:.3s">Service</i>
+      <i style="--dx:22vw;--dy:3vh;--r:3deg;--d:.18s">Équipe</i>
+      <i style="--dx:-27vw;--dy:11vh;--r:2deg;--d:.36s">Stocks</i>
+      <i style="--dx:24vw;--dy:16vh;--r:-4deg;--d:.06s">Planning</i>
+      <i style="--dx:-14vw;--dy:22vh;--r:3deg;--d:.28s">Coûts qui explosent</i>
+      <i style="--dx:28vw;--dy:28vh;--r:-3deg;--d:.4s">Absences</i>
+      <i style="--dx:-24vw;--dy:32vh;--r:-2deg;--d:.16s">Pression</i>
+      <i style="--dx:12vw;--dy:35vh;--r:2deg;--d:.34s">Trop de tâches</i>
+    </div>
+    <div class="dim"></div>
   </div>
   <div class="glow"></div><div class="rays"></div>
   <div class="hero">
@@ -107,29 +126,34 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
   try{ var app=(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true); var has=false;
     for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(/^sb-.*-auth-token$/.test(k)){has=true;break;}}
     if(app&&has){location.replace('portail/login.html');return;} }catch(e){}
-  var stage=document.getElementById('stage'), v=document.getElementById('v'), on=false;
+  var stage=document.getElementById('stage'), v=document.getElementById('v'), on=false, started=false;
   function arrive(){ if(on) return; on=true; stage.classList.add('arrived'); }
-  // Lancement automatique et fiable : muet obligatoire pour que les navigateurs autorisent la lecture sans clic
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var portrait=matchMedia('(max-aspect-ratio: 1/1)').matches;
+
+  if(portrait||reduce){
+    // Téléphone : étiquettes animées en direct (rien à télécharger), puis le titre arrive du fond
+    stage.classList.add('fallback');
+    setTimeout(arrive, reduce?300:3900);
+    return;
+  }
+
+  // Ordinateur / paysage : la vidéo (0,9 Mo), lancée automatiquement (muette pour être autorisée)
   v.muted=true; v.defaultMuted=true; v.setAttribute('muted',''); v.playsInline=true;
-  var started=false;
+  v.src='assets/video/intro-tags.mp4';
   function tryPlay(){ if(started) return; var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
-  v.addEventListener('playing',function(){started=true;stage.classList.add('vplay');});
-  ['loadedmetadata','loadeddata','canplay','canplaythrough'].forEach(function(e){v.addEventListener(e,tryPlay);});
+  v.addEventListener('playing',function(){started=true;stage.classList.add('vplay');stage.classList.remove('fallback');requestAnimationFrame(watch);});
+  ['loadedmetadata','loadeddata','canplay'].forEach(function(e){v.addEventListener(e,tryPlay);});
   tryPlay();
-  // Certains navigateurs (économie d'énergie) attendent un premier geste : le moindre contact lance la vidéo
   ['touchstart','pointerdown','keydown','scroll','click'].forEach(function(e){window.addEventListener(e,tryPlay,{passive:true,once:true});});
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) tryPlay(); });
   window.addEventListener('pageshow',tryPlay);
-  // Le titre arrive du fond dès que les étiquettes sont bien proches de l'écran
-  function watch(){ if(on) return; if(v.ended || (v.currentTime||0)>=4.6) arrive(); else requestAnimationFrame(watch); }
-  v.addEventListener('playing',function(){requestAnimationFrame(watch)});
+  // Le titre arrive du fond quand les étiquettes sont proches de l'écran
+  function watch(){ if(on) return; if(v.ended||(v.currentTime||0)>=4.4) arrive(); else requestAnimationFrame(watch); }
   v.addEventListener('ended',arrive);
-  // Vidéo vraiment impossible à lire (ou réseau très lent) : le titre arrive quand même
-  // Lecture refusée : on joue les étiquettes en direct, puis le titre arrive (une fois la vidéo lancée par un contact, on repasse dessus)
-  setTimeout(function(){ if(!started && !on){ stage.classList.add('fallback'); setTimeout(arrive,4300); } },1200);
-  v.addEventListener('playing',function(){ stage.classList.remove('fallback'); });
-  setTimeout(function(){ if(!on && !started) arrive(); },9000);
-  setTimeout(function(){ if(!on && (v.currentTime||0)<0.3) arrive(); },14000);
+  // Lecture refusée par le navigateur : mêmes étiquettes en direct, puis le titre
+  setTimeout(function(){ if(!started&&!on){ stage.classList.add('fallback'); setTimeout(arrive,3900); } },1500);
+  setTimeout(function(){ if(!on) arrive(); },10000);
 })();
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
