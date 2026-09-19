@@ -1,424 +1,461 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RESTUP — Ton resto tourne. Ta marge, non.</title>
+<meta name="description" content="Un coach RESTUP, une heure de pilotage par semaine, un plan sur 16 semaines. Pour les restaurateurs qui veulent arrêter de subir leurs chiffres.">
+<meta name="theme-color" content="#050507">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="RESTUP — Ton resto tourne. Ta marge, non.">
+<meta property="og:description" content="Un coach, une heure par semaine, un plan sur 16 semaines. Audit gratuit.">
 <link rel="icon" type="image/png" href="portail/icon-192.png">
-<title>Découvrir RestUp — Pilotez. Optimisez. Développez.</title>
-<meta name="description" content="L'accompagnement stratégique pour restaurateurs ambitieux, par un consultant qui accompagne des enseignes de restauration depuis plus de 12 ans. Diagnostic précis, stratégie sur-mesure et suivi personnalisé.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<style>
-.strip{padding-top:36px;padding-bottom:36px;}
-.strip-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;}
-.strip-label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted-dim);width:100%;text-align:center;}
-@media (min-width:700px){.strip-label{width:auto;text-align:left;}}
-
-.problem{background:var(--surface);border-radius:var(--r-xl);overflow:hidden;position:relative;}
-.problem .glow-a{width:400px;height:400px;background:radial-gradient(circle,rgba(155,77,255,.16),transparent 70%);top:-100px;right:-60px;}
-.problem-inner{position:relative;z-index:1;padding:52px 26px;}
-.problem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
-.problem-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px 22px;}
-.problem-card .icon{width:42px;height:42px;border-radius:var(--r-sm);background:var(--lime-dim);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
-.problem-card .icon svg{width:21px;height:21px;stroke:var(--green-deep);}
-.problem-card h3{font-weight:800;font-size:16.5px;margin-bottom:8px;color:var(--text-strong,#fff);}
-.problem-card p{font-size:14px;}
-
-.proof-banner{background:#151515;border:1px solid rgba(155,77,255,.55);box-shadow:0 0 40px rgba(155,77,255,.18);border-radius:var(--r-xl);padding:38px 32px;color:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;box-shadow:0 20px 40px -14px rgba(155,77,255,.35);}
-.proof-banner h3{font-size:20px;margin-bottom:6px;color:#fff;}
-.proof-banner p{color:rgba(13,13,13,.72);font-size:13.5px;max-width:52ch;margin:0 auto;}
-.proof-banner .big{font-family:var(--font-heading);font-weight:400;font-size:44px;color:#B37BFF;white-space:nowrap;}
-
-.final{position:relative;background:var(--surface);border-radius:var(--r-xl);overflow:hidden;padding:56px 26px;text-align:center;}
-.final-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
-.final h2{font-size:clamp(26px,4vw,42px);margin-bottom:14px;color:var(--text-strong,#fff);}
-.final p{font-size:15.5px;margin-bottom:26px;}
-.btn-primary.on-lime{background:#fff;color:#0B0D0C;}
-.final-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin-top:22px;font-size:12px;color:var(--muted-dim);}
-.final-trust span{display:flex;align-items:center;gap:6px;}
-.final-trust svg{width:14px;height:14px;stroke:var(--green-deep);flex:0 0 auto;}
-
-/* founder section — stacked & centered */
-.founder-card{background:var(--surface);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow);}
-.founder-media{position:relative;height:300px;background:linear-gradient(160deg,#151515,#4a2482);}
-.founder-media img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
-.founder-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,var(--surface) 100%);pointer-events:none;}
-.founder-content{padding:8px 36px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;}
-.founder-content h2{font-size:clamp(22px,3vw,30px);color:var(--text-strong,#fff);margin-bottom:14px;line-height:1.2;}
-.founder-content p{font-size:14.5px;margin:0 auto 16px;max-width:56ch;}
-.founder-badge-row{display:flex;align-items:center;gap:14px;margin:10px auto 22px;padding:14px 18px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);width:fit-content;max-width:100%;}
-.founder-badge-row img{height:28px;width:auto;flex:0 0 auto;}
-.founder-badge-row .tagline{font-size:13px;font-weight:700;color:var(--text-strong,#fff);}
-.founder-stats{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;}
-.founder-stats div{font-size:12px;color:var(--muted);}
-.founder-stats b{display:block;font-size:19px;font-weight:800;font-family:var(--font-heading);color:var(--green-deep);}
-
-/* client logos marquee */
-.client-logo{width:88px;height:88px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:#fff;border:1px solid var(--line);}
-.client-logo.dark-tile{background:#1c0e33;}
-.client-logo.fill img{object-fit:cover;padding:0;}
-.client-logo img{width:100%;height:100%;object-fit:contain;padding:9px;box-sizing:border-box;display:block;}
-
-/* ===== motion-design offer showcase ===== */
-.omc-border{position:relative;border-radius:30px;padding:2px;isolation:isolate;overflow:hidden;}
-.omc-border::before{content:"";position:absolute;inset:-60%;background:conic-gradient(from 0deg,var(--lime),transparent 25%,transparent 50%,var(--lime-2),transparent 75%,var(--lime));animation:omcSpin 7s linear infinite;z-index:-1;}
-@keyframes omcSpin{to{transform:rotate(360deg);}}
-.omc-inner{position:relative;background:var(--surface);border-radius:28px;padding:44px 38px;overflow:hidden;}
-.omc-glow{position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(155,77,255,.38),transparent 70%);filter:blur(50px);top:-120px;right:-100px;pointer-events:none;animation:omcPulse 4.5s ease-in-out infinite;}
-.omc-glow.b{top:auto;bottom:-140px;left:-100px;right:auto;background:radial-gradient(circle,rgba(22,163,74,.30),transparent 70%);animation-delay:1.4s;}
-@keyframes omcPulse{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.18);}}
-.omc-top{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px;}
-.omc-eyebrow-row{display:flex;flex-direction:column;gap:10px;}
-.omc-badge{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;background:#fff;border:none;color:#6d2fd0;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:7px 14px;border-radius:999px;animation:omcFloat 3.6s ease-in-out infinite;}
-.omc-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);}
-@keyframes omcFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-.omc-title{font-size:clamp(20px,2.6vw,26px);color:var(--text-strong,#fff);font-weight:800;}
-.omc-price{display:flex;align-items:flex-end;flex-wrap:wrap;gap:2px;font-family:var(--font-heading);font-weight:800;color:var(--text-strong,#fff);line-height:1;}
-.omc-price .cur{font-size:26px;margin-top:6px;color:var(--muted);}
-.omc-from{font-family:var(--font-body);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 6px 12px 0;}
-.omc-price .num{font-size:clamp(48px,7vw,68px);}
-.omc-price .per{font-size:15px;color:var(--muted);align-self:flex-end;margin-bottom:8px;font-weight:600;}
-.omc-anchor{position:relative;z-index:1;font-size:13px;color:var(--muted);margin-bottom:28px;}
-.omc-anchor b{color:var(--green-deep);}
-.omc-features{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px;}
-@media (max-width:680px){.omc-features{grid-template-columns:1fr;}}
-.omc-feature{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:var(--r-lg);background:var(--bg-2);border:1px solid var(--line);opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease;transition-delay:calc(var(--d) * .13s);}
-.in-view .omc-feature{opacity:1;transform:translateY(0);}
-.omc-feat-icon{position:relative;flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--ink);border:1px solid rgba(155,77,255,.4);display:flex;align-items:center;justify-content:center;}
-.omc-feat-icon svg{width:18px;height:18px;stroke:var(--lime);}
-.omc-feat-icon .omc-check{position:absolute;bottom:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1);transition-delay:calc(var(--d) * .13s + .4s);}
-.in-view .omc-feat-icon .omc-check{transform:scale(1);}
-.omc-feat-icon .omc-check svg{width:9px;height:9px;stroke:var(--ink);stroke-width:3;}
-.omc-feature h4{font-size:14.5px;font-weight:800;color:var(--text-strong,#fff);margin-bottom:3px;}
-.omc-feature p{font-size:12.5px;line-height:1.5;}
-.omc-guarantees{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:14px 22px;margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--line);}
-.omc-guarantees span{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;font-weight:600;}
-.omc-guarantees svg{width:15px;height:15px;stroke:var(--green-deep);flex:0 0 auto;}
-.omc-bottom{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;}
-.omc-urgency{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-strong,#fff);font-weight:700;max-width:34ch;}
-.omc-urgency .dot{width:8px;height:8px;border-radius:50%;background:#ff5c5c;box-shadow:0 0 8px #ff5c5c;flex:0 0 auto;animation:pulse 1.6s ease-in-out infinite;}
-.omc-secondary{display:block;text-align:center;font-size:12.5px;color:var(--muted-dim);margin-top:12px;text-decoration:underline;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-
-/* mini FAQ */
-.mini-faq{}
-.faq-item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:10px;overflow:hidden;}
-.faq-q{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 18px;cursor:pointer;font-weight:700;font-size:14.5px;color:var(--text-strong,#fff);}
-.faq-q .plus{transition:transform .25s ease;color:var(--green-deep);flex:0 0 auto;}
-.faq-item.open .plus{transform:rotate(45deg);}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;}
-.faq-item.open .faq-a{max-height:240px;}
-.faq-a-inner{padding:0 18px 18px;font-size:14px;color:var(--muted);}
-
-
-/* alternating image/text feature rows — full width */
-.feature-row{display:flex;align-items:center;gap:44px;}
-.feature-row.reverse{flex-direction:row-reverse;}
-.feature-media{flex:1 1 420px;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow);}
-.feature-media img{width:100%;height:100%;display:block;aspect-ratio:4/3;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1);}
-.feature-media:hover img{transform:scale(1.06);}
-.feature-text{flex:1 1 420px;text-align:left;}
-.feature-text h3{font-size:clamp(22px,3vw,32px);color:var(--text-strong,#fff);margin-bottom:16px;line-height:1.2;}
-.feature-text p{font-size:15px;line-height:1.75;max-width:56ch;margin:0;}
-.feature-stack{display:flex;flex-direction:column;gap:28px;}
-@media (max-width:820px){
-  .feature-row,.feature-row.reverse{flex-direction:column;gap:22px;}
-  .feature-media{width:100%;}
-}
-
-/* ============ LIGHT DA — experimental variant ============ */
-body.light-theme{
-  background:#EEF2E9;
-  color:#12180F;
-  --surface:#FFFFFF;
-  --surface-2:#F0F3EC;
-  --muted:#5B6259;
-  --muted-dim:#62695F;
-  --line: rgba(15,30,15,0.10);
-  --shadow: 0 1px 2px rgba(20,30,20,.05), 0 24px 48px -16px rgba(20,30,20,.10);
-  --text-strong:#12180F;
-}
-body.light-theme #ambientBg{display:none;}
-body.light-theme .eyebrow{background:rgba(15,30,15,.05);color:#2B3428;border-color:var(--line);}
-body.light-theme .problem-card{background:rgba(15,30,15,.03);}
-body.light-theme .omc-feature{background:rgba(15,30,15,.03);}
-body.light-theme .founder-badge-row{background:rgba(15,30,15,.03);}
-body.light-theme .chip{box-shadow:0 1px 3px rgba(20,30,20,.06);}
-body.light-theme .glow{opacity:.5;}
-body.light-theme .toast{color:var(--text-strong);}
-body.light-theme .problem-card,body.light-theme .founder-badge-row,body.light-theme .omc-feature{background:rgba(15,30,15,.035);}
-body.light-theme .plan-tag.internal{background:rgba(15,30,15,.06);}
-body.light-theme .section-head h2{color:var(--text-strong);}
-body.light-theme .final h2{color:var(--text-strong);}
-.proof-banner p{color:rgba(255,255,255,.92);}
-</style>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="RESTUP">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050507;--bg2:#0d0b13;--card:#111017;--line:#25222f;--v:#9B4DFF;--v2:#B37BFF;--v3:#D2ADFF;--vd:#4a2482;--vdd:#1c0e33;--t:#fff;--m:#b9b4c6;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--t);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--safe-t);background:var(--bg);z-index:120;pointer-events:none}
+a{color:inherit;text-decoration:none}
+.disp{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.98}
+.v{color:var(--v2)}
+section{position:relative}
+.wrap{width:min(1180px,100% - 44px);margin:0 auto}
+#prog{position:fixed;left:0;top:var(--safe-t);height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--v),var(--v3));z-index:130}
+.glowcur{position:fixed;left:0;top:0;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:radial-gradient(closest-side,rgba(155,77,255,.22),transparent);pointer-events:none;z-index:1;will-change:transform;display:none}
+@media (pointer:fine){.glowcur{display:block}}
+
+/* NAV */
+.nav{position:fixed;left:0;right:0;top:var(--safe-t);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px max(22px,env(safe-area-inset-left)) 14px;transition:background .3s,backdrop-filter .3s,padding .3s}
+.nav.s{background:rgba(5,5,7,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding-top:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.wm{font-family:Anton,Impact,sans-serif;font-size:28px;letter-spacing:-.01em;line-height:1}
+.wm span{color:var(--v2)}
+.nav ul{display:flex;gap:30px;list-style:none;font-size:14px;font-weight:600;color:var(--m)}
+.nav ul a:hover{color:#fff}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 30px;border-radius:999px;font-weight:700;font-size:15.5px;background:#fff;color:#6d2fd0;overflow:hidden;transition:transform .2s,box-shadow .2s;box-shadow:0 12px 40px -10px rgba(155,77,255,.7);will-change:transform}
+.btn::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(120deg,transparent,rgba(155,77,255,.35),transparent);transform:skewX(-20deg);animation:shine 3.4s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-70%}100%{left:130%}}
+.btn:hover{box-shadow:0 16px 54px -8px rgba(179,123,255,.95)}
+.btn.sm{min-height:42px;padding:0 20px;font-size:14px}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid var(--v);box-shadow:none}
+.btn.ghost::after{display:none}
+.btn.ghost:hover{background:rgba(155,77,255,.16)}
+@media (max-width:820px){.nav ul{display:none}}
+
+/* REVEALS : ça arrive de gauche, de droite, du fond */
+[data-r]{opacity:0;transition:opacity .9s ease,transform 1.1s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s);will-change:transform,opacity}
+[data-r=left]{transform:translateX(-120px)}
+[data-r=right]{transform:translateX(120px)}
+[data-r=up]{transform:translateY(60px)}
+[data-r=depth]{transform:scale(.55)}
+[data-r].in{opacity:1;transform:none}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
+.split .w>span{display:inline-block;transform:translateX(calc(var(--dir,1) * -115%));transition:transform 1s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i,0) * 55ms)}
+.split.in .w>span{transform:none}
+
+/* HERO */
+.hero{min-height:100svh;display:flex;align-items:center;overflow:hidden;padding:calc(var(--safe-t) + 96px) 0 90px;background:radial-gradient(80% 60% at 78% 30%,rgba(155,77,255,.14),transparent 60%),var(--bg)}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.rays{position:absolute;left:72%;top:35%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;background:repeating-conic-gradient(from 0deg,rgba(155,77,255,.09) 0 2deg,transparent 2deg 10deg);-webkit-mask-image:radial-gradient(closest-side,#000,transparent 65%);mask-image:radial-gradient(closest-side,#000,transparent 65%);animation:spin 160s linear infinite;pointer-events:none;opacity:.55}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(90deg,rgba(5,5,7,.9) 0%,rgba(5,5,7,.72) 45%,rgba(5,5,7,.2) 100%)}
+@media (max-width:900px){.hero::before{background:radial-gradient(90% 55% at 40% 48%,rgba(5,5,7,.92),rgba(5,5,7,.6) 70%,rgba(5,5,7,.25))}}
+.hero .wrap{position:relative;z-index:3}
+.kick{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--v2);margin-bottom:22px}
+.kick::before{content:"";width:34px;height:2px;background:var(--v)}
+h1.big{font-size:clamp(50px,11.2vw,170px);margin-bottom:26px}
+h1.big .ln{display:block;overflow:hidden;padding-bottom:.04em}
+h1.big .ln>span{display:inline-block;transition:transform 1.2s cubic-bezier(.16,1,.3,1),opacity 1s}
+h1.big .ln:nth-child(1)>span{transform:translateX(-110%)}
+h1.big .ln:nth-child(2)>span{transform:translateX(110%)}
+h1.big .ln:nth-child(3)>span{transform:translateY(110%)}
+h1.big.in .ln>span{transform:none}
+h1.big .ln:nth-child(2)>span{transition-delay:.18s}
+h1.big .ln:nth-child(3)>span{transition-delay:.4s}
+h1.big .ln:nth-child(3){color:var(--v2)}
+.lead{max-width:560px;font-size:clamp(16px,1.6vw,19.5px);color:#d8d4e3;margin-bottom:34px}
+.lead b{color:#fff}
+.ctas{display:flex;gap:14px;flex-wrap:wrap}
+.cue{position:absolute;left:50%;bottom:calc(20px + var(--safe-b));transform:translateX(-50%);z-index:3;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--m);display:flex;flex-direction:column;align-items:center;gap:8px}
+.cue i{width:1px;height:38px;background:linear-gradient(var(--v),transparent);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* TICKERS : un défile à gauche, l'autre revient à droite */
+.tick{overflow:hidden;border-block:1px solid var(--line);background:var(--bg2);padding:16px 0;position:relative;z-index:2}
+.tick .tr{display:flex;width:max-content;animation:mq 34s linear infinite;gap:0;will-change:transform}
+.tick.rev .tr{animation-direction:reverse}
+.tick span{font-family:Anton,Impact,sans-serif;text-transform:uppercase;font-size:clamp(28px,4.4vw,56px);white-space:nowrap;padding:0 26px;color:transparent;-webkit-text-stroke:1.4px rgba(185,180,198,.5)}
+.tick span.f{color:#fff;-webkit-text-stroke:0}
+.tick span.d{color:var(--v);-webkit-text-stroke:0;padding:0 4px}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* CONSTAT */
+.pad{padding:clamp(80px,12vw,150px) 0}
+h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{position:relative;background:linear-gradient(180deg,#15121d,#0c0a12);border:1px solid var(--line);border-radius:26px;padding:34px 30px 38px;overflow:hidden;transform-style:preserve-3d}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 80% 0%,rgba(155,77,255,.22),transparent 70%);opacity:.8;pointer-events:none}
+.card svg.ic{width:70px;height:70px;margin-bottom:22px;stroke:var(--v2);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(26px,2.6vw,34px);text-transform:uppercase;line-height:1.04;margin-bottom:14px}
+.card p{color:var(--m);font-size:15.5px}
+.sd path,.sd circle,.sd line,.sd polyline,.sd rect{stroke-dasharray:var(--l,260);stroke-dashoffset:var(--l,260);transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1) .25s}
+.in .sd path,.in .sd circle,.in .sd line,.in .sd polyline,.in .sd rect,.sd.in path,.sd.in circle,.sd.in line,.sd.in polyline,.sd.in rect{stroke-dashoffset:0}
+.slap{margin-top:clamp(60px,9vw,120px);font-size:clamp(32px,6vw,84px)}
+.slap em{font-style:normal;color:var(--v2)}
+@media (max-width:900px){.cards{grid-template-columns:1fr}}
+
+/* MÉTHODE : défilement horizontal épinglé */
+.hs{--n:4;height:calc(var(--n) * 100svh)}
+.hs-s{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(70% 60% at 50% 100%,rgba(74,36,130,.4),transparent 70%),var(--bg)}
+.hs-top{display:flex;justify-content:space-between;align-items:flex-end;padding:calc(var(--safe-t) + 78px) max(22px,4vw) 0;gap:20px}
+.hs-top h2{font-size:clamp(34px,5vw,72px)}
+.hs-bar{width:min(260px,32vw);height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:12px}
+.hs-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--v),var(--v3));transform-origin:0 50%;transform:scaleX(0)}
+.hs-track{display:flex;flex:1;min-height:0;will-change:transform}
+.pn{flex:0 0 100vw;display:flex;align-items:center;gap:clamp(24px,5vw,80px);padding:0 max(22px,5vw)}
+.pn .num{font-family:Anton,Impact,sans-serif;font-size:clamp(150px,26vw,380px);line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(155,77,255,.55);flex:0 0 auto}
+.pn .tx{max-width:520px}
+.pn h3{font-size:clamp(34px,5vw,68px);margin-bottom:16px}
+.pn p{color:var(--m);font-size:clamp(15px,1.5vw,18px)}
+.pn .viz{margin-left:auto;flex:0 0 min(340px,28vw);aspect-ratio:1;border:1px solid var(--line);border-radius:30px;background:linear-gradient(180deg,#15121d,#0b0910);display:grid;place-items:center;position:relative;overflow:hidden}
+.pn .viz svg{width:82%;height:82%}
+@media (max-width:900px){
+  .hs{height:auto}.hs-s{position:relative;height:auto;padding-bottom:40px}
+  .hs-top{padding-top:80px}.hs-bar{display:none}
+  .hs-track{flex-direction:column;gap:26px;padding:26px 22px 0!important;transform:none!important}
+  .pn{flex:none;flex-direction:column;align-items:flex-start;padding:0;gap:14px;border:1px solid var(--line);border-radius:26px;background:var(--card);padding:26px}
+  .pn .num{font-size:120px}.pn .viz{margin:6px 0 0;flex:none;width:100%;max-width:300px}
+}
+
+/* APPLI */
+.app{background:radial-gradient(60% 50% at 50% 40%,rgba(155,77,255,.16),transparent 70%),var(--bg)}
+.appgrid{display:grid;grid-template-columns:1fr 1.2fr;gap:clamp(30px,5vw,80px);align-items:center}
+.appgrid p.d{color:var(--m);font-size:clamp(16px,1.5vw,19px);max-width:480px;margin-bottom:22px}
+.ticks{list-style:none;display:flex;flex-direction:column;gap:12px}
+.ticks li{display:flex;gap:12px;align-items:flex-start;font-weight:600}
+.ticks li::before{content:"";flex:0 0 22px;height:22px;margin-top:2px;border-radius:50%;background:rgba(155,77,255,.18) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B37BFF' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/14px no-repeat}
+.phones{display:flex;justify-content:center;align-items:center;gap:0;perspective:1400px;min-height:560px}
+.phone{width:min(240px,26vw);aspect-ratio:9/19;border-radius:38px;background:#0a0910;border:1.5px solid #34303f;padding:12px;box-shadow:0 40px 80px -20px rgba(0,0,0,.8),0 0 60px -10px rgba(155,77,255,.35);position:relative;flex:0 0 auto;will-change:transform}
+.phone:nth-child(1){transform:translateX(30px) rotate(-7deg) translateZ(-40px);z-index:1}
+.phone:nth-child(2){z-index:3;margin:0 -18px;animation:fl 6s ease-in-out infinite}
+.phone:nth-child(3){transform:translateX(-30px) rotate(7deg) translateZ(-40px);z-index:1}
+@keyframes fl{50%{transform:translateY(-16px)}}
+.scr{height:100%;border-radius:28px;background:linear-gradient(180deg,#14111c,#0a0910);padding:16px 13px;overflow:hidden;display:flex;flex-direction:column;gap:9px;font-size:11px}
+.scr .k{font-size:8.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--v2)}
+.scr h5{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:17px;line-height:1.05}
+.scr .box{background:#191622;border:1px solid var(--line);border-radius:14px;padding:11px}
+.scr .box.hot{border-color:rgba(155,77,255,.6);box-shadow:0 0 24px -6px rgba(155,77,255,.5)}
+.scr .box b{display:block;font-size:12.5px;line-height:1.25;margin:3px 0}
+.scr small{color:var(--m);font-size:9.5px}
+.chip{display:inline-block;font-size:8.5px;font-weight:700;padding:3px 8px;border-radius:99px;background:rgba(155,77,255,.2);color:var(--v3)}
+.tk{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:600;padding:8px 9px;background:#191622;border-radius:10px;border:1px solid var(--line)}
+.tk i{flex:0 0 15px;height:15px;border-radius:50%;border:1.5px solid #4a4658;position:relative;transition:.4s}
+.tk.on i{background:var(--v);border-color:var(--v)}
+.tk.on i::after{content:"";position:absolute;left:4px;top:1.5px;width:4px;height:7px;border:solid #fff;border-width:0 1.8px 1.8px 0;transform:rotate(45deg)}
+.tk.on span{color:#8b869a;text-decoration:line-through}
+.pb{height:5px;border-radius:5px;background:#26222f;overflow:hidden}
+.pb i{display:block;height:100%;width:var(--w,30%);background:linear-gradient(90deg,var(--v),var(--v3));transition:width .8s}
+.bub{background:#241a3a;border:1px solid rgba(155,77,255,.35);color:#eee7fb;border-radius:12px 12px 12px 3px;padding:8px 10px;font-size:10px;line-height:1.4;max-width:92%;opacity:0;transform:translateY(8px);transition:.5s}
+.bub.on{opacity:1;transform:none}
+.bub b{color:#fff}
+.ex{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--m);letter-spacing:.06em}
+@media (max-width:900px){.appgrid{grid-template-columns:1fr}.phone{width:min(210px,31vw)}.phones{min-height:430px}.phone:nth-child(1){transform:translateX(24px) rotate(-6deg)}.phone:nth-child(3){transform:translateX(-24px) rotate(6deg)}}
+
+/* CHIFFRES */
+.stats{background:linear-gradient(135deg,var(--vdd),#0a0710 60%);border-block:1px solid var(--line)}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.st{padding:8px 0;border-left:2px solid var(--v);padding-left:20px}
+.st b{display:block;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(54px,7.6vw,112px);line-height:1;color:#fff}
+.st b small{font-size:.42em;color:var(--v2);margin-left:6px}
+.st>span{display:block;color:var(--m);font-size:14.5px;margin-top:8px}
+.st b span{display:inline;font-size:inherit;color:inherit;margin:0}
+@media (max-width:900px){.sgrid{grid-template-columns:1fr 1fr}}
+
+/* VS */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.col{border-radius:28px;padding:clamp(26px,3.4vw,44px);border:1px solid var(--line)}
+.col.no{background:#0b0a0f;color:var(--m)}
+.col.yes{background:linear-gradient(160deg,#241046,#12091f);border-color:rgba(155,77,255,.55);box-shadow:0 0 80px -20px rgba(155,77,255,.55)}
+.col h3{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(28px,3.4vw,46px);text-transform:uppercase;margin-bottom:20px}
+.col.yes h3{color:var(--v3)}
+.col ul{list-style:none;display:flex;flex-direction:column;gap:14px;font-size:clamp(15px,1.4vw,17.5px);font-weight:600}
+.col li{display:flex;gap:12px}
+.col.no li::before{content:"✕";color:#5c5768;font-weight:800}
+.col.yes li::before{content:"→";color:var(--v2);font-weight:800}
+.col.yes li{color:#fff}
+@media (max-width:900px){.vs{grid-template-columns:1fr}}
+
+/* LOGOS */
+.logos .lt{display:flex;width:max-content;gap:18px;animation:mq 46s linear infinite;padding:9px 0}
+.logos .lt.rev{animation-direction:reverse;animation-duration:54s}
+.logos .lw{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.lg{flex:0 0 auto;width:96px;height:96px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;border:2px solid #2b2536}
+.lg img{width:100%;height:100%;object-fit:contain;padding:10px}
+.lg.fill img{object-fit:cover;padding:0}
+.lg.dk{background:#1c0e33}
+
+/* FAQ */
+.faq details{border-bottom:1px solid var(--line);padding:6px 0}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;padding:20px 0;font-weight:700;font-size:clamp(16px,1.6vw,20px)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:Anton;font-size:30px;color:var(--v2);transition:transform .3s;flex:0 0 auto}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--m);padding:0 0 22px;max-width:760px}
+.fqg{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(30px,5vw,80px)}
+@media (max-width:900px){.fqg{grid-template-columns:1fr}}
+
+/* FINAL */
+.final{text-align:center;overflow:hidden;background:radial-gradient(60% 60% at 50% 50%,rgba(155,77,255,.3),transparent 70%),var(--bg);padding:clamp(100px,16vw,200px) 0 calc(80px + var(--safe-b))}
+.final h2{font-size:clamp(46px,10.4vw,160px);margin-bottom:26px}
+.final p{color:var(--m);max-width:520px;margin:0 auto 34px;font-size:clamp(16px,1.6vw,19px)}
+.final .ctas{justify-content:center}
+.final .rays{left:50%;top:50%;opacity:.8}
+.foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--m);font-size:13px;margin-top:clamp(70px,10vw,130px);border-top:1px solid var(--line);padding-top:22px;position:relative;z-index:2}
+.foot a:hover{color:#fff}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  [data-r],.split .w>span,h1.big .ln>span{opacity:1!important;transform:none!important}
+  .hs{height:auto}.hs-s{position:relative;height:auto}.hs-track{flex-direction:column;transform:none!important}.pn{flex:none}
+}
+</style>
 </head>
 <body>
+<div id="prog"></div><div class="glowcur" id="gc"></div>
 
-<div class="nav-outer">
-  <nav class="nav">
-    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
-    <div class="nav-links">
-      <a href="index.html" class="active">Accueil</a>
-      <a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a>
-      <a href="offre.html">Offre</a>
-      <a href="contact.html">Contact</a>
-    </div>
-    <a class="nav-cta" href="portail/login.html">Espace client</a>
-    <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu"><span></span></button>
-    <div class="nav-menu" id="navMenu">
-      <a href="index.html">Accueil</a>
-      <a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a>
-      <a href="offre.html">Offre</a>
-      <a href="contact.html">Contact</a>
-      <a href="portail/login.html" class="menu-cta">Espace client</a>
-    </div>
-  </nav>
-</div>
+<header class="nav" id="nav">
+  <a href="decouvrir.html" class="wm" aria-label="RESTUP">REST<span>UP</span></a>
+  <ul><li><a href="#constat">Le constat</a></li><li><a href="#methode">La méthode</a></li><li><a href="#appli">L'appli</a></li><li><a href="#questions">Questions</a></li></ul>
+  <a class="btn sm" href="contact.html">Demander mon audit</a>
+</header>
 
-<section class="page-hero reveal" style="text-align:center;">
-  <div class="eyebrow">Découvrir RestUp</div>
-  <h1 style="max-width:16ch;margin:0 auto 24px;">Un accompagnement de terrain, pensé pour votre rentabilité.</h1>
-  <p class="lead" style="max-width:56ch;margin:0 auto;">Ce qu'on fait concrètement, comment ça se déroule, et pourquoi ça marche — avant de vous engager sur quoi que ce soit.</p>
+<main>
+<!-- HERO -->
+<section class="hero" id="top">
+  <canvas id="fx" aria-hidden="true"></canvas><div class="rays"></div>
+  <div class="wrap">
+    <p class="kick" data-r="left">Coaching de pilotage pour restaurateurs</p>
+    <h1 class="big disp" id="h1"><span class="ln"><span>Ton resto tourne.</span></span><span class="ln"><span>Ta marge, non.</span></span><span class="ln"><span>On règle ça.</span></span></h1>
+    <p class="lead" data-r="right" style="--d:.5s">Un coach RESTUP à tes côtés, <b>une heure de pilotage par semaine</b> et un plan sur 16 semaines. Pas un rapport qui prend la poussière : des décisions, puis des actions. Chaque semaine.</p>
+    <div class="ctas" data-r="up" style="--d:.7s"><a class="btn" href="contact.html">Demander mon audit gratuit <span aria-hidden="true">↗</span></a><a class="btn ghost" href="#methode">Voir comment ça marche</a></div>
+  </div>
+  <div class="cue"><span>Scroll</span><i></i></div>
 </section>
 
-<!-- 2. AGITATION — on lui montre qu'on comprend sa douleur, avant toute autre chose -->
-<section id="constat">
-  <div class="problem">
-    <span class="glow glow-a"></span>
-    <div class="problem-inner">
-      <div class="section-head reveal" style="max-width:640px;">
-        <div class="eyebrow">Le constat</div>
-        <h2>Vous travaillez plus que jamais. La marge, elle, ne suit pas.</h2>
-        <p>Trois blocages qu'on retrouve dans la quasi-totalité des restaurants qu'on audite. Reconnaissez-vous votre établissement ?</p>
-      </div>
-      <div class="problem-grid">
-        <div class="problem-card glow-card reveal"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l4-4 4 4 4-6 6 6"/></svg></div><h3>L'effet ciseaux</h3><p>Vos prix montent, vos couverts baissent. Le CA tient sur le papier — la rentabilité, elle, recule.</p></div>
-        <div class="problem-card glow-card reveal"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 3"/></svg></div><h3>La marge fantôme</h3><p>2 points de food cost qui dérivent, 3% de masse salariale en plus : la marge s'évapore sans que vous le voyiez venir.</p></div>
-        <div class="problem-card glow-card reveal"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg></div><h3>Le plafond de verre du recrutement</h3><p>Ce n'est plus le manque de clients qui freine votre croissance. C'est l'impossibilité de recruter et garder une équipe stable.</p></div>
-      </div>
+<div class="tick" aria-hidden="true"><div class="tr" id="t1"></div></div>
+
+<!-- CONSTAT -->
+<section class="pad" id="constat">
+  <div class="wrap">
+    <h2 class="h disp split" data-split>Tu reconnais le quotidien ?</h2>
+    <div class="cards">
+      <article class="card" data-r="left" data-tilt>
+        <svg class="ic sd" viewBox="0 0 64 64" style="--l:180"><path d="M8 46a24 24 0 1 1 48 0"/><line x1="32" y1="46" x2="44" y2="24"/><circle cx="32" cy="46" r="3"/></svg>
+        <h3>Le chiffre rentre. La marge reste floue.</h3><p>Les achats montent, la trésorerie serre, et tu ne sais pas quel levier tirer en premier.</p>
+      </article>
+      <article class="card" data-r="up" style="--d:.15s" data-tilt>
+        <svg class="ic sd" viewBox="0 0 64 64" style="--l:200"><path d="M50 22a20 20 0 0 0-36 4"/><polyline points="14,12 14,26 28,26"/><path d="M14 42a20 20 0 0 0 36-4"/><polyline points="50,52 50,38 36,38"/></svg>
+        <h3>Tout finit par revenir vers toi.</h3><p>Plannings, imprévus, décisions : tu es indispensable au service, et ton rôle de dirigeant attend dehors.</p>
+      </article>
+      <article class="card" data-r="right" style="--d:.3s" data-tilt>
+        <svg class="ic sd" viewBox="0 0 64 64" style="--l:220"><circle cx="32" cy="32" r="20"/><line x1="32" y1="4" x2="32" y2="18"/><line x1="32" y1="46" x2="32" y2="60"/><line x1="4" y1="32" x2="18" y2="32"/><line x1="46" y1="32" x2="60" y2="32"/></svg>
+        <h3>Tu sais qu'il faut changer un truc.</h3><p>Il te manque du recul, un ordre de priorité, et quelqu'un pour tenir le cap avec toi.</p>
+      </article>
     </div>
+    <p class="slap disp split" data-split>Ton comptable te dit ce qui s'est passé. <em>Nous, on te dit quoi faire lundi.</em></p>
   </div>
 </section>
 
-<section>
-  <div class="proof-banner reveal">
-    <div><h3>La rentabilité ne se pilote pas au feeling</h3><p>Food cost autour de 28-30%, masse salariale autour de 30% : ce sont nos repères de départ pour situer un restaurant — pas des règles absolues. L'objectif qu'on vise ensuite avec vous : un EBITDA cible proche de 10%.</p></div>
-    <div class="big">~10%</div>
-  </div>
-</section>
+<div class="tick rev" aria-hidden="true"><div class="tr" id="t2"></div></div>
 
-<!-- 3. SOLUTION — comment on répare ça concrètement -->
-<section class="pillars">
-  <div class="section-head reveal" style="max-width:640px;">
-    <div class="eyebrow">Ce qu'on fait pour vous</div>
-    <h2>Mesurer. Prioriser. Piloter.</h2>
-    <p>Pas de rapport théorique. Une méthode de terrain, appliquée directement à votre établissement.</p>
-  </div>
-  <div class="feature-stack">
-    <div class="feature-row reveal">
-      <div class="feature-media"><img src="assets/photos/audit-kitchen.jpg" alt="Audit terrain d'un restaurant"></div>
-      <div class="feature-text">
-        <h3>Audit terrain complet</h3>
-        <p>On dissèque votre carte, votre food cost, votre masse salariale et votre trafic sur le terrain — pas depuis un tableur envoyé par mail. Pendant l'audit, on passe du temps dans votre établissement, on observe un vrai service, on discute avec votre équipe. L'objectif : identifier les 1 à 3 priorités qui comptent vraiment, pas 50 recommandations théoriques. Vous repartez avec un diagnostic chiffré, pas une impression générale.</p>
-      </div>
-    </div>
-    <div class="feature-row reverse reveal">
-      <div class="feature-media"><img src="assets/photos/planning.jpg" alt="Plan d'action hebdomadaire"></div>
-      <div class="feature-text">
-        <h3>Un plan à 12 mois, décliné à la semaine</h3>
-        <p>Pas de stratégie sur 40 pages que personne n'a le temps d'appliquer. Vision à 12 mois, grands chantiers à 4 mois, priorités du mois, et chaque semaine 2 à 3 actions concrètes — pensées pour tenir dans le quotidien d'un restaurateur qui gère déjà son service, son équipe et ses fournisseurs. Vous savez toujours ce qu'il faut faire aujourd'hui, et pourquoi.</p>
-      </div>
-    </div>
-    <div class="feature-row reveal">
-      <div class="feature-media"><img src="assets/photos/coaching.jpg" alt="Suivi continu avec votre consultant"></div>
-      <div class="feature-text">
-        <h3>1h de comité de pilotage, chaque semaine</h3>
-        <p>KPI du moment, actions réalisées ou non, blocages, décisions, priorités de la semaine suivante — en direct avec votre coach. Un espace client garde la trace de chaque tâche et de chaque échange, pour ne jamais perdre le fil d'une semaine à l'autre. L'accompagnement ne s'arrête pas après le diagnostic initial : il continue tant que vous avancez, avec quelqu'un qui connaît votre dossier et vos chiffres.</p>
-      </div>
+<!-- MÉTHODE -->
+<section class="hs" id="methode" data-hs>
+  <div class="hs-s">
+    <div class="hs-top"><h2 class="disp">Quatre temps.<br><span class="v">Zéro blabla.</span></h2><div class="hs-bar"><i id="hsb"></i></div></div>
+    <div class="hs-track" id="hst">
+      <div class="pn"><div class="num">01</div><div class="tx"><h3 class="disp">Comprendre</h3><p>On regarde où tu en es vraiment : rentabilité, achats, équipe, organisation. Un diagnostic de ta situation et de tes objectifs, pas une opinion.</p></div>
+        <div class="viz"><svg viewBox="0 0 200 200" fill="none" stroke-linecap="round"><path d="M30 150a70 70 0 1 1 140 0" stroke="#2b2536" stroke-width="14"/><path class="gauge" d="M30 150a70 70 0 1 1 140 0" stroke="#9B4DFF" stroke-width="14" stroke-dasharray="220" stroke-dashoffset="220"/><line class="needle" x1="100" y1="150" x2="100" y2="92" stroke="#fff" stroke-width="5" style="transform-origin:100px 150px;transform:rotate(-70deg);transition:transform 1.6s cubic-bezier(.3,1.4,.4,1) .3s"/><circle cx="100" cy="150" r="8" fill="#fff"/></svg></div></div>
+      <div class="pn"><div class="num">02</div><div class="tx"><h3 class="disp">Prioriser</h3><p>Une à trois priorités, pas trente. Chacune avec un responsable et une échéance. Le reste peut attendre, et il attendra.</p></div>
+        <div class="viz"><svg viewBox="0 0 200 200"><g class="stk"><rect x="30" y="118" width="140" height="34" rx="10" fill="#1d1a26" stroke="#2b2536"/><rect x="30" y="76" width="140" height="34" rx="10" fill="#241a3a" stroke="#4a2482"/><rect class="top" x="30" y="34" width="140" height="34" rx="10" fill="#9B4DFF"/><circle cx="50" cy="51" r="6" fill="#fff"/><rect x="64" y="47" width="70" height="8" rx="4" fill="#fff" opacity=".85"/></g></svg></div></div>
+      <div class="pn"><div class="num">03</div><div class="tx"><h3 class="disp">Agir</h3><p>Chaque semaine, ton coach t'aide à décider, débloquer et tenir le cap. Une action à la fois, jamais dix. Tu sais toujours quoi faire ensuite.</p></div>
+        <div class="viz"><svg viewBox="0 0 200 200" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="6"><rect x="30" y="34" width="26" height="26" rx="8" stroke="#9B4DFF"/><path class="ck" d="M36 47l6 6 10-12" stroke="#fff" stroke-dasharray="34" stroke-dashoffset="34"/><rect x="30" y="86" width="26" height="26" rx="8" stroke="#9B4DFF"/><path class="ck" d="M36 99l6 6 10-12" stroke="#fff" stroke-dasharray="34" stroke-dashoffset="34"/><rect x="30" y="138" width="26" height="26" rx="8" stroke="#4a4658"/></g><g fill="#2b2536"><rect x="72" y="42" width="96" height="10" rx="5"/><rect x="72" y="94" width="80" height="10" rx="5"/><rect x="72" y="146" width="90" height="10" rx="5"/></g></svg></div></div>
+      <div class="pn"><div class="num">04</div><div class="tx"><h3 class="disp">Ajuster</h3><p>On vérifie ce qui a bougé. Les indicateurs utiles sont suivis, le plan est ajusté à ta réalité. Aucun résultat n'est garanti, tout est mesuré.</p></div>
+        <div class="viz"><svg viewBox="0 0 200 200" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M24 40v130h152" stroke="#2b2536" stroke-width="4"/><path class="ln2" d="M32 150l32-30 28 14 34-52 34-20" stroke="#9B4DFF" stroke-width="7" stroke-dasharray="260" stroke-dashoffset="260"/><circle class="dot" cx="160" cy="62" r="9" fill="#fff" opacity="0"/></svg></div></div>
     </div>
   </div>
 </section>
 
-<!-- 3bis. RÉALISATIONS — teaser vers la page dédiée -->
-<section>
-  <div class="proof-banner reveal">
-    <div><h3>Nos champs d'action, en détail</h3><p>Transformations, inaugurations, vidéos UGC, analyses — découvrez où on fait vraiment la différence.</p></div>
-    <a href="realisations.html" class="btn-primary on-lime">Voir nos réalisations →</a>
-  </div>
-</section>
-
-<!-- 4. AUTORITÉ — pourquoi me faire confiance pour appliquer cette méthode -->
-<section class="founder-section" data-tone="boost">
-  <div class="founder-card reveal">
-    <div class="founder-media">
-      <img src="assets/illus-founder.svg" alt="Illustration de marques de restauration accompagnées à travers la France">
+<!-- APPLI -->
+<section class="pad app" id="appli">
+  <div class="wrap appgrid">
+    <div>
+      <p class="kick" data-r="left">L'appli RESTUP</p>
+      <h2 class="h disp split" data-split style="margin-bottom:22px">Ton coach est dans ta poche.</h2>
+      <p class="d" data-r="right">Pas un tableau de bord de plus à ne jamais ouvrir. Une appli qui te dit une seule chose : <b style="color:#fff">ce que tu fais maintenant</b>.</p>
+      <ul class="ticks">
+        <li data-r="left" style="--d:.1s">Une priorité à la fois : la suivante apparaît quand tu as terminé.</li>
+        <li data-r="left" style="--d:.2s">Ton plan semaine par semaine, avec ce qui est validé par ton coach.</li>
+        <li data-r="left" style="--d:.3s">Un récap clair après chaque échange, là où tu es déjà : WhatsApp.</li>
+      </ul>
     </div>
-    <div class="founder-content">
-      <div class="eyebrow">Derrière RestUp</div>
-      <h2>12 ans à faire grandir des marques de restauration.</h2>
-      <p><b style="color:var(--text-strong,#fff);">Hissam Bouhiza</b> n'a pas appris ce métier dans un livre. Du Mans à Bordeaux, il est dans la restauration depuis l'âge de 14 ans — jusqu'à devenir aujourd'hui consultant en croissance et créateur de concepts food.</p>
-      <p>Depuis plus de 12 ans, il accompagne des enseignes comme <b style="color:var(--text-strong,#fff);">Streat Burger, Pitaya, Crousty Game, La Kazdalerie, Dangerous Burger, My Khao, KFB Burger, Chamas Tacos</b> et de nombreux concepts indépendants — sur le développement, le branding et la rentabilité. RestUp, c'est cette expertise mise directement au service de <em style="font-style:normal;color:var(--green-deep);">votre</em> restaurant.</p>
-      <div class="founder-badge-row">
-        <span class="wm">REST<span>UP</span></span>
-        <span class="tagline">Pilotez. Optimisez. Développez.</span>
-      </div>
-      <div class="founder-stats">
-        <div><b>12+ ans</b>d'expérience en restauration</div>
-        <div><b>8+ enseignes</b>accompagnées</div>
-        <div><b>1h/semaine</b>de comité de pilotage avec chaque client</div>
-      </div>
+    <div class="phones" id="phones">
+      <div class="phone" data-r="left"><div class="scr"><span class="k">Accueil</span><h5>Bonjour,<br>Le Petit Bouchon</h5><div class="box hot"><span class="k">Ta priorité maintenant</span><b>Relever les pertes cuisine pendant 7 jours</b><small>À voir d'ici 72 h</small></div><div class="box"><span class="k">Prochain rendez-vous</span><b>Jeudi · 10 h 00</b></div><div style="display:flex;gap:5px;flex-wrap:wrap"><span class="chip">Accès</span><span class="chip">Onboarding</span><span class="chip">Audit</span></div></div><div class="ex">Exemple illustratif</div></div>
+      <div class="phone" data-r="depth"><div class="scr"><span class="k">Plan · Semaine 3</span><h5>Cap sur<br>la marge</h5><div class="pb"><i id="pbar" style="--w:20%"></i></div><div class="tk" id="tk1"><i></i><span>Relever les pertes</span></div><div class="tk" id="tk2"><i></i><span>Renégocier 2 fournisseurs</span></div><div class="tk" id="tk3"><i></i><span>Mettre à jour la carte</span></div><div class="tk" id="tk4"><i></i><span>Point équipe du lundi</span></div></div></div>
+      <div class="phone" data-r="right"><div class="scr"><span class="k">WhatsApp · récap</span><h5>Après ton<br>call</h5><div class="bub" id="b1">Bonjour Karim, merci pour notre échange. Voici l'essentiel :</div><div class="bub" id="b2"><b>Décidé :</b> on relève les pertes 7 jours.</div><div class="bub" id="b3"><b>Toi :</b> envoyer les fiches d'achats avant vendredi.</div><div class="bub" id="b4"><b>Moi :</b> te transmettre le modèle demain.</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- 5. PREUVE SOCIALE -->
-<section class="strip">
-  <div class="strip-inner" style="flex-direction:column;align-items:stretch;">
-    <span class="strip-label">Ils m'ont fait confiance</span>
-    <div class="marquee">
-      <div class="marquee-track">
-        <div class="client-logo"><img src="assets/clients/ultra-clean.png" alt="Ultra"></div>
-        <div class="client-logo dark-tile"><img src="assets/clients/breakys-clean.png" alt="Breakys"></div>
-        <div class="client-logo"><img src="assets/clients/coup-de-food.png" alt="Coup de Food"></div>
-        <div class="client-logo fill"><img src="assets/clients/kfb.jpg" alt="KFB"></div>
-        <div class="client-logo fill"><img src="assets/clients/super-kroustif-wok.jpg" alt="Super Kroustif Wok"></div>
-        <div class="client-logo fill"><img src="assets/clients/my-khao.jpg" alt="My Khao"></div>
-        <div class="client-logo fill"><img src="assets/clients/pitaya.png" alt="Pitaya"></div>
-        <div class="client-logo"><img src="assets/clients/crousty-game-clean.png" alt="Crousty Game"></div>
-        <div class="client-logo fill"><img src="assets/clients/dangerous-burger.jpg" alt="Dangerous Burger"></div>
-        <div class="client-logo"><img src="assets/clients/chamas-tacos-clean.png" alt="Chamas Tacos"></div>
-        <div class="client-logo"><img src="assets/clients/streat-burger-clean.png" alt="Str'Eat Burger"></div>
-        <div class="client-logo fill"><img src="assets/clients/la-kazdalerie.png" alt="La Kazdalerie"></div>
-        <div class="client-logo"><img src="assets/clients/ultra-clean.png" alt="Ultra"></div>
-        <div class="client-logo dark-tile"><img src="assets/clients/breakys-clean.png" alt="Breakys"></div>
-        <div class="client-logo"><img src="assets/clients/coup-de-food.png" alt="Coup de Food"></div>
-        <div class="client-logo fill"><img src="assets/clients/kfb.jpg" alt="KFB"></div>
-        <div class="client-logo fill"><img src="assets/clients/super-kroustif-wok.jpg" alt="Super Kroustif Wok"></div>
-        <div class="client-logo fill"><img src="assets/clients/my-khao.jpg" alt="My Khao"></div>
-        <div class="client-logo fill"><img src="assets/clients/pitaya.png" alt="Pitaya"></div>
-        <div class="client-logo"><img src="assets/clients/crousty-game-clean.png" alt="Crousty Game"></div>
-        <div class="client-logo fill"><img src="assets/clients/dangerous-burger.jpg" alt="Dangerous Burger"></div>
-        <div class="client-logo"><img src="assets/clients/chamas-tacos-clean.png" alt="Chamas Tacos"></div>
-        <div class="client-logo"><img src="assets/clients/streat-burger-clean.png" alt="Str'Eat Burger"></div>
-        <div class="client-logo fill"><img src="assets/clients/la-kazdalerie.png" alt="La Kazdalerie"></div>
-      </div>
+<!-- CHIFFRES -->
+<section class="stats pad" style="padding-block:clamp(60px,8vw,110px)">
+  <div class="wrap sgrid">
+    <div class="st" data-r="left"><b><span data-c="16">0</span></b><span>semaines de plan, construit avec toi</span></div>
+    <div class="st" data-r="right" style="--d:.1s"><b><span data-c="1">0</span><small>h</small></b><span>de pilotage chaque semaine avec ton coach</span></div>
+    <div class="st" data-r="left" style="--d:.2s"><b><span data-c="1">0</span></b><span>priorité à la fois, jamais dix</span></div>
+    <div class="st" data-r="right" style="--d:.3s"><b><span data-c="72">0</span><small>h</small></b><span>pour passer à la première action</span></div>
+  </div>
+</section>
+
+<!-- VS -->
+<section class="pad">
+  <div class="wrap">
+    <h2 class="h disp split" data-split>Avant. <span class="v">Après.</span></h2>
+    <div class="vs">
+      <div class="col no" data-r="left"><h3>Sans RESTUP</h3><ul><li>Tu subis tes chiffres, tu les découvres trop tard.</li><li>Tu réponds à l'urgent, jamais à l'important.</li><li>Tu improvises tes décisions à l'instinct.</li><li>Tu travailles dans ton resto, 7 jours sur 7.</li></ul></div>
+      <div class="col yes" data-r="right" style="--d:.15s"><h3>Avec RESTUP</h3><ul><li>Tu sais quoi changer lundi, et pourquoi.</li><li>Une priorité claire, chaque semaine.</li><li>Un coach qui te relance et t'aide à décider.</li><li>Tu travailles sur ton resto, plus seulement dedans.</li></ul></div>
     </div>
   </div>
 </section>
 
-<section class="strip">
-  <div class="strip-inner" style="flex-direction:column;align-items:stretch;">
-    <span class="strip-label">Pourquoi RestUp</span>
-    <div class="marquee">
-      <div class="marquee-track">
-        <span class="chip">12+ ans d'expérience terrain</span><span class="chip">Sans engagement</span><span class="chip">Diagnostic offert</span><span class="chip">1h de pilotage / semaine</span><span class="chip">Espace client inclus</span><span class="chip">Des repères, pas des promesses</span><span class="chip">À partir de 1 000€/mois</span>
-      </div>
+<div class="tick" aria-hidden="true"><div class="tr" id="t3"></div></div>
+
+<!-- LOGOS -->
+<section class="pad logos" id="logos" style="padding-block:clamp(70px,9vw,120px)">
+  <div class="wrap"><h2 class="h disp split" data-split style="margin-bottom:34px">12 ans de terrain. <span class="v">Des enseignes qui ont testé.</span></h2></div>
+  <div class="lw"><div class="lt" id="l1"></div></div>
+  <div class="lw" style="margin-top:8px"><div class="lt rev" id="l2"></div></div>
+</section>
+
+<!-- FAQ -->
+<section class="pad faq" id="questions" style="padding-top:0">
+  <div class="wrap fqg">
+    <div><h2 class="h disp split" data-split>Les questions <span class="v">qu'on nous pose.</span></h2><p style="color:var(--m);max-width:340px" data-r="left">Des réponses franches. Aucun résultat financier n'est garanti : les objectifs dépendent du diagnostic.</p></div>
+    <div data-r="right">
+      <details><summary>Je n'ai déjà pas le temps. Comment faire ?</summary><p>Une heure de pilotage par semaine et un nombre limité d'actions prioritaires. Leur mise en œuvre demande aussi ton implication : on cadre cette charge ensemble.</p></details>
+      <details><summary>J'ai déjà un expert-comptable.</summary><p>Il reste un partenaire essentiel. RESTUP transforme les informations disponibles en décisions opérationnelles : achats, carte, organisation, équipe et suivi des actions.</p></details>
+      <details><summary>Je ne connais pas mes ratios.</summary><p>On part des données disponibles dans ta caisse, ta comptabilité et tes documents, puis on identifie les quelques indicateurs utiles à ta situation.</p></details>
+      <details><summary>Est-ce adapté à mon restaurant ?</summary><p>Le premier échange sert à comprendre ton établissement, tes difficultés et tes objectifs, et à vérifier l'adéquation avec tes besoins et ta capacité à mettre les actions en œuvre.</p></details>
+      <details><summary>Qui réalise les actions ?</summary><p>RESTUP analyse, priorise, construit le plan avec toi et suit son exécution. Toi et ton équipe réalisez les actions dans le restaurant. Les responsabilités sont clarifiées dès le départ.</p></details>
+      <details><summary>Comment mesure-t-on les progrès ?</summary><p>On suit les actions chaque semaine et les indicateurs au rythme pertinent : chiffre d'affaires, coût matière, masse salariale, charges, rentabilité.</p></details>
     </div>
   </div>
 </section>
 
-<!-- 6. L'OFFRE — le moment de vérité, une fois la confiance installée -->
-<section class="offer-motion">
-  <div class="section-head reveal" style="max-width:600px;">
-    <div class="eyebrow">L'offre</div>
-    <h2>Un seul plan. Tout compris.</h2>
-  </div>
-  <div class="omc-border reveal">
-    <div class="omc-inner tilt glow-card">
-      <span class="omc-glow"></span>
-      <span class="omc-glow b"></span>
-      <div class="omc-top">
-        <div class="omc-eyebrow-row">
-          <span class="omc-badge">Sans engagement</span>
-          <span class="omc-title">Accompagnement RestUp</span>
-        </div>
-        <div class="omc-price"><span class="omc-from">à partir de</span><span class="num cnt" data-target="1000">0</span><span class="cur">€</span><span class="per">/ mois</span></div>
-      </div>
-      <p class="omc-anchor">Soit, à partir de <b>moins de 35€/jour</b> — l'expertise de 12 ans passés à faire grandir des marques de restauration, appliquée directement au vôtre.</p>
-      <div class="omc-features">
-        <div class="omc-feature" style="--d:0">
-          <div class="omc-feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
-            <span class="omc-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-          </div>
-          <div><h4>Diagnostic précis</h4><p>On analyse votre activité en profondeur pour identifier les vrais leviers de croissance.</p></div>
-        </div>
-        <div class="omc-feature" style="--d:1">
-          <div class="omc-feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h4M9 16h6"/></svg>
-            <span class="omc-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-          </div>
-          <div><h4>Stratégie sur-mesure</h4><p>Un plan d'action adapté à votre établissement, vos objectifs et votre marché.</p></div>
-        </div>
-        <div class="omc-feature" style="--d:2">
-          <div class="omc-feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 4-6"/></svg>
-            <span class="omc-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-          </div>
-          <div><h4>Actions concrètes</h4><p>Des actions claires, testées et approuvées, pour des résultats rapides et durables.</p></div>
-        </div>
-        <div class="omc-feature" style="--d:3">
-          <div class="omc-feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span class="omc-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
-          </div>
-          <div><h4>Suivi & conseils personnalisés</h4><p>Un accompagnement humain et régulier pour avancer ensemble sereinement.</p></div>
-        </div>
-      </div>
-      <div class="omc-guarantees">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Audit gratuit avant de vous engager</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Sans engagement de durée</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Vous partez quand vous voulez</span>
-      </div>
-      <div class="omc-bottom">
-        <p class="omc-urgency"><span class="dot"></span>Un nombre restreint de restaurateurs accompagnés chaque mois, sélectionnés sur audit — pas un accompagnement à la chaîne.</p>
-        <a href="contact.html" class="btn-primary magnetic">Candidater à l'accompagnement →</a>
-      </div>
-      <a href="offre.html" class="omc-secondary">Voir le détail complet de l'offre</a>
-    </div>
+<!-- FINAL -->
+<section class="final" id="final">
+  <div class="rays"></div>
+  <div class="wrap" style="position:relative;z-index:2">
+    <h2 class="disp split" data-split>Alors, on <span class="v">reprend</span> les commandes ?</h2>
+    <p data-r="up">Audit gratuit et sans engagement. Un message suffit : on revient vers toi sous 48 h.</p>
+    <div class="ctas" data-r="depth" style="--d:.2s"><a class="btn" href="contact.html">Demander mon audit gratuit <span aria-hidden="true">↗</span></a><a class="btn ghost" href="portail/login.html">Je suis déjà membre</a></div>
+    <div class="foot"><span class="wm">REST<span>UP</span></span><span>© RESTUP 2026 · Le partenaire de pilotage du restaurateur</span><a href="index.html">Revoir l'intro</a></div>
   </div>
 </section>
+</main>
 
-<!-- 7. LEVÉE D'OBJECTIONS — avant la dernière demande -->
-<section data-tone="calm">
-  <div class="section-head reveal" style="max-width:600px;">
-    <div class="eyebrow">Avant de vous lancer</div>
-    <h2>Les questions qu'on nous pose le plus</h2>
-  </div>
-  <div class="mini-faq">
-    <div class="faq-item reveal"><div class="faq-q"><span>Pourquoi l'audit est gratuit ?</span><span class="plus">＋</span></div><div class="faq-a"><div class="faq-a-inner">Parce qu'on sélectionne les restaurants qu'on accompagne. L'audit vérifie qu'il y a un vrai potentiel de marge avant de s'engager — pour vous comme pour moi.</div></div></div>
-    <div class="faq-item reveal"><div class="faq-q"><span>Je n'ai pas le temps, ça demande quoi concrètement ?</span><span class="plus">＋</span></div><div class="faq-a"><div class="faq-a-inner">1h de comité de pilotage par semaine, et 2-3 actions à appliquer entre deux — pensées pour tenir dans le planning d'un restaurateur, pas pour l'alourdir.</div></div></div>
-    <div class="faq-item reveal"><div class="faq-q"><span>Et si ça ne me convient plus après un mois ?</span><span class="plus">＋</span></div><div class="faq-a"><div class="faq-a-inner">Vous partez. Aucun engagement de durée, aucune justification à donner. Le suivi se fait mois par mois.</div></div></div>
-    <div class="faq-item reveal"><div class="faq-q"><span>Ça marche pour quel type de restaurant ?</span><span class="plus">＋</span></div><div class="faq-a"><div class="faq-a-inner">Indépendant, snack, restaurant traditionnel, dark kitchen... L'audit adapte le plan à votre carte, votre équipe et votre trafic.</div></div></div>
-  </div>
-</section>
+<script>
+(function(){
+  var rm=matchMedia('(prefers-reduced-motion: reduce)').matches, fine=matchMedia('(pointer:fine)').matches, desk=function(){return innerWidth>900};
+  var $=function(s,c){return (c||document).querySelector(s)}, $$=function(s,c){return [].slice.call((c||document).querySelectorAll(s))};
 
-<!-- 8. CTA FINAL — dernière relance -->
-<section data-tone="boost">
-  <div class="final reveal">
-    <span class="glow glow-a" style="width:420px;height:420px;background:radial-gradient(circle,rgba(155,77,255,.18),transparent 70%);top:-140px;left:50%;transform:translateX(-50%);"></span>
-    <div class="final-inner">
-      <h2>Et si votre restaurant n'était que le premier ?</h2>
-      <p>Pas de rapport de 40 pages. Un audit direct avec celui qui a fait le chemin, un plan d'action concret, dès la première semaine.</p>
-      <a href="contact.html" class="btn-primary magnetic">Candidater pour un audit stratégique</a>
-      <div class="final-trust">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Audit 100% gratuit</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Réponse sous 48h</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Sans engagement</span>
-      </div>
-    </div>
-  </div>
-</section>
+  // Bandeaux de mots (dupliqués pour boucler sans coupure)
+  function fill(id,items,cls){var el=document.getElementById(id);if(!el)return;var h='';for(var k=0;k<2;k++)items.forEach(function(w,i){h+='<span class="'+(cls&&i%3===0?cls:'')+'">'+w+'</span><span class="d">✦</span>'});el.innerHTML=h}
+  fill('t1',['Marge','Trésorerie','Équipe','Stocks','Planning','Coût matière','Pression','Fournisseurs','Absences'],'f');
+  fill('t2',['Décider','Prioriser','Agir','Mesurer','Ajuster','Recommencer'],'f');
+  fill('t3',['Moins de bruit','Plus de marge','Une priorité','Un coach','Un plan','Chaque semaine'],'f');
+  var logos=[['ultra-clean.png','Ultra',''],['breakys-clean.png','Breakys','dk'],['coup-de-food.png','Coup de Food',''],['kfb.jpg','KFB','fill'],['super-kroustif-wok.jpg','Super Kroustif Wok','fill'],['my-khao.jpg','My Khao','fill'],['pitaya.png','Pitaya','fill'],['crousty-game-clean.png','Crousty Game',''],['dangerous-burger.jpg','Dangerous Burger','fill'],['chamas-tacos-clean.png','Chamas Tacos',''],['streat-burger-clean.png','Str’Eat Burger',''],['la-kazdalerie.png','La Kazdalerie','fill']];
+  function lg(id,arr){var h='';for(var k=0;k<2;k++)arr.forEach(function(l){h+='<div class="lg '+l[2]+'"><img src="assets/clients/'+l[0]+'" alt="'+(k?'':l[1])+'" loading="lazy"></div>'});document.getElementById(id).innerHTML=h}
+  lg('l1',logos);lg('l2',logos.slice().reverse());
 
-<footer>RestUp — Pilotez. Optimisez. Développez. · 12 ans d'expérience terrain</footer><script src="script.js"></script>
-<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){});}</script>
+  // Titres : mots qui entrent alternativement de gauche / de droite
+  $$('[data-split]').forEach(function(el){
+    var i=0;(function walk(n){[].slice.call(n.childNodes).forEach(function(c){
+      if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(t){if(!t)return;if(/^\s+$/.test(t)){f.appendChild(document.createTextNode(' '));return}var w=document.createElement('span');w.className='w';var s=document.createElement('span');s.textContent=t;s.style.setProperty('--i',i);s.style.setProperty('--dir',i%2?-1:1);w.appendChild(s);f.appendChild(w);i++});c.parentNode.replaceChild(f,c)}
+      else if(c.nodeType===1&&!c.classList.contains('w'))walk(c)})})(el);
+    el.classList.add('split');
+  });
+
+  // Apparitions au scroll
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);
+    if(e.target.matches('.card')){var s=e.target.querySelector('.sd');if(s)s.classList.add('in')}
+    if(e.target.matches('.phones,#phones'))phones();
+  }})},{threshold:.18,rootMargin:'0px 0px -6% 0px'});
+  $$('[data-r],.split,#phones,.st').forEach(function(el){io.observe(el)});
+  setTimeout(function(){$('#h1').classList.add('in')},150);
+
+  // Compteurs
+  var co=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;co.unobserve(e.target);var t=+e.target.getAttribute('data-c'),t0=performance.now(),d=1600;(function f(n){var p=Math.min(1,(n-t0)/d),q=1-Math.pow(1-p,4);e.target.textContent=Math.round(t*q);if(p<1)requestAnimationFrame(f)})(t0)})},{threshold:.6});
+  $$('[data-c]').forEach(function(el){co.observe(el)});
+
+  // Mockups vivants (coches, barre, WhatsApp)
+  var ph=false;function phones(){if(ph)return;ph=true;var bars=[20,45,70,100],tks=['tk1','tk2','tk3','tk4'],bub=['b1','b2','b3','b4'];
+    function loop(){tks.forEach(function(id){document.getElementById(id).classList.remove('on')});bub.forEach(function(id){document.getElementById(id).classList.remove('on')});document.getElementById('pbar').style.setProperty('--w','15%');
+      tks.forEach(function(id,i){setTimeout(function(){document.getElementById(id).classList.add('on');document.getElementById('pbar').style.setProperty('--w',bars[i]+'%')},1200+i*1100)});
+      bub.forEach(function(id,i){setTimeout(function(){document.getElementById(id).classList.add('on')},900+i*1200)});
+      setTimeout(loop,9800)}
+    loop()}
+  var vio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){phones()}})},{threshold:.25});vio.observe(document.getElementById('phones'));
+
+  // Curseur lumineux, tilt, boutons magnétiques
+  var gc=$('#gc'),mx=innerWidth/2,my=innerHeight/2,gx=mx,gy=my;
+  addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY},{passive:true});
+  if(fine&&!rm){$$('[data-tilt]').forEach(function(c){c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform='perspective(800px) rotateY('+(x*10)+'deg) rotateX('+(-y*10)+'deg) translateY(-4px)';c.style.transition='transform .1s'});c.addEventListener('pointerleave',function(){c.style.transform='';c.style.transition='transform .6s'})});
+    $$('.btn').forEach(function(b){b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();b.style.transform='translate('+((e.clientX-r.left-r.width/2)*.18)+'px,'+((e.clientY-r.top-r.height/2)*.28)+'px)'});b.addEventListener('pointerleave',function(){b.style.transform=''})})}
+
+  // Canvas héros : étiquettes qui partent à droite / reviennent à gauche, avec profondeur
+  var cv=$('#fx'),cx=cv.getContext('2d'),W=0,H=0,dpr=Math.min(2,devicePixelRatio||1),items=[],words=['MARGE','TRÉSORERIE','ÉQUIPE','STOCKS','PLANNING','COÛT MATIÈRE','PRESSION','FOURNISSEURS','ABSENCES','AVIS CLIENTS','CONCURRENCE','TEMPS QUI MANQUE','TROP DE TÂCHES','CHARGES'];
+  function size(){W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);var n=W<700?9:15;items=[];for(var i=0;i<n;i++){var z=.45+Math.random()*.85;items.push({w:words[i%words.length],x:Math.random()*W*1.4,y:Math.random()*H,z:z,s:(12+Math.random()*26)*z,dir:i%2?1:-1,ph:Math.random()*6})}items.sort(function(a,b){return a.z-b.z})}
+  function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
+  var vis=true,last=0,sy=0;new IntersectionObserver(function(e){vis=e[0].isIntersecting}).observe(cv);
+  function draw(t){requestAnimationFrame(draw);if(!vis||rm)return;var dt=Math.min(40,t-last)/16.7;last=t;var px=(mx/innerWidth-.5),py=(my/innerHeight-.5);cx.clearRect(0,0,W,H);
+    items.forEach(function(o){o.x+=o.dir*o.s*.016*dt+(scrollV*o.dir*o.z*.25);var fs=13*o.z+2;cx.font='700 '+fs+'px Inter,sans-serif';var tw=cx.measureText(o.w).width+fs*1.8,h=fs*2.3;
+      if(o.x>W+tw)o.x=-tw;if(o.x<-tw)o.x=W+tw;var x=o.x+px*-18*o.z,y=o.y+py*-14*o.z;
+      cx.globalAlpha=Math.min(.42,.08+o.z*.26);var g=cx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'rgba(44,36,62,.95)');g.addColorStop(1,'rgba(18,15,26,.95)');cx.fillStyle=g;rr(x,y,tw,h,h*.32);cx.fill();cx.strokeStyle='rgba(155,77,255,'+(.15+.35*o.z)+')';cx.lineWidth=1;cx.stroke();cx.fillStyle='#fff';cx.textBaseline='middle';cx.fillText(o.w,x+fs*.9,y+h/2+1)});cx.globalAlpha=1}
+  var scrollV=0,lastY=scrollY;
+  size();addEventListener('resize',size);requestAnimationFrame(draw);
+
+  // Boucle scroll : barre de progression, nav, vitesse des bandeaux, défilement horizontal épinglé
+  var nav=$('#nav'),prog=$('#prog'),hs=$('[data-hs]'),hst=$('#hst'),hsb=$('#hsb'),tr=$$('.tick .tr,.lt'),anims=[],ticking=false;
+  function tick(){var y=scrollY,dy=y-lastY;lastY=y;scrollV+= (dy*.02-scrollV)*.2;
+    var h=document.documentElement.scrollHeight-innerHeight;prog.style.transform='scaleX('+(h>0?y/h:0)+')';nav.classList.toggle('s',y>40);
+    if(gc&&fine){gx+=(mx-gx)*.12;gy+=(my-gy)*.12;gc.style.transform='translate('+gx+'px,'+gy+'px)'}
+    if(!anims.length)tr.forEach(function(e){e.getAnimations&&e.getAnimations().forEach(function(a){anims.push(a)})});
+    var rate=1+Math.min(6,Math.abs(dy)*.12);anims.forEach(function(a){a.playbackRate=rate});
+    if(hs&&desk()&&!rm){var r=hs.getBoundingClientRect(),tot=hs.offsetHeight-innerHeight,p=Math.max(0,Math.min(1,-r.top/tot));hst.style.transform='translate3d('+(-p*(hst.scrollWidth-innerWidth))+'px,0,0)';hsb.style.transform='scaleX('+p+')';
+      var pn=$$('.pn',hst);pn.forEach(function(el,i){var a=Math.max(0,Math.min(1,p*pn.length-i+0.6));var num=el.querySelector('.num');num.style.transform='translateX('+((1-a)*-80)+'px)';num.style.opacity=.35+a*.65});
+      // vizs animées quand le panneau devient visible
+      var idx=Math.min(pn.length-1,Math.floor(p*pn.length+.35));pn.forEach(function(el,i){el.classList.toggle('act',i<=idx)});vizs(idx)}
+    else if(hs){$$('.pn',hst).forEach(function(el){el.classList.add('act')});vizs(3)}
+    requestAnimationFrame(tick)}
+  var vz=-1;function vizs(i){if(i===vz&&i<3)return;var prev=vz;vz=i;
+    if(i>=0){var g=$('.gauge');if(g){g.style.transition='stroke-dashoffset 1.6s ease .2s';g.style.strokeDashoffset='60'}var n=$('.needle');if(n)n.style.transform='rotate(38deg)'}
+    if(i>=1){var t=$('.top');if(t)t.style.transition='transform 1s cubic-bezier(.3,1.4,.4,1)',t.style.transform='translateY(-4px)'}
+    if(i>=2){$$('.ck').forEach(function(c,k){c.style.transition='stroke-dashoffset .8s ease '+(k*.5)+'s';c.style.strokeDashoffset='0'})}
+    if(i>=3){var l=$('.ln2');if(l){l.style.transition='stroke-dashoffset 1.8s ease';l.style.strokeDashoffset='0'}var d=$('.dot');if(d){d.style.transition='opacity .4s ease 1.6s';d.style.opacity='1'}}}
+  requestAnimationFrame(tick);
+  if(location.hash)setTimeout(function(){var t=document.querySelector(location.hash);t&&t.scrollIntoView()},300);
+  if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){})}
+})();
+</script>
 </body>
 </html>
