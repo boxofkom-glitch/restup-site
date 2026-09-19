@@ -296,3 +296,26 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
 })();
+
+// ---- Appli installée : aucune barre de navigateur → on utilise toute la hauteur réelle de l'écran ----
+(function () {
+  const standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  const setH = () => document.documentElement.style.setProperty("--app-h", window.innerHeight + "px");
+  setH(); window.addEventListener("resize", setH); window.addEventListener("orientationchange", () => setTimeout(setH, 250));
+  if (!standalone) return;
+  const s = document.createElement("style");
+  s.textContent = `
+    html.is-app .portal-back{display:none !important}
+    html.is-app .portal-topbar{justify-content:flex-start !important}
+    @media (max-width:900px){
+      html.is-app .portal-hero{height:var(--app-h) !important;bottom:auto !important}
+      html.is-app .portal-main{justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 3dvh)}
+      html.is-app .portal-main h1{font-size:clamp(30px,6.4dvh,58px) !important;margin-bottom:3.2dvh !important}
+      html.is-app .login-card{padding:clamp(22px,4dvh,38px) 26px clamp(18px,3.2dvh,30px) !important}
+      html.is-app .field{margin-bottom:2.2dvh !important}
+      html.is-app .field input{padding:clamp(11px,1.9dvh,16px) 14px !important}
+      html.is-app #staffBottomNav,html.is-app #clientBottomNav{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px) * .55) !important}
+      html.is-app .main>.admin-main{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px) * .55) !important}
+    }`;
+  document.head.appendChild(s);
+})();
