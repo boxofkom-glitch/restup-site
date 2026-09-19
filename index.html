@@ -27,18 +27,20 @@ body{position:fixed;inset:0;width:100%}
 @media (max-aspect-ratio:1/1){.frame{width:150vw}}
 video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;background:#000;transform-origin:50% 50%;
   transition:filter 1.8s ease,transform 2.2s cubic-bezier(.16,1,.3,1),opacity 1.8s ease}
-/* Jamais de bouton lecture natif (Safari) */
-video{pointer-events:none}
+/* Jamais de bouton lecture natif (Safari) : la vidéo reste invisible tant qu'elle ne tourne pas vraiment */
+video{pointer-events:none;visibility:hidden}
+.vplay video{visibility:visible}
 video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button,video::-webkit-media-controls-panel,video::-webkit-media-controls-enclosure{display:none !important;-webkit-appearance:none;opacity:0;pointer-events:none}
 /* Secours si le navigateur refuse de lancer la vidéo (économie d'énergie) : mêmes étiquettes, animées en direct */
 .fb{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden}
 .fallback .fb{display:block}
 .fallback video{opacity:0}
+.arrived .fb{opacity:.14;filter:blur(6px);transition:opacity 1.6s,filter 1.6s}
 .fb i{position:absolute;font-style:normal;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(13px,3.1vw,28px);padding:.7em 1.2em;border-radius:14px;color:#fff;
   background:linear-gradient(180deg,rgba(38,32,50,.92),rgba(18,15,26,.92));border:1px solid rgba(155,77,255,.28);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(155,77,255,.18);
   opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(var(--r,0deg));animation:fly 4.6s cubic-bezier(.3,.1,.3,1) var(--d,0s) forwards}
 @keyframes fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.45) rotate(var(--r))}18%{opacity:1}100%{opacity:1;transform:translate(-50%,-50%) scale(1.3) rotate(var(--r))}}
-.arrived video{filter:blur(7px) brightness(.4) saturate(.9);transform:scale(1.18)}
+.arrived video{filter:blur(9px) brightness(.16) saturate(.8);transform:scale(1.18)}
 
 .glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 2s ease .3s;
   background:radial-gradient(48% 40% at 50% 46%,rgba(155,77,255,.34),rgba(74,36,130,.16) 45%,transparent 72%)}
@@ -111,7 +113,7 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
   v.muted=true; v.defaultMuted=true; v.setAttribute('muted',''); v.playsInline=true;
   var started=false;
   function tryPlay(){ if(started) return; var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
-  v.addEventListener('playing',function(){started=true;});
+  v.addEventListener('playing',function(){started=true;stage.classList.add('vplay');});
   ['loadedmetadata','loadeddata','canplay','canplaythrough'].forEach(function(e){v.addEventListener(e,tryPlay);});
   tryPlay();
   // Certains navigateurs (économie d'énergie) attendent un premier geste : le moindre contact lance la vidéo
