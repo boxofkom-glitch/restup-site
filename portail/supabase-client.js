@@ -85,6 +85,7 @@ async function restupStaffBar(me) {
       #staffBar .sb-av{width:32px;height:32px;}
       #staffBar .sb-out{padding:7px 12px;}
       .mobile-topbar{display:none !important;}
+      .sidebar{padding-top:calc(22px + env(safe-area-inset-top,0px)) !important;}
     }
   `;
   document.head.appendChild(style);
@@ -218,6 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
     @media (max-width:900px){
       .mobile-topbar{padding:max(8px,env(safe-area-inset-top)) 16px 8px !important;min-height:0 !important;}
       .mobile-topbar .mobile-nav-toggle{display:none !important;}
+      .sidebar{padding-top:calc(22px + env(safe-area-inset-top,0px)) !important;}
       #clientBottomNav{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;background:rgba(11,13,12,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line,#2B2E2A);padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
       #clientBottomNav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:#9aa09a;background:none;border:0;font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.1;cursor:pointer;border-radius:12px;}
       #clientBottomNav button.on{color:#fff;background:rgba(155,77,255,.22);}

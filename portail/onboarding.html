@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="admin/admin-theme.css">
 <style>
 body{overflow-x:hidden;background:radial-gradient(120% 60% at 20% 0%,#2a1550 0%,#0B0D0C 55%) fixed;}
-.wrap{max-width:620px;margin:0 auto;padding:26px 18px 90px;}
+.wrap{max-width:620px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(90px + env(safe-area-inset-bottom,0px));}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
 .wordmark{display:inline-flex;align-items:baseline;line-height:1;font-family:var(--font-display);text-transform:uppercase;font-size:24px;letter-spacing:-.5px;color:#fff;text-decoration:none;}
 .wordmark .up{color:#9B4DFF;margin-left:1px;}
@@ -82,7 +82,7 @@ body{overflow-x:hidden;background:radial-gradient(120% 60% at 20% 0%,#2a1550 0%,
 <script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js?v=7"></script>
+<script src="supabase-client.js?v=8"></script>
 <script>
 // Entonnoir : du général (qui es-tu, comment ça va) vers le précis (ce qui pèse, objectifs), chiffres optionnels en fin.
 const FUNNEL = [
