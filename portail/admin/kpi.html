@@ -172,12 +172,13 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js"></script>
-<script src="mock-clients.js"></script>
+<script src="../supabase-client.js?v=4"></script>
+<script src="mock-clients.js?v=3"></script>
 <script>
 (async function () {
   const me = await restupRequireStaff();
   if (!me) return;
+  restupStaffBar(me);
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';
@@ -236,91 +237,94 @@ body{overflow-x:hidden;}
   `).join('');
 
   // =========================================================
-  // BIBLIOTHÈQUE DE KPI — démo locale (localStorage).
-  // TEMP : à remplacer par des tables Supabase "kpi_templates"
-  // (id, name, unit) et "kpi_assignments" (kpi_id, user_id, value)
-  // pour une vraie synchronisation entre le coach et le client.
+  // BIBLIOTHÈQUE DE KPI : créés une fois, assignés aux clients, valeurs saisies par le client.
+  // Tables Supabase : kpi_templates · kpi_assignments · kpi_values.
   // =========================================================
   const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const LIB_KEY = 'restup_kpi_templates';
-  const ASSIGN_KEY = 'restup_kpi_assignments';
-  const loadLib = () => JSON.parse(localStorage.getItem(LIB_KEY) || '[]');
-  const saveLib = (list) => localStorage.setItem(LIB_KEY, JSON.stringify(list));
-  const loadAssignments = () => JSON.parse(localStorage.getItem(ASSIGN_KEY) || '[]');
-  const saveAssignments = (list) => localStorage.setItem(ASSIGN_KEY, JSON.stringify(list));
 
   const allClients = (profiles && profiles.length)
     ? profiles.map(p => ({ id: p.id, company_name: p.company_name || p.email || 'Client' }))
     : (window.MOCK_CLIENTS || []);
+  const realClients = allClients.filter(c => /^[0-9a-f]{8}-/i.test(c.id));
+
+  let lib = [], assignments = [], lastValue = {};
+  async function refresh() {
+    const [{ data: t }, { data: a }, { data: v }] = await Promise.all([
+      supabaseClient.from('kpi_templates').select('*').order('created_at', { ascending: false }),
+      supabaseClient.from('kpi_assignments').select('*').order('created_at', { ascending: false }),
+      supabaseClient.from('kpi_values').select('assignment_id, value, period, created_at').order('created_at', { ascending: false }),
+    ]);
+    lib = t || []; assignments = a || [];
+    lastValue = {};
+    (v || []).forEach(x => { if (!lastValue[x.assignment_id]) lastValue[x.assignment_id] = x; });
+  }
 
   function renderKpiLib() {
-    const lib = loadLib();
     const list = document.getElementById('kpiLibList');
     list.innerHTML = lib.length ? lib.map(k => `
       <div class="kpi-lib-item">
-        <b>${esc(k.name)}${k.unit ? ` <span style="color:var(--muted-dim);font-weight:400;">(${esc(k.unit)})</span>` : ''}</b>
+        <b>${esc(k.name)}${k.unit ? ` <span style="color:var(--muted-dim);font-weight:400;">(${esc(k.unit)})</span>` : ''} <span style="color:var(--muted-dim);font-weight:400;font-size:12px;">· ${k.frequency === 'month' ? 'mensuel' : 'hebdo'}</span></b>
         <select data-kpi="${esc(k.id)}" class="kpi-assign-select">
           <option value="">Assigner à…</option>
-          ${allClients.map(c => `<option value="${esc(c.id)}">${esc(c.company_name)}</option>`).join('')}
+          ${realClients.map(c => `<option value="${esc(c.id)}">${esc(c.company_name)}</option>`).join('')}
         </select>
         <button type="button" class="btn-secondary kpi-assign-btn" data-kpi="${esc(k.id)}">Assigner</button>
         <button type="button" class="icon-btn kpi-delete-btn" data-kpi="${esc(k.id)}" title="Supprimer" aria-label="Supprimer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
         </button>
       </div>
     `).join('') : '<div class="empty-state">Aucun KPI créé pour l\'instant.</div>';
 
-    list.querySelectorAll('.kpi-assign-btn').forEach(btn => btn.addEventListener('click', () => {
+    list.querySelectorAll('.kpi-assign-btn').forEach(btn => btn.addEventListener('click', async () => {
       const kpiId = btn.dataset.kpi;
       const select = list.querySelector(`.kpi-assign-select[data-kpi="${kpiId}"]`);
-      const clientId = select.value;
-      if (!clientId) return;
-      const assignments = loadAssignments();
-      if (!assignments.some(a => a.kpiId === kpiId && a.clientId === clientId)) {
-        assignments.push({ kpiId, clientId, value: '' });
-        saveAssignments(assignments);
-        renderAssignments();
-        if (window.toast) toast('KPI assigné.', 'ok');
-      }
+      if (!select.value) return;
+      const { error } = await supabaseClient.from('kpi_assignments').insert({ client_id: select.value, template_id: kpiId });
+      if (error) { if (window.toast) toast(/duplicate|unique/i.test(error.message) ? 'Ce KPI est déjà assigné à ce client.' : error.message, 'error'); return; }
+      if (window.toast) toast('KPI assigné — visible dans l\'espace du client.', 'ok');
       select.value = '';
+      await refresh(); renderAssignments();
     }));
-    list.querySelectorAll('.kpi-delete-btn').forEach(btn => btn.addEventListener('click', () => {
-      saveLib(loadLib().filter(k => k.id !== btn.dataset.kpi));
-      saveAssignments(loadAssignments().filter(a => a.kpiId !== btn.dataset.kpi));
-      renderKpiLib(); renderAssignments();
+    list.querySelectorAll('.kpi-delete-btn').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm('Supprimer ce KPI et ses assignations ?')) return;
+      const { error } = await supabaseClient.from('kpi_templates').delete().eq('id', btn.dataset.kpi);
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      await refresh(); renderKpiLib(); renderAssignments();
     }));
   }
 
   function renderAssignments() {
-    const lib = loadLib();
-    const assignments = loadAssignments();
     const body = document.getElementById('kpiAssignBody');
     const empty = document.getElementById('kpiAssignEmpty');
     if (!assignments.length) { body.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     body.innerHTML = assignments.map(a => {
-      const kpi = lib.find(k => k.id === a.kpiId);
-      const client = allClients.find(c => c.id === a.clientId);
-      return `<tr><td>${esc(kpi ? kpi.name : '—')}</td><td>${esc(client ? client.company_name : '—')}</td><td>${a.value ? esc(a.value) + (kpi && kpi.unit ? ' ' + esc(kpi.unit) : '') : '<span style="color:var(--muted-dim);">— pas encore renseigné</span>'}</td></tr>`;
+      const kpi = lib.find(k => k.id === a.template_id);
+      const client = allClients.find(c => c.id === a.client_id);
+      const lv = lastValue[a.id];
+      return `<tr><td>${esc(kpi ? kpi.name : '—')}</td><td>${esc(client ? client.company_name : '—')}</td><td>${lv ? esc(lv.value) + (kpi && kpi.unit ? ' ' + esc(kpi.unit) : '') + ` <span style="color:var(--muted-dim);font-size:12px;">(${esc(lv.period)})</span>` : '<span style="color:var(--muted-dim);">En attente du client</span>'}</td></tr>`;
     }).join('');
   }
 
-  document.getElementById('kpiCreateForm').addEventListener('submit', (e) => {
+  let creating = false;
+  document.getElementById('kpiCreateForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (creating) return;
     const nameInput = document.getElementById('kpiNameInput');
     const unitInput = document.getElementById('kpiUnitInput');
     const name = nameInput.value.trim();
     if (!name) return;
-    const lib = loadLib();
-    lib.push({ id: 'kpi_' + Date.now(), name, unit: unitInput.value.trim() });
-    saveLib(lib);
+    creating = true;
+    const { error } = await supabaseClient.from('kpi_templates').insert({ name, unit: unitInput.value.trim() });
+    creating = false;
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
     nameInput.value = ''; unitInput.value = '';
-    renderKpiLib();
+    await refresh(); renderKpiLib();
   });
 
+  await refresh();
   renderKpiLib();
-  renderAssignments();
-})();
+  renderAssignments();})();
 </script>
 </body>
 </html>

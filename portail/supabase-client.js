@@ -49,6 +49,46 @@ async function restupRequireStaff() {
   return data.session.user;
 }
 
+// ---- Barre du haut (équipe) : avatar / photo du coach + déconnexion ----
+async function restupStaffBar(me) {
+  if (!me || document.getElementById("staffBar")) return;
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let prof = null;
+  try { const { data } = await supabaseClient.from("staff_profiles").select("display_name, photo_url").eq("user_id", me.id).maybeSingle(); prof = data; } catch (e) {}
+  const isDev = (me.email || "").toLowerCase() === DEV_EMAIL;
+  const name = (prof && prof.display_name) || (me.email || "coach").split("@")[0];
+  const initials = name.trim().slice(0, 2).toUpperCase();
+  const avatar = prof && prof.photo_url
+    ? `<img class="sb-av" src="${esc(prof.photo_url)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'sb-av',textContent:'${esc(initials)}'}))">`
+    : `<span class="sb-av">${esc(initials)}</span>`;
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #staffBar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:10px 24px;background:rgba(11,13,12,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line,#2B2E2A);}
+    #staffBar a.sb-user{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0;}
+    #staffBar .sb-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#9B4DFF,#B37BFF);color:#fff;font-weight:900;font-size:13px;border:2px solid rgba(255,255,255,.12);}
+    #staffBar .sb-txt{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
+    #staffBar .sb-txt b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+    #staffBar .sb-txt small{font-size:11px;color:var(--muted-dim,#82887F);}
+    #staffBar .sb-out{background:transparent;border:1px solid var(--line,#2B2E2A);color:var(--muted,#B7BDB4);font-family:inherit;font-weight:700;font-size:12.5px;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+    #staffBar .sb-out:hover{color:#fff;border-color:#9B4DFF;}
+    #logoutBtn,#sidebarLogoutBtn,.side-foot .icon-btn{display:none !important;}
+    @media (max-width:900px){#staffBar{padding:8px 14px;}#staffBar .sb-txt{display:none;}}
+  `;
+  document.head.appendChild(style);
+
+  const bar = document.createElement("div");
+  bar.id = "staffBar";
+  bar.innerHTML = `<a class="sb-user" href="${location.pathname.includes('/admin/') ? 'settings.html' : 'admin/settings.html'}" title="Mon profil">${avatar}<span class="sb-txt"><b>${esc(name)}</b><small>${isDev ? "Développeur" : "Coach"}</small></span></a>
+    <button type="button" class="sb-out" id="staffLogout"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Déconnexion</button>`;
+  const host = document.querySelector(".main") || document.body;
+  host.insertBefore(bar, host.firstChild);
+  document.getElementById("staffLogout").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = "/portail/login.html";
+  });
+}
+
 // ---- Invitation client (flux unique, dédoublonné, renvoyable) ----
 // Crée/relance l'invitation puis envoie l'email brandé. Aucun rôle n'est choisi par le client.
 async function restupInviteClient(f) {

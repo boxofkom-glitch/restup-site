@@ -397,9 +397,9 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js"></script>
-<script src="../audit-engine.js"></script>
-<script src="mock-clients.js"></script>
+<script src="../supabase-client.js?v=4"></script>
+<script src="../audit-engine.js?v=3"></script>
+<script src="mock-clients.js?v=3"></script>
 <script>
 (async function () {
   const params = new URLSearchParams(window.location.search);
@@ -407,6 +407,7 @@ body{overflow-x:hidden;}
 
   const me = await restupRequireStaff();
   if (!me) return;
+  restupStaffBar(me);
   if (!clientId) { window.location.href = 'index.html'; return; }
 
   document.getElementById('authGate').style.display = 'none';
@@ -550,7 +551,7 @@ body{overflow-x:hidden;}
   const EVENT_LABEL = {
     'account.activated': 'Compte activé', 'onboarding.completed': 'Onboarding terminé', 'coach.assigned': 'Coach assigné',
     'audit.scheduled': 'Audit programmé', 'audit.draft_created': 'Brouillon d\'audit créé', 'audit.published': 'Audit validé et publié',
-    'audit.unpublished': 'Audit repassé en brouillon', 'quickwin.selected': 'Première priorité (Quick Win) choisie', 'plan.draft_created': 'Brouillon de plan créé',
+    'audit.unpublished': 'Audit repassé en brouillon', 'quickwin.selected': 'Première priorité (Quick Win) choisie', 'plan.draft_created': 'Brouillon de plan créé', 'payment.updated': 'Paiement mis à jour',
   };
   async function renderTimeline() {
     const wrap = document.getElementById('timelineList');
@@ -881,22 +882,45 @@ body{overflow-x:hidden;}
   // =========================================================
   function renderFinancier() {
     const root = document.getElementById('financierRoot');
-    if (!auditRow) {
-      root.innerHTML = '<div class="empty-state">Pas encore de données financières — l\'audit du client n\'est pas fait.</div>';
-      return;
-    }
-    const ov = auditRow.data?.overview || {};
+    const p = profile || {};
+    const ov = (auditRow && auditRow.data && auditRow.data.overview) || null;
     root.innerHTML = `
-      <div class="stat-grid">
+      <div class="info-card" id="payCard">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Paiement</span><span class="paid-tag ${p.paid ? 'yes' : 'no'}">${p.paid ? 'Payé' : 'Non payé'}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+          <div class="field"><label>Statut</label><select id="payPaid" style="width:100%;background:var(--ink);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:12px;"><option value="0"${p.paid ? '' : ' selected'}>Non payé</option><option value="1"${p.paid ? ' selected' : ''}>Payé</option></select></div>
+          <div class="field"><label>Montant payé (€)</label><input type="number" min="0" id="payAmount" value="${esc(p.amount_paid != null ? p.amount_paid : 0)}"></div>
+          <div class="field"><label>Mois payés</label><input type="number" min="0" id="payMonths" value="${esc(p.months_paid != null ? p.months_paid : 0)}"></div>
+        </div>
+        <div class="field"><label>Note (échéancier, mode de paiement…)</label><input type="text" id="payNote" value="${esc(p.payment_note || '')}" maxlength="200"></div>
+        <button type="button" class="btn-primary magnetic" id="savePayBtn" style="padding:10px 18px;">Enregistrer le paiement</button>
+      </div>
+      ${ov ? `<div class="stat-grid">
         <div class="stat-card"><span>Chiffre d'affaires</span><b>${fmtEuro(ov.revenue)}</b></div>
         <div class="stat-card"><span>Marge nette</span><b>${ov.margin_pct ?? '—'}%</b></div>
         <div class="stat-card"><span>Collaborateurs</span><b>${ov.employees ?? '—'}</b></div>
         <div class="stat-card"><span>Charges fixes</span><b>${fmtEuro(ov.fixed_costs)}</b></div>
         <div class="stat-card"><span>Vente moyenne</span><b>${fmtEuro(ov.avg_sale)}</b></div>
         <div class="stat-card"><span>Trésorerie</span><b>${fmtEuro(ov.cash)}</b></div>
-      </div>`;
+      </div>` : '<div class="empty-state">Les chiffres du client apparaîtront ici une fois l\'audit renseigné.</div>'}`;
+    let busy = false;
+    document.getElementById('savePayBtn').addEventListener('click', async () => {
+      if (busy) return; busy = true;
+      const updates = {
+        paid: document.getElementById('payPaid').value === '1',
+        amount_paid: Number(document.getElementById('payAmount').value) || 0,
+        months_paid: parseInt(document.getElementById('payMonths').value, 10) || 0,
+        payment_note: document.getElementById('payNote').value.trim() || null,
+      };
+      const { error } = await supabaseClient.from('profiles').update(updates).eq('id', clientId);
+      busy = false;
+      if (error) { if (window.toast) toast('Enregistrement impossible : ' + error.message, 'error'); return; }
+      Object.assign(profile, updates);
+      await logEvent('payment.updated', { paid: updates.paid, amount: updates.amount_paid });
+      if (window.toast) toast('Paiement enregistré', 'ok');
+      renderFinancier();
+    });
   }
-
   // =========================================================
   // CLOSER
   // =========================================================
@@ -1021,18 +1045,53 @@ body{overflow-x:hidden;}
   // =========================================================
   // KPIS (agrégés depuis tous les mois du plan)
   // =========================================================
-  function renderKpis() {
+  async function renderKpis() {
     const root = document.getElementById('kpisRoot');
-    if (!planData) { root.innerHTML = '<div class="empty-state">Pas encore de plan pour ce client.</div>'; return; }
-    const rows = [];
-    (planData.cycles || []).forEach(cy => (cy.months || []).forEach(m => (m.kpis || []).forEach(k => rows.push({ cycle: cy.name, month: m.name, kpi: k }))));
-    if (!rows.length) { root.innerHTML = '<div class="empty-state">Aucun KPI défini dans le plan.</div>'; return; }
-    root.innerHTML = `<div class="info-card"><div class="table-scroll"><table class="action-table">
-      <thead><tr><th>Cycle</th><th>Mois</th><th>Indicateur</th></tr></thead>
-      <tbody>${rows.map(r => `<tr><td>${esc(r.cycle)}</td><td>${esc(r.month)}</td><td>${esc(r.kpi)}</td></tr>`).join('')}</tbody>
-    </table></div></div>`;
+    if (!isUuid(clientId)) { root.innerHTML = '<div class="empty-state">Indisponible pour un client de démonstration.</div>'; return; }
+    const [{ data: tpls }, { data: assigns }, { data: vals }] = await Promise.all([
+      supabaseClient.from('kpi_templates').select('*').order('name'),
+      supabaseClient.from('kpi_assignments').select('*').eq('client_id', clientId),
+      supabaseClient.from('kpi_values').select('assignment_id, period, value, created_at').eq('client_id', clientId).order('period', { ascending: false }),
+    ]);
+    const templates = tpls || [], assignments = assigns || [], values = vals || [];
+    const assignedIds = new Set(assignments.map(a => a.template_id));
+    const free = templates.filter(t => !assignedIds.has(t.id));
+    const rows = assignments.map(a => {
+      const t = templates.find(x => x.id === a.template_id) || {};
+      const mine = values.filter(v => v.assignment_id === a.id).slice(0, 4);
+      return `<tr><td>${esc(t.name || '—')}${t.unit ? ' (' + esc(t.unit) + ')' : ''}</td>
+        <td>${mine.length ? mine.map(v => `<span style="margin-right:12px;white-space:nowrap;"><b>${esc(v.value)}</b> <span style="color:var(--muted-dim);font-size:12px;">${esc(v.period)}</span></span>`).join('') : '<span style="color:var(--muted-dim);">En attente du client</span>'}</td>
+        <td><button type="button" class="btn-danger" data-unassign="${esc(a.id)}" style="padding:5px 12px;font-size:11.5px;">Retirer</button></td></tr>`;
+    }).join('');
+    const planRows = [];
+    if (planData) (planData.cycles || []).forEach(cy => (cy.months || []).forEach(m => (m.kpis || []).forEach(k => planRows.push({ cycle: cy.name, month: m.name, kpi: k }))));
+    root.innerHTML = `
+      <div class="info-card">
+        <div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">KPI suivis par le client</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <select id="kpiPick" style="flex:1;min-width:200px;background:var(--ink);border:1px solid var(--line);color:#fff;border-radius:var(--r-sm);padding:10px;"><option value="">${free.length ? 'Assigner un KPI de la bibliothèque…' : (templates.length ? 'Tous les KPI sont déjà assignés' : 'Aucun KPI dans la bibliothèque (onglet KPI)')}</option>${free.map(t => `<option value="${esc(t.id)}">${esc(t.name)}${t.unit ? ' (' + esc(t.unit) + ')' : ''}</option>`).join('')}</select>
+          <button type="button" class="btn-primary magnetic" id="kpiAssignBtn" style="padding:10px 18px;"${free.length ? '' : ' disabled'}>Assigner</button>
+        </div>
+        ${assignments.length ? `<div class="table-scroll"><table class="action-table"><thead><tr><th>Indicateur</th><th>Dernières valeurs</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty-state" style="padding:18px 0;">Aucun KPI assigné à ce client.</div>'}
+      </div>
+      ${planRows.length ? `<div class="info-card"><div class="info-card-head"><span class="section-tag" style="margin-bottom:0;">Indicateurs prévus dans le plan</span></div><div class="table-scroll"><table class="action-table">
+        <thead><tr><th>Cycle</th><th>Mois</th><th>Indicateur</th></tr></thead>
+        <tbody>${planRows.map(r => `<tr><td>${esc(r.cycle)}</td><td>${esc(r.month)}</td><td>${esc(r.kpi)}</td></tr>`).join('')}</tbody>
+      </table></div></div>` : ''}`;
+    const btn = document.getElementById('kpiAssignBtn');
+    btn.addEventListener('click', async () => {
+      const id = document.getElementById('kpiPick').value; if (!id) return;
+      const { error } = await supabaseClient.from('kpi_assignments').insert({ client_id: clientId, template_id: id });
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      if (window.toast) toast('KPI assigné — le client peut le renseigner.', 'ok');
+      renderKpis();
+    });
+    root.querySelectorAll('[data-unassign]').forEach(b => b.addEventListener('click', async () => {
+      const { error } = await supabaseClient.from('kpi_assignments').delete().eq('id', b.dataset.unassign);
+      if (error) { if (window.toast) toast(error.message, 'error'); return; }
+      renderKpis();
+    }));
   }
-
   // =========================================================
   // DRIVE (fichiers partagés — Supabase Storage, bucket "client-files")
   // =========================================================
@@ -1060,7 +1119,7 @@ body{overflow-x:hidden;}
     document.getElementById('driveFileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const path = `${clientId}/${Date.now()}-${file.name}`;
+      const path = `${clientId}/${Date.now()}-${file.name.replace(/[^\w.\-]+/g, '_')}`;
       const { error } = await supabaseClient.storage.from('client-files').upload(path, file);
       if (error) { if (window.toast) toast(error.message, 'error'); return; }
       if (window.toast) toast('Fichier envoyé', 'ok');
@@ -1068,16 +1127,17 @@ body{overflow-x:hidden;}
     });
 
     renderDocRequests();
-    document.getElementById('docReqForm').addEventListener('submit', (e) => {
+    let reqBusy = false;
+    document.getElementById('docReqForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (reqBusy) return;
       const label = document.getElementById('docReqLabel').value.trim();
       const note = document.getElementById('docReqNote').value.trim();
       if (!label) return;
-      const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
-      const list = all[clientId] || [];
-      list.push({ id: 'req-' + Date.now(), label, note, createdAt: new Date().toISOString() });
-      all[clientId] = list;
-      localStorage.setItem('restup_doc_requests', JSON.stringify(all));
+      reqBusy = true;
+      const { error } = await supabaseClient.from('document_requests').insert({ client_id: clientId, label, note: note || null });
+      reqBusy = false;
+      if (error) { if (window.toast) toast('Demande impossible : ' + error.message, 'error'); return; }
       document.getElementById('docReqLabel').value = '';
       document.getElementById('docReqNote').value = '';
       renderDocRequests();
@@ -1087,42 +1147,42 @@ body{overflow-x:hidden;}
     const files = await loadDriveFiles();
     const listWrap = document.getElementById('driveListWrap');
     if (files === null) {
-      listWrap.innerHTML = '<div class="empty-state">Le stockage n\'est pas encore configuré (voir README.md, section Drive).</div>';
+      listWrap.innerHTML = '<div class="empty-state">Le stockage est momentanément indisponible.</div>';
       return;
     }
     if (!files.length) { listWrap.innerHTML = '<div class="empty-state">Aucun fichier partagé pour l\'instant.</div>'; return; }
+    const paths = files.map(f => `${clientId}/${f.name}`);
+    const { data: signed } = await supabaseClient.storage.from('client-files').createSignedUrls(paths, 3600);
+    const urlOf = {}; (signed || []).forEach(s => { urlOf[s.path] = s.signedUrl; });
     listWrap.innerHTML = files.map(f => {
-      const { data } = supabaseClient.storage.from('client-files').getPublicUrl(`${clientId}/${f.name}`);
-      return `<div class="drive-file-row"><span>${esc(f.name.replace(/^\d+-/, ''))}</span><a href="${esc(data.publicUrl)}" target="_blank" rel="noopener">Ouvrir</a></div>`;
+      const u = urlOf[`${clientId}/${f.name}`];
+      return `<div class="drive-file-row"><span>${esc(f.name.replace(/^\d+-/, ''))}</span>${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">Ouvrir</a>` : ''}</div>`;
     }).join('');
   }
 
-  // TEMP — demandes de documents en localStorage (bus démo coach ↔ client, voir dashboard.html).
-  function renderDocRequests() {
+  // Demandes de documents : table "document_requests" (le client importe, le fichier atterrit dans le stockage privé).
+  async function renderDocRequests() {
     const wrap = document.getElementById('docReqList');
-    const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
-    const list = all[clientId] || [];
-    const uploadsAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
-    const uploads = uploadsAll[clientId] || {};
+    if (!isUuid(clientId)) { wrap.innerHTML = '<div class="empty-state">Indisponible pour un client de démonstration.</div>'; return; }
+    const { data: list, error } = await supabaseClient.from('document_requests').select('*').eq('client_id', clientId).order('created_at', { ascending: false });
+    if (error) { wrap.innerHTML = '<div class="empty-state">Chargement impossible.</div>'; return; }
     if (!list.length) { wrap.innerHTML = '<div class="empty-state">Aucun document demandé pour l\'instant.</div>'; return; }
-    wrap.innerHTML = list.map(r => {
-      const up = uploads[r.id];
-      return `<div class="drive-file-row">
+    const paths = list.filter(r => r.file_path).map(r => r.file_path);
+    let urlOf = {};
+    if (paths.length) { const { data: signed } = await supabaseClient.storage.from('client-files').createSignedUrls(paths, 3600); (signed || []).forEach(s => { urlOf[s.path] = s.signedUrl; }); }
+    wrap.innerHTML = list.map(r => `<div class="drive-file-row">
         <span><b>${esc(r.label)}</b>${r.note ? ` <span style="color:var(--muted-dim);">— ${esc(r.note)}</span>` : ''}</span>
         <span style="display:flex;align-items:center;gap:10px;">
-          ${up ? `<span class="paid-tag yes">Reçu : ${esc(up.fileName)}</span>` : `<span class="paid-tag no">En attente</span>`}
-          <button type="button" class="btn-danger" data-del="${r.id}" style="padding:5px 12px;font-size:11.5px;">Retirer</button>
+          ${r.status === 'received' ? `<span class="paid-tag yes">Reçu</span>${urlOf[r.file_path] ? `<a href="${esc(urlOf[r.file_path])}" target="_blank" rel="noopener">Ouvrir</a>` : ''}` : `<span class="paid-tag no">En attente</span>`}
+          <button type="button" class="btn-danger" data-del="${esc(r.id)}" style="padding:5px 12px;font-size:11.5px;">Retirer</button>
         </span>
-      </div>`;
-    }).join('');
-    wrap.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => {
-      const all2 = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
-      all2[clientId] = (all2[clientId] || []).filter(r => r.id !== btn.dataset.del);
-      localStorage.setItem('restup_doc_requests', JSON.stringify(all2));
+      </div>`).join('');
+    wrap.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
+      const { error: e2 } = await supabaseClient.from('document_requests').delete().eq('id', btn.dataset.del);
+      if (e2) { if (window.toast) toast(e2.message, 'error'); return; }
       renderDocRequests();
     }));
   }
-
   // =========================================================
   // PLAN D'ACTION (éditeur structuré)
   // =========================================================

@@ -128,6 +128,18 @@ body{overflow-x:hidden;}
           <div><h1>Paramètres</h1><p>Gérez les informations de votre compte coach.</p></div>
         </div>
 
+        <div class="card glow-card settings-form reveal in-view" style="margin-bottom:18px;">
+          <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px;">
+            <div id="photoPreview" style="width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#9B4DFF,#B37BFF);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:26px;overflow:hidden;flex:0 0 auto;border:3px solid rgba(255,255,255,.12);">--</div>
+            <div>
+              <label class="btn-secondary" for="photoFile" style="display:inline-flex;cursor:pointer;background:var(--surface-2);border:1px solid var(--line);color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:999px;">📷 Choisir une photo</label>
+              <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" style="display:none;">
+              <div id="photoMsg" style="font-size:12.5px;color:var(--muted-dim);margin-top:8px;">JPG, PNG ou WebP. Visible par tes clients.</div>
+            </div>
+          </div>
+          <div class="field"><label>Nom affiché</label><input id="displayName" placeholder="Sarah Meunier" maxlength="60"></div>
+          <button type="button" class="btn-primary" id="saveProfileBtn" style="padding:11px 20px;">Enregistrer mon profil</button>
+        </div>
         <div class="card glow-card settings-form reveal in-view">
           <div class="field"><label>Email</label><input id="settingsEmail" disabled style="opacity:.6;"></div>
           <div class="danger-zone">
@@ -142,11 +154,12 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js"></script>
+<script src="../supabase-client.js?v=4"></script>
 <script>
 (async function () {
   const me = await restupRequireStaff();
   if (!me) return;
+  restupStaffBar(me);
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';
@@ -156,6 +169,53 @@ body{overflow-x:hidden;}
   document.getElementById('coachAvatar').textContent = (me.email || 'C').slice(0, 2).toUpperCase();
   document.getElementById('settingsEmail').value = me.email || '';
 
+  // ---- Profil : photo + nom affiché (visibles par les clients) ----
+  let photoUrl = null;
+  const preview = document.getElementById('photoPreview');
+  const setPreview = (url, name) => {
+    if (url) { preview.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:cover;">'; }
+    else { preview.textContent = (name || me.email || 'C').trim().slice(0, 2).toUpperCase(); }
+  };
+  try {
+    const { data: sp } = await supabaseClient.from('staff_profiles').select('display_name, photo_url').eq('user_id', me.id).maybeSingle();
+    if (sp) { document.getElementById('displayName').value = sp.display_name || ''; photoUrl = sp.photo_url || null; }
+  } catch (e) {}
+  setPreview(photoUrl, document.getElementById('displayName').value);
+
+  async function resizeToBlob(file, size) {
+    const bmp = await createImageBitmap(file);
+    const s = Math.min(bmp.width, bmp.height);
+    const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
+    canvas.getContext('2d').drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, size, size);
+    return new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.88));
+  }
+  const photoMsg = document.getElementById('photoMsg');
+  document.getElementById('photoFile').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    if (f.size > 8 * 1024 * 1024) { photoMsg.textContent = 'Image trop lourde (8 Mo max).'; return; }
+    photoMsg.textContent = 'Envoi…';
+    try {
+      const blob = await resizeToBlob(f, 320);
+      const path = me.id + '/avatar.jpg';
+      const { error } = await supabaseClient.storage.from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+      if (error) throw error;
+      const { data } = supabaseClient.storage.from('avatars').getPublicUrl(path);
+      photoUrl = data.publicUrl + '?v=' + Date.now();
+      const { error: e2 } = await supabaseClient.from('staff_profiles').upsert({ user_id: me.id, display_name: document.getElementById('displayName').value.trim() || null, photo_url: photoUrl, updated_at: new Date().toISOString() });
+      if (e2) throw e2;
+      setPreview(photoUrl);
+      photoMsg.textContent = 'Photo enregistrée ✔';
+      const bar = document.getElementById('staffBar'); if (bar) bar.remove();   // se réaffiche avec la nouvelle photo
+      restupStaffBar(me);
+    } catch (err) { photoMsg.textContent = 'Envoi impossible : ' + (err.message || err); }
+  });
+  document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+    const { error } = await supabaseClient.from('staff_profiles').upsert({ user_id: me.id, display_name: document.getElementById('displayName').value.trim() || null, photo_url: photoUrl, updated_at: new Date().toISOString() });
+    if (error) { if (window.toast) toast(error.message, 'error'); return; }
+    if (window.toast) toast('Profil enregistré', 'ok');
+    const bar = document.getElementById('staffBar'); if (bar) bar.remove();
+    restupStaffBar(me);
+  });
   async function logout() {
     await supabaseClient.auth.signOut();
     window.location.href = '../login.html';

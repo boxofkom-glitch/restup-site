@@ -674,8 +674,8 @@ p{margin:0 0 10px;color:var(--muted);}
 <script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js"></script>
-<script src="admin/mock-clients.js"></script>
+<script src="supabase-client.js?v=4"></script>
+<script src="admin/mock-clients.js?v=3"></script>
 <script>
 (async function () {
   // Session obligatoire (l'aperçu de démo n'existe qu'en local). Le rôle vient du compte.
@@ -750,30 +750,39 @@ p{margin:0 0 10px;color:var(--muted);}
     });
   });
 
-  // ---- KPI assignés par le coach (démo locale, voir admin/kpi.html) ----
-  function renderMyKpis() {
-    const lib = JSON.parse(localStorage.getItem('restup_kpi_templates') || '[]');
-    const assignments = JSON.parse(localStorage.getItem('restup_kpi_assignments') || '[]').filter(a => a.clientId === user.id);
+  // ---- KPI assignés par le coach : le client saisit sa valeur de la période (tables kpi_*) ----
+  function periodKey(freq) {
+    const d = new Date();
+    if (freq === 'month') return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return t.getUTCFullYear() + '-S' + String(Math.ceil(((t - y0) / 86400000 + 1) / 7)).padStart(2, '0');
+  }
+  async function renderMyKpis() {
     const card = document.getElementById('myKpisCard');
-    if (!assignments.length) { card.style.display = 'none'; return; }
+    if (user._preview) { card.style.display = 'none'; return; }
+    const { data: assigns } = await supabaseClient.from('kpi_assignments').select('id, target, kpi_templates(name, unit, frequency)').eq('client_id', user.id);
+    if (!assigns || !assigns.length) { card.style.display = 'none'; return; }
+    const { data: vals } = await supabaseClient.from('kpi_values').select('assignment_id, period, value').eq('client_id', user.id);
     card.style.display = 'block';
-    document.getElementById('myKpisList').innerHTML = assignments.map(a => {
-      const kpi = lib.find(k => k.id === a.kpiId);
-      if (!kpi) return '';
+    document.getElementById('myKpisList').innerHTML = assigns.map(a => {
+      const k = a.kpi_templates; if (!k) return '';
+      const per = periodKey(k.frequency);
+      const cur = (vals || []).find(v => v.assignment_id === a.id && v.period === per);
       return `<div class="field" style="margin-bottom:0;">
-        <label>${esc(kpi.name)}${kpi.unit ? ` (${esc(kpi.unit)})` : ''}</label>
-        <input type="text" data-kpi="${esc(a.kpiId)}" value="${esc(a.value || '')}" placeholder="Votre valeur">
+        <label>${esc(k.name)}${k.unit ? ` (${esc(k.unit)})` : ''} <span style="color:var(--muted-dim);font-weight:500;font-size:12px;">· ${k.frequency === 'month' ? 'ce mois-ci' : 'cette semaine'}</span></label>
+        <input type="number" step="any" data-a="${esc(a.id)}" data-p="${esc(per)}" value="${cur ? esc(cur.value) : ''}" placeholder="Ta valeur">
       </div>`;
     }).join('');
     document.getElementById('myKpisList').querySelectorAll('input').forEach(input => {
-      input.addEventListener('change', () => {
-        const all = JSON.parse(localStorage.getItem('restup_kpi_assignments') || '[]');
-        const row = all.find(a => a.kpiId === input.dataset.kpi && a.clientId === user.id);
-        if (row) { row.value = input.value; localStorage.setItem('restup_kpi_assignments', JSON.stringify(all)); }
+      input.addEventListener('change', async () => {
+        if (input.value === '') return;
+        const { error } = await supabaseClient.from('kpi_values').upsert({ assignment_id: input.dataset.a, client_id: user.id, period: input.dataset.p, value: Number(input.value) }, { onConflict: 'assignment_id,period' });
+        if (window.toast) toast(error ? 'Enregistrement impossible.' : 'Valeur enregistrée ✔', error ? 'error' : 'ok');
       });
     });
   }
-
   // ---- Quick win de la semaine + bandeau semaine terminée ----
   function renderQuickWinAndBanner(plan) {
     const banner = document.getElementById('weekCompleteBanner');
@@ -1261,55 +1270,56 @@ p{margin:0 0 10px;color:var(--muted);}
       return data || [];
     } catch (e) { return null; }
   }
-  // TEMP — demandes de documents en localStorage (bus démo coach ↔ client, voir admin/client.html).
-  function renderDocRequestsClient() {
+  // Documents demandés par le coach : table "document_requests" + stockage privé "client-files".
+  const DOC_ICON = '<span class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>';
+  async function renderDocRequestsClient() {
     const card = document.getElementById('docReqCard');
     const wrap = document.getElementById('docReqClientList');
-    const all = JSON.parse(localStorage.getItem('restup_doc_requests') || '{}');
-    const list = all[user.id] || [];
-    if (!list.length) { card.style.display = 'none'; return; }
+    if (user._preview) { card.style.display = 'none'; return; }
+    const { data: list, error } = await supabaseClient.from('document_requests').select('*').eq('client_id', user.id).order('created_at', { ascending: false });
+    if (error || !list || !list.length) { card.style.display = 'none'; return; }
     card.style.display = 'block';
-    const uploadsAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
-    const uploads = uploadsAll[user.id] || {};
-    wrap.innerHTML = list.map(r => {
-      const up = uploads[r.id];
-      return `<div class="doc-item">
-        <span class="doc-name"><span class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>${esc(r.label)}${r.note ? ` <span style="color:var(--muted-dim);font-weight:400;">— ${esc(r.note)}</span>` : ''}</span>
+    wrap.innerHTML = list.map(r => `<div class="doc-item">
+        <span class="doc-name">${DOC_ICON}<span><b>${esc(r.label)}</b>${r.note ? `<br><span style="color:var(--muted-dim);font-size:12.5px;">${esc(r.note)}</span>` : ''}</span></span>
         <span style="display:flex;align-items:center;gap:10px;">
-          ${up
-            ? `<span class="paid-tag yes">Envoyé : ${esc(up.fileName)}</span>`
-            : `<label class="btn-primary magnetic" style="padding:8px 16px;font-size:12.5px;cursor:pointer;">Importer<input type="file" data-req="${r.id}" style="display:none;"></label>`}
+          ${r.status === 'received'
+            ? '<span class="paid-tag yes">Envoyé ✔</span>'
+            : `<label class="btn-primary magnetic" style="padding:8px 16px;font-size:12.5px;cursor:pointer;">Importer<input type="file" data-req="${esc(r.id)}" style="display:none;"></label>`}
         </span>
-      </div>`;
-    }).join('');
+      </div>`).join('');
     wrap.querySelectorAll('input[type=file]').forEach(input => {
-      input.addEventListener('change', (e) => {
+      input.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const uAll = JSON.parse(localStorage.getItem('restup_doc_uploads') || '{}');
-        const uUser = uAll[user.id] || {};
-        uUser[input.dataset.req] = { fileName: file.name, uploadedAt: new Date().toISOString() };
-        uAll[user.id] = uUser;
-        localStorage.setItem('restup_doc_uploads', JSON.stringify(uAll));
-        if (window.toast) toast('Document envoyé à votre coach', 'ok');
+        if (file.size > 15 * 1024 * 1024) { if (window.toast) toast('Fichier trop lourd (15 Mo maximum).', 'error'); return; }
+        const label = input.closest('label');
+        label.firstChild.textContent = 'Envoi…';
+        const path = `${user.id}/${input.dataset.req}-${file.name.replace(/[^\w.\-]+/g, '_')}`;
+        const up = await supabaseClient.storage.from('client-files').upload(path, file, { upsert: true });
+        if (up.error) { label.firstChild.textContent = 'Importer'; if (window.toast) toast('Envoi impossible : ' + up.error.message, 'error'); return; }
+        const { error: e2 } = await supabaseClient.from('document_requests').update({ status: 'received', file_path: path, received_at: new Date().toISOString() }).eq('id', input.dataset.req);
+        if (e2) { if (window.toast) toast('Fichier envoyé, mais le suivi n\'a pas pu être mis à jour.', 'error'); }
+        else if (window.toast) toast('Document envoyé à ton coach', 'ok');
         renderDocRequestsClient();
       });
     });
   }
 
-  function renderDocs(files) {
+  async function renderDocs(files) {
     const list = document.getElementById('docsList');
-    if (files === null) { list.innerHTML = '<div class="empty-state">Votre coach n\'a pas encore partagé de documents.</div>'; return; }
-    if (!files.length) { list.innerHTML = '<div class="empty-state">Les prochains documents ajoutés par votre coach apparaîtront ici.</div>'; return; }
+    if (files === null) { list.innerHTML = '<div class="empty-state">Ton coach n\'a pas encore partagé de documents.</div>'; return; }
+    // Seuls les fichiers déposés par le coach : ceux importés par le client (préfixe uuid de demande) restent dans la liste "demandés".
+    if (!files.length) { list.innerHTML = '<div class="empty-state">Les prochains documents ajoutés par ton coach apparaîtront ici.</div>'; return; }
+    const { data: signed } = await supabaseClient.storage.from('client-files').createSignedUrls(files.map(f => `${user.id}/${f.name}`), 3600);
+    const urlOf = {}; (signed || []).forEach(s => { urlOf[s.path] = s.signedUrl; });
     list.innerHTML = files.map(f => {
-      const { data } = supabaseClient.storage.from('client-files').getPublicUrl(`${user.id}/${f.name}`);
+      const u = urlOf[`${user.id}/${f.name}`];
       return `<div class="doc-item">
-        <span class="doc-name"><span class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>${esc(f.name.replace(/^\d+-/, ''))}</span>
-        <a href="${esc(data.publicUrl)}" target="_blank" rel="noopener">Voir</a>
+        <span class="doc-name">${DOC_ICON}${esc(f.name.replace(/^[\w-]{8,}-|^\d+-/, ''))}</span>
+        ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">Voir</a>` : ''}
       </div>`;
     }).join('');
   }
-
   // ---- Calls : table Supabase "calls" (colonnes : id, user_id, scheduled_at,
   // status, notes, created_at). Statuts : requested / confirmed / done. ----
   async function loadCalls() {
@@ -1466,7 +1476,15 @@ p{margin:0 0 10px;color:var(--muted);}
     // Coach
     let coach = null;
     if (!user._preview) { try { const { data } = await supabaseClient.rpc('restup_my_coach'); coach = data; } catch (e) {} }
-    document.getElementById('homeCoach').textContent = coach && coach.name ? coach.name : 'En cours d\'attribution';
+    const coachEl = document.getElementById('homeCoach');
+    coachEl.textContent = coach && coach.name ? coach.name : 'En cours d\'attribution';
+    if (coach && coach.photo) {
+      const img = document.createElement('img');
+      img.src = coach.photo; img.alt = '';
+      img.style.cssText = 'width:34px;height:34px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;border:2px solid rgba(255,255,255,.12);';
+      img.onerror = () => img.remove();
+      coachEl.prepend(img);
+    }
     const wa = coach && coach.phone ? String(coach.phone).replace(/[^\d]/g, '').replace(/^0/, '33') : '';
     const waEl = document.getElementById('homeCoachWa');
     if (wa) { waEl.href = 'https://wa.me/' + wa; waEl.style.display = 'inline-block'; }

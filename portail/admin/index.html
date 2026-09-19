@@ -225,7 +225,7 @@ body{overflow-x:hidden;}
           <div class="table-scroll">
             <table class="client-table wide">
               <thead>
-                <tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Accès</th><th>Onboarding</th><th>Audit</th><th>Prochaine action</th><th>Coach</th><th>Entrée</th></tr>
+                <tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Accès</th><th>Onboarding</th><th>Audit</th><th>Prochaine action</th><th>Payé</th><th>Montant payé</th><th>Mois payés</th><th>Calls</th><th>Coach</th><th>Closer</th><th>Entrée</th></tr>
               </thead>
               <tbody id="clientsBody"></tbody>
             </table>
@@ -276,12 +276,13 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js"></script>
-<script src="mock-clients.js"></script>
+<script src="../supabase-client.js?v=4"></script>
+<script src="mock-clients.js?v=3"></script>
 <script>
 (async function () {
   const user = await restupRequireStaff();
   if (!user) return;
+  restupStaffBar(user);
 
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminPage').style.display = 'block';
@@ -306,11 +307,14 @@ body{overflow-x:hidden;}
 
   async function loadClients() {
     // RLS côté serveur garantit l'isolation : un coach ne reçoit QUE ses clients.
-    const [{ data: profiles }, { data: invitations }, { data: team }] = await Promise.all([
+    const [{ data: profiles }, { data: invitations }, { data: team }, { data: callRows }] = await Promise.all([
       supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }),
       supabaseClient.from('client_invitations').select('*').eq('status', 'invited').order('invited_at', { ascending: false }),
       supabaseClient.from('team_members').select('id, name, email, role').eq('role', 'coach'),
+      supabaseClient.from('calls').select('user_id, status'),
     ]);
+    const doneByUser = {};
+    (callRows || []).forEach(r => { if (r.status === 'done') doneByUser[r.user_id] = (doneByUser[r.user_id] || 0) + 1; });
     teamById = {};
     (team || []).forEach(t => { teamById[t.id] = t; });
     coachOptions = team || [];
@@ -332,6 +336,9 @@ body{overflow-x:hidden;}
         onboarding: p.onboarding_status || 'completed',
         auditAt: p.audit_scheduled_at || null,
         coachId: p.coach_id || null,
+        paid: !!p.paid, amountPaid: Number(p.amount_paid) || 0, monthsPaid: p.months_paid || 0,
+        doneCalls: doneByUser[p.id] || 0, totalCalls: 12,
+        closer: p.closer_name || '—',
         coach: p.coach_id && teamById[p.coach_id] ? (teamById[p.coach_id].name || teamById[p.coach_id].email) : (p.coach || '—'),
       }));
 
@@ -350,6 +357,7 @@ body{overflow-x:hidden;}
       onboarding: 'not_started',
       auditAt: null,
       coachId: i.coach_id || null,
+      paid: false, amountPaid: 0, monthsPaid: 0, doneCalls: 0, totalCalls: 12, closer: '—',
       coach: i.coach_id && teamById[i.coach_id] ? (teamById[i.coach_id].name || teamById[i.coach_id].email) : '—',
     }));
 
@@ -424,7 +432,12 @@ body{overflow-x:hidden;}
         <td data-label="Onboarding"><span class="pill ${ONBOARDING_TONE[c.onboarding] || ''}">${ONBOARDING_LABEL[c.onboarding] || '—'}</span></td>
         <td class="hide-m" data-label="Audit">${esc(audit)}</td>
         <td data-label="À faire"><span class="pill ${na.tone}">${esc(na.label)}</span></td>
+        <td class="hide-m"><span class="pill ${c.paid ? 'ok' : 'bad'}">${c.paid ? 'Payé' : 'Non payé'}</span></td>
+        <td class="hide-m">${(c.amountPaid || 0).toLocaleString('fr-FR')} €</td>
+        <td class="hide-m">${c.monthsPaid || 0} mois</td>
+        <td class="hide-m">${c.doneCalls}/${c.totalCalls}</td>
         <td class="hide-m" data-label="Coach">${esc(c.coach)}</td>
+        <td class="hide-m">${esc(c.closer)}</td>
         <td class="hide-m" data-label="Entrée">${esc(entree)}</td>
       </tr>`;
     }).join('');
@@ -455,7 +468,10 @@ body{overflow-x:hidden;}
       <div class="qv-row"><span>Prochaine action</span><span>${esc(na.label)}</span></div>
       <div class="qv-row"><span>Accès</span><span>${c.pending ? 'Invitation envoyée' + (c.sendCount > 1 ? ' (' + c.sendCount + '×)' : '') : 'Actif'}</span></div>
       <div class="qv-row"><span>Onboarding</span><span>${esc(ONBOARDING_LABEL[c.onboarding] || '—')}</span></div>
+      <div class="qv-row"><span>Paiement</span><span>${c.paid ? 'Payé' : 'Non payé'}${c.amountPaid ? ' · ' + c.amountPaid.toLocaleString('fr-FR') + ' €' : ''}</span></div>
+      <div class="qv-row"><span>Calls</span><span>${c.doneCalls} / ${c.totalCalls}</span></div>
       <div class="qv-row"><span>Coach</span><span>${esc(c.coach)}</span></div>
+      <div class="qv-row"><span>Closer</span><span>${esc(c.closer)}</span></div>
       <div class="qv-row"><span>Email</span><span>${esc(c.email)}</span></div>
       <div class="qv-row"><span>Téléphone</span><span>${esc(c.phone)}</span></div>
       <div class="qv-actions">
