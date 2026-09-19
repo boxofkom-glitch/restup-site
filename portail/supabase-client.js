@@ -76,13 +76,22 @@ async function restupStaffBar(me) {
     #staffBar .sb-out{background:transparent;border:1px solid var(--line,#2B2E2A);color:var(--muted,#B7BDB4);font-family:inherit;font-weight:700;font-size:12.5px;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
     #staffBar .sb-out:hover{color:#fff;border-color:#9B4DFF;}
     #logoutBtn,#sidebarLogoutBtn,.side-foot .icon-btn{display:none !important;}
-    @media (max-width:900px){#staffBar{padding:8px 14px;}#staffBar .sb-txt{display:none;}}
+    #staffBar .sb-wm{display:none;font-family:'Anton',Impact,sans-serif;font-size:22px;letter-spacing:.01em;color:#fff;text-decoration:none;margin-right:auto;line-height:1;}
+    #staffBar .sb-wm span{color:#B37BFF;}
+    @media (max-width:900px){
+      #staffBar{padding:max(8px,env(safe-area-inset-top)) 14px 8px;gap:10px;}
+      #staffBar .sb-txt{display:none;}
+      #staffBar .sb-wm{display:block;}
+      #staffBar .sb-av{width:32px;height:32px;}
+      #staffBar .sb-out{padding:7px 12px;}
+      .mobile-topbar{display:none !important;}
+    }
   `;
   document.head.appendChild(style);
 
   const bar = document.createElement("div");
   bar.id = "staffBar";
-  bar.innerHTML = `<a class="sb-user" href="${location.pathname.includes('/admin/') ? 'settings.html' : 'admin/settings.html'}" title="Mon profil">${avatar}<span class="sb-txt"><b>${esc(name)}</b><small>${isDev ? "Développeur" : "Coach"}</small></span></a>
+  bar.innerHTML = `<a class="sb-wm" href="${location.pathname.includes('/admin/') ? 'index.html' : 'admin/index.html'}" aria-label="RESTUP">REST<span>UP</span></a><a class="sb-user" href="${location.pathname.includes('/admin/') ? 'settings.html' : 'admin/settings.html'}" title="Mon profil">${avatar}<span class="sb-txt"><b>${esc(name)}</b><small>${isDev ? "Développeur" : "Coach"}</small></span></a>
     <button type="button" class="sb-out" id="staffLogout"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Déconnexion</button>`;
   const host = document.querySelector(".main") || document.body;
   host.insertBefore(bar, host.firstChild);
@@ -198,3 +207,45 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   .mobile-nav-toggle:active{transform:scale(.96);}`;
   document.head.appendChild(s);
 })();
+
+// ---- Espace client (mobile) : en-tête fine, menu du bas à portée de pouce ----
+document.addEventListener("DOMContentLoaded", function () {
+  const shell = document.getElementById("dashboardContent");
+  if (!shell || !document.querySelector('[data-view="overview"]')) return;
+  const st = document.createElement("style");
+  st.textContent = `
+    #clientBottomNav{display:none;}
+    @media (max-width:900px){
+      .mobile-topbar{padding:max(8px,env(safe-area-inset-top)) 16px 8px !important;min-height:0 !important;}
+      .mobile-topbar .mobile-nav-toggle{display:none !important;}
+      #clientBottomNav{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;background:rgba(11,13,12,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line,#2B2E2A);padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+      #clientBottomNav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:#9aa09a;background:none;border:0;font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.1;cursor:pointer;border-radius:12px;}
+      #clientBottomNav button.on{color:#fff;background:rgba(155,77,255,.22);}
+      #clientBottomNav button.on svg{color:#B37BFF;}
+      body{padding-bottom:76px;}
+    }`;
+  document.head.appendChild(st);
+  const ico = (d) => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const items = [
+    ["overview", "Accueil", ico('<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>')],
+    ["plan", "Plan", ico('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')],
+    ["calls", "Calls", ico('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>')],
+    ["messages", "Messages", ico('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')],
+  ];
+  const nav = document.createElement("nav");
+  nav.id = "clientBottomNav";
+  nav.innerHTML = items.map(([v, l, i]) => `<button type="button" data-go="${v}">${i}<span>${l}</span></button>`).join("")
+    + `<button type="button" id="cbnMore">${ico('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')}<span>Plus</span></button>`;
+  shell.appendChild(nav);
+  nav.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => {
+    const t = document.querySelector('.side-link[data-view="' + b.dataset.go + '"]'); if (t) t.click();
+  }));
+  document.getElementById("cbnMore").addEventListener("click", () => { const t = document.getElementById("mobileNavToggle"); if (t) t.click(); });
+  const sync = () => {
+    const act = document.querySelector(".side-link.active");
+    const v = act && act.dataset.view;
+    nav.querySelectorAll("[data-go]").forEach((b) => b.classList.toggle("on", b.dataset.go === v));
+  };
+  document.addEventListener("click", () => setTimeout(sync, 60));
+  sync();
+});
