@@ -73,7 +73,7 @@ section{position:relative}
 .hero .wrap{position:relative;z-index:3}
 .kick{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--v2);margin-bottom:22px}
 .kick::before{content:"";width:34px;height:2px;background:var(--v)}
-h1.big{font-size:clamp(50px,11.2vw,170px);margin-bottom:26px}
+h1.big{font-size:clamp(50px,min(11vw,14.5vh),140px);margin-bottom:22px}
 h1.big .ln{display:block;overflow:hidden;padding-bottom:.04em}
 h1.big .ln>span{display:inline-block;transition:transform 1.2s cubic-bezier(.16,1,.3,1),opacity 1s}
 h1.big .ln:nth-child(1)>span{transform:translateX(-110%)}
@@ -172,14 +172,16 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
 @media (max-width:900px){.appgrid{grid-template-columns:1fr}.phone{width:min(210px,31vw)}.phones{min-height:430px}.phone:nth-child(1){transform:translateX(24px) rotate(-6deg)}.phone:nth-child(3){transform:translateX(-24px) rotate(6deg)}}
 
 /* CHIFFRES */
-.stats{background:linear-gradient(135deg,var(--vdd),#0a0710 60%);border-block:1px solid var(--line)}
-.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.st{padding:8px 0;border-left:2px solid var(--v);padding-left:20px}
-.st b{display:block;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(54px,7.6vw,112px);line-height:1;color:#fff}
-.st b small{font-size:.42em;color:var(--v2);margin-left:6px}
-.st>span{display:block;color:var(--m);font-size:14.5px;margin-top:8px}
+.stats{background:linear-gradient(135deg,var(--vdd),#0a0710 65%);border-block:1px solid var(--line);padding:clamp(70px,9vw,120px) 0}
+.stats h2{font-size:clamp(32px,5vw,64px);margin-bottom:clamp(26px,4vw,48px)}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.st{position:relative;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,2.4vw,34px) clamp(18px,2vw,28px) 26px;overflow:hidden;text-align:left}
+.st::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--v),var(--v3))}
+.st b{display:flex;align-items:baseline;gap:8px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:clamp(84px,9.2vw,150px);line-height:.95;color:#fff;letter-spacing:-.01em}
 .st b span{display:inline;font-size:inherit;color:inherit;margin:0}
-@media (max-width:900px){.sgrid{grid-template-columns:1fr 1fr}}
+.st b small{font-size:.34em;color:var(--v2);text-transform:uppercase;letter-spacing:.02em}
+.st>span{display:block;color:var(--m);font-size:15px;line-height:1.45;margin-top:14px;max-width:24ch}
+@media (max-width:900px){.sgrid{grid-template-columns:1fr 1fr;gap:12px}.st{padding:20px 16px 22px}.st b{font-size:clamp(72px,21vw,104px)}.st>span{font-size:13.5px}}
 
 /* VS */
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:24px}
@@ -317,12 +319,15 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
 </section>
 
 <!-- CHIFFRES -->
-<section class="stats pad" style="padding-block:clamp(60px,8vw,110px)">
-  <div class="wrap sgrid">
-    <div class="st" data-r="left"><b><span data-c="16">0</span></b><span>semaines de plan, construit avec toi</span></div>
-    <div class="st" data-r="right" style="--d:.1s"><b><span data-c="1">0</span><small>h</small></b><span>de pilotage chaque semaine avec ton coach</span></div>
-    <div class="st" data-r="left" style="--d:.2s"><b><span data-c="1">0</span></b><span>priorité à la fois, jamais dix</span></div>
-    <div class="st" data-r="right" style="--d:.3s"><b><span data-c="72">0</span><small>h</small></b><span>pour passer à la première action</span></div>
+<section class="stats">
+  <div class="wrap">
+    <h2 class="disp split" data-split>Un cadre. <span class="v">Pas du flou.</span></h2>
+    <div class="sgrid">
+      <div class="st" data-r="left"><b><span data-c="16">0</span><small>sem.</small></b><span>de plan construit avec toi, étape par étape</span></div>
+      <div class="st" data-r="right" style="--d:.1s"><b><span data-c="1">0</span><small>heure</small></b><span>de pilotage chaque semaine avec ton coach</span></div>
+      <div class="st" data-r="left" style="--d:.2s"><b><span data-c="1">0</span><small>priorité</small></b><span>à la fois. Jamais dix en même temps</span></div>
+      <div class="st" data-r="right" style="--d:.3s"><b><span data-c="72">0</span><small>h</small></b><span>pour passer à ta première action</span></div>
+    </div>
   </div>
 </section>
 
