@@ -25,10 +25,10 @@
 .problem-card h3{font-weight:800;font-size:16.5px;margin-bottom:8px;color:var(--text-strong,#fff);}
 .problem-card p{font-size:14px;}
 
-.proof-banner{background:linear-gradient(120deg,var(--lime),var(--lime-2));border-radius:var(--r-xl);padding:38px 32px;color:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;box-shadow:0 20px 40px -14px rgba(155,77,255,.35);}
-.proof-banner h3{font-size:20px;margin-bottom:6px;color:var(--ink);}
+.proof-banner{background:#151515;border:1px solid rgba(155,77,255,.55);box-shadow:0 0 40px rgba(155,77,255,.18);border-radius:var(--r-xl);padding:38px 32px;color:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;box-shadow:0 20px 40px -14px rgba(155,77,255,.35);}
+.proof-banner h3{font-size:20px;margin-bottom:6px;color:#fff;}
 .proof-banner p{color:rgba(13,13,13,.72);font-size:13.5px;max-width:52ch;margin:0 auto;}
-.proof-banner .big{font-family:var(--font-heading);font-weight:800;font-size:44px;color:var(--ink);white-space:nowrap;}
+.proof-banner .big{font-family:var(--font-heading);font-weight:400;font-size:44px;color:#B37BFF;white-space:nowrap;}
 
 .final{position:relative;background:var(--surface);border-radius:var(--r-xl);overflow:hidden;padding:56px 26px;text-align:center;}
 .final-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
@@ -70,7 +70,7 @@
 @keyframes omcPulse{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.18);}}
 .omc-top{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px;}
 .omc-eyebrow-row{display:flex;flex-direction:column;gap:10px;}
-.omc-badge{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;background:var(--lime);border:none;color:var(--text);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:7px 14px;border-radius:999px;animation:omcFloat 3.6s ease-in-out infinite;}
+.omc-badge{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;background:#fff;border:none;color:#6d2fd0;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:7px 14px;border-radius:999px;animation:omcFloat 3.6s ease-in-out infinite;}
 .omc-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);}
 @keyframes omcFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 .omc-title{font-size:clamp(20px,2.6vw,26px);color:var(--text-strong,#fff);font-weight:800;}

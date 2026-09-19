@@ -69,14 +69,14 @@ async function restupStaffBar(me) {
   style.textContent = `
     #staffBar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:10px 24px;background:rgba(11,13,12,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line,#2B2E2A);}
     #staffBar a.sb-user{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0;}
-    #staffBar .sb-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#9B4DFF,#B37BFF);color:#fff;font-weight:900;font-size:13px;border:2px solid rgba(255,255,255,.12);}
+    #staffBar .sb-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;background:#1c0e33;color:#B37BFF;font-weight:900;font-size:13px;border:2px solid rgba(155,77,255,.55);}
     #staffBar .sb-txt{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
     #staffBar .sb-txt b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
     #staffBar .sb-txt small{font-size:11px;color:var(--muted-dim,#82887F);}
     #staffBar .sb-out{background:transparent;border:1px solid var(--line,#2B2E2A);color:var(--muted,#B7BDB4);font-family:inherit;font-weight:700;font-size:12.5px;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
     #staffBar .sb-out:hover{color:#fff;border-color:#9B4DFF;}
     #logoutBtn,#sidebarLogoutBtn,.side-foot .icon-btn{display:none !important;}
-    #staffBar .sb-wm{display:none;font-family:'Anton',Impact,sans-serif;font-size:22px;letter-spacing:.01em;color:#fff;text-decoration:none;margin-right:auto;line-height:1;}
+    #staffBar .sb-wm{display:none;font-family:'Anton',Impact,sans-serif;font-size:22px;letter-spacing:-.01em;color:#fff;text-decoration:none;margin-right:auto;line-height:1;}
     #staffBar .sb-wm span{color:#B37BFF;}
     @media (max-width:900px){
       #staffBar{padding:max(8px,env(safe-area-inset-top)) 14px 8px;gap:10px;}
@@ -201,7 +201,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 // ---- Bouton menu mobile : bien visible (violet plein + libellé), sur toutes les pages ----
 (function () {
   const s = document.createElement("style");
-  s.textContent = `.mobile-nav-toggle{width:auto !important;height:44px !important;padding:0 16px 0 14px !important;gap:8px;border-radius:999px !important;border:0 !important;color:#fff !important;background:linear-gradient(135deg,#9B4DFF,#6d2fd0) !important;box-shadow:0 4px 16px rgba(155,77,255,.45);font-weight:800;font-size:13px;letter-spacing:.3px;}
+  s.textContent = `.mobile-nav-toggle{width:auto !important;height:44px !important;padding:0 16px 0 14px !important;gap:8px;border-radius:999px !important;border:0 !important;color:#6d2fd0 !important;background:#fff !important;box-shadow:0 4px 16px rgba(0,0,0,.35);font-weight:800;font-size:13px;letter-spacing:.3px;}
   .mobile-nav-toggle::after{content:"Menu";font-family:inherit;font-weight:800;font-size:13px;}
   .mobile-nav-toggle svg{width:22px !important;height:22px !important;stroke-width:2.6 !important;}
   .mobile-nav-toggle:active{transform:scale(.96);}`;

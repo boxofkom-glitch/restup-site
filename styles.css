@@ -50,7 +50,7 @@ p{color:var(--text-2);font-size:clamp(1rem,.94rem + .25vw,1.125rem);line-height:
 p.lead,.lead{text-wrap:pretty;max-width:60ch;}
 
 /* inline lime mark — the only way to spotlight a word inside a heading */
-.mark{background:var(--lime);color:var(--text);padding:.05em .18em;border-radius:.2em;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.mark{background:#fff;color:#6d2fd0;padding:.05em .18em;border-radius:.2em;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
 
 .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:12.5px;color:var(--green-deep);margin-bottom:16px;}
 .eyebrow::before{content:"";width:16px;height:2px;border-radius:2px;background:var(--lime);flex:0 0 auto;}
@@ -67,8 +67,8 @@ p.lead,.lead{text-wrap:pretty;max-width:60ch;}
 .nav-links{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--text-2);}
 .nav-links a{text-decoration:none;margin:0 16px;transition:color .2s;white-space:nowrap;}
 .nav-links a:hover,.nav-links a.active{color:var(--text);font-weight:600;}
-.nav-cta{background:var(--lime);color:var(--text);font-family:var(--font-body);font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:999px;text-decoration:none;white-space:nowrap;transition:background .18s,transform .18s,box-shadow .18s;}
-.nav-cta:hover{background:var(--lime-hover);transform:translateY(-1px);box-shadow:var(--shadow-lime);}
+.nav-cta{background:#fff;color:#6d2fd0;font-family:var(--font-body);font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:999px;text-decoration:none;white-space:nowrap;transition:background .18s,transform .18s,box-shadow .18s;}
+.nav-cta:hover{background:#f1e7ff;transform:translateY(-1px);box-shadow:var(--shadow-lime);}
 .nav-burger{display:none;width:40px;height:40px;border-radius:50%;background:var(--bg-2);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
 .nav-burger span,.nav-burger span::before,.nav-burger span::after{content:"";display:block;width:16px;height:2px;background:var(--text);border-radius:2px;position:relative;transition:transform .2s,opacity .2s;}
 .nav-burger span::before{position:absolute;top:-5px;}
@@ -83,12 +83,12 @@ p.lead,.lead{text-wrap:pretty;max-width:60ch;}
   body.menu-open .nav-burger span::after{transform:rotate(-45deg);top:0;}
   .nav-menu a{display:block;padding:14px 16px;border-radius:14px;text-decoration:none;color:var(--text);font-weight:500;font-size:15.5px;min-height:44px;display:flex;align-items:center;}
   .nav-menu a:hover{background:var(--bg-2);}
-  .nav-menu a.menu-cta{background:var(--lime);color:var(--text);font-weight:600;justify-content:center;margin-top:4px;}
+  .nav-menu a.menu-cta{background:#fff;color:#6d2fd0;font-weight:600;justify-content:center;margin-top:4px;}
 }
 
 /* BUTTONS — pill shaped, per spec */
-.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;background:var(--lime);color:var(--text);font-family:var(--font-body);font-weight:600;font-size:15.5px;padding:14px 30px;border-radius:999px;text-decoration:none;border:none;cursor:pointer;transition:background .18s,transform .18s,box-shadow .18s;position:relative;overflow:hidden;}
-.btn-primary:hover{background:var(--lime-hover);box-shadow:var(--shadow-lime);}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;background:#fff;color:#6d2fd0;font-family:var(--font-body);font-weight:600;font-size:15.5px;padding:14px 30px;border-radius:999px;text-decoration:none;border:none;cursor:pointer;transition:background .18s,transform .18s,box-shadow .18s;position:relative;overflow:hidden;}
+.btn-primary:hover{background:#f1e7ff;box-shadow:var(--shadow-lime);}
 .btn-primary:active{transform:scale(.97);}
 .btn-primary:focus-visible{outline:2px solid var(--green-deep);outline-offset:2px;}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
@@ -172,5 +172,5 @@ body{animation:pageIn .4s ease both;}
 /* focus visibility (kept consistent everywhere, incl. skipped components above) */
 a:focus-visible,button:focus-visible{outline:2px solid var(--green-deep);outline-offset:2px;}
 
-.wm{font-family:'Anton',Impact,sans-serif;font-size:26px;letter-spacing:.01em;color:#fff;line-height:1;display:inline-block}
+.wm{font-family:'Anton',Impact,sans-serif;font-size:26px;letter-spacing:-.01em;color:#fff;line-height:1;display:inline-block}
 .wm span{color:#B37BFF}
