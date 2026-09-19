@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="fr">
 <head>
+<meta name="color-scheme" content="dark"><style>html,body{background:#050507}</style>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RESTUP — Ton resto tourne. Ta marge, non.</title>
@@ -18,7 +20,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <style>
 :root{--bg:#050507;--bg2:#0d0b13;--card:#111017;--line:#25222f;--v:#9B4DFF;--v2:#B37BFF;--v3:#D2ADFF;--vd:#4a2482;--vdd:#1c0e33;--t:#fff;--m:#b9b4c6;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -227,7 +229,37 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
   [data-r],.split .w>span,h1.big .ln>span{opacity:1!important;transform:none!important}
   .hs{height:auto}.hs-s{position:relative;height:auto}.hs-track{flex-direction:column;transform:none!important}.pn{flex:none}
 }
+
+/* Téléphone : premier écran court, tout centré sur la largeur */
+@media (max-width:900px){
+  .hero{min-height:0 !important;padding:calc(var(--safe-t) + 86px) 0 46px !important}
+  .hero .wrap,.hero .wrap>*{text-align:center}
+  h1.big{font-size:clamp(34px,10.4vw,84px) !important;margin-bottom:18px !important}
+  .kick{justify-content:center;display:flex}
+  .kick::before{display:none}
+  .lead{margin-left:auto;margin-right:auto;margin-bottom:24px}
+  .ctas{justify-content:center}
+  .pad h2.h,.stats h2,.logos h2,.faq h2,.hs-top h2{text-align:center}
+  .appgrid p.d{margin-left:auto;margin-right:auto;text-align:center}
+  .appgrid .ticks{max-width:360px;margin:0 auto}
+  .fqg>div>p{margin:0 auto 18px;text-align:center}
+  .final .foot{justify-content:center;text-align:center}
+  .hs-top{justify-content:center;text-align:center}
+  .card,.pn{text-align:center}
+  .card svg.ic{margin-left:auto;margin-right:auto}
+  .st{text-align:center}.st b{justify-content:center}.st>span{margin-left:auto;margin-right:auto}
+  .pn{align-items:center !important}
+}
 </style>
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s750x1334.png">
 </head>
 <body>
 <div id="prog"></div><div class="glowcur" id="gc"></div>

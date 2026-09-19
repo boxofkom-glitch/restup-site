@@ -308,7 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
     html.is-app .portal-back{display:none !important}
     html.is-app .portal-topbar{justify-content:flex-start !important}
     @media (max-width:900px){
-      html.is-app .portal-hero{height:var(--app-h) !important;bottom:auto !important}
       html.is-app .portal-main{justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 3dvh)}
       html.is-app .portal-main h1{font-size:clamp(30px,6.4dvh,58px) !important;margin-bottom:3.2dvh !important}
       html.is-app .login-card{padding:clamp(22px,4dvh,38px) 26px clamp(18px,3.2dvh,30px) !important}
@@ -316,6 +315,23 @@ document.addEventListener("DOMContentLoaded", function () {
       html.is-app .field input{padding:clamp(11px,1.9dvh,16px) 14px !important}
       html.is-app #staffBottomNav,html.is-app #clientBottomNav{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px) * .55) !important}
       html.is-app .main>.admin-main{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px) * .55) !important}
-    }`;
+      html.is-app input,html.is-app select,html.is-app textarea{font-size:max(16px,1em)}
+    }
+    /* Comportement d'appli native : pas de sélection de texte, pas de menu de pression longue, pas de rebond */
+    html.is-app{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;overscroll-behavior:none}
+    html.is-app input,html.is-app textarea,html.is-app [contenteditable]{-webkit-user-select:text;user-select:text}
+    html.is-app *{-webkit-tap-highlight-color:transparent}
+    @view-transition{navigation:auto}
+    ::view-transition-old(root){animation:vtOut .16s ease both}
+    ::view-transition-new(root){animation:vtIn .22s ease both}
+    @keyframes vtOut{to{opacity:0}}
+    @keyframes vtIn{from{opacity:0}}`;
   document.head.appendChild(s);
+})();
+
+// Fond de page sombre partout : aucune bande blanche possible (zone du geste iPhone, rebond, chargement)
+(function () {
+  const s = document.createElement("style");
+  s.textContent = "html,html body{background-color:#0B0D0C}";
+  document.head.insertBefore(s, document.head.firstChild);
 })();

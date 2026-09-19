@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta name="color-scheme" content="dark"><style>html,body{background:#050507}</style>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" type="image/png" href="../../assets/logo-restup-wordmark.png">
@@ -221,6 +223,15 @@ body{overflow-x:hidden;}
   .tab-nav .tab-btn{flex:0 0 auto;white-space:nowrap}
 }
 </style>
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s750x1334.png">
 </head>
 <body>
 
@@ -228,7 +239,20 @@ body{overflow-x:hidden;}
   <span style="width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--lime);border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span>
   Chargement…
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+<style>@keyframes spin{to{transform:rotate(360deg);}}
+/* Mobile — format appli : une seule barre en haut (retour + nom), actions rapides en pastilles, onglets sur une ligne */
+@media (max-width:900px){
+  #staffBar{display:none !important}
+  .admin-topbar{position:sticky;top:0;z-index:45;background:#0B0D0C;padding:calc(10px + env(safe-area-inset-top,0px) * 0) 14px 8px !important;border-bottom:1px solid var(--line)}
+  .admin-topbar .client-title{font-size:17px !important;font-weight:800}
+  .client-hero{display:flex;flex-wrap:nowrap !important;overflow-x:auto;scrollbar-width:none;padding:8px 14px !important;gap:8px !important}
+  .client-hero::-webkit-scrollbar{display:none}
+  .client-hero .client-avatar,.client-hero-name{display:none !important}
+  .client-hero>div[style*="flex:1"]{flex:0 0 auto !important}
+  .client-hero .btn-primary,.client-hero .btn-secondary{flex:0 0 auto;min-height:34px !important;padding:0 13px !important;font-size:12.5px !important;border-radius:999px}
+  .tab-nav{top:calc(45px + 0px) !important}
+}
+</style>
 
 <div id="adminPage" style="display:none;">
 
@@ -417,7 +441,7 @@ body{overflow-x:hidden;}
 
 <script src="../../script.js"></script>
 <script src="../vendor/supabase.js"></script>
-<script src="../supabase-client.js?v=15"></script>
+<script src="../supabase-client.js?v=18"></script>
 <script src="../audit-engine.js?v=3"></script>
 <script src="copilot.js?v=1"></script>
 <script src="mock-clients.js?v=3"></script>
