@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Connexion — RESTUP</title>
 <meta name="theme-color" content="#0B0D0C">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230B0D0C'/%3E%3Ctext x='8' y='29' font-family='Arial' font-size='29' font-weight='bold' fill='%239B4DFF'%3ER%3C/text%3E%3C/svg%3E">
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="../style.css">
 <style>
 .portal-hero{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:radial-gradient(120% 130% at 22% 18%,#4a2482 0%,#1c0e33 45%,var(--ink) 78%)}
-.portal-topbar{display:flex;justify-content:space-between;align-items:center;padding:28px 56px}
+.portal-topbar{display:flex;justify-content:space-between;align-items:center;padding:calc(28px + env(safe-area-inset-top)) 56px 28px}
 .portal-back{color:#fff;font-size:14px;font-weight:600;opacity:.75;transition:opacity .2s}
 .portal-back:hover{opacity:1}
 .portal-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px 56px}
@@ -67,7 +67,7 @@
 
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="supabase-client.js?v=4"></script>
+<script src="supabase-client.js?v=5"></script>
 <script>
 function showMsg(text, type) {
   const el = document.getElementById('formMsg');

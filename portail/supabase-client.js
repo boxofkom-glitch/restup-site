@@ -139,3 +139,21 @@ async function restupRequireClient() {
   }
   return data.session.user;
 }
+
+// ---- Appli installée (écran d'accueil) : plein écran, jamais d'interface de navigateur ----
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/portail/sw.js", { scope: "/portail/" }).catch(() => {});
+}
+(function () {
+  const standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  if (!standalone) return;
+  document.documentElement.classList.add("is-app");
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("a[href]").forEach((a) => {
+      let p; try { p = new URL(a.href, location.href).pathname; } catch (e) { return; }
+      if (p.indexOf("/portail/") === 0) return;
+      // Un lien vers le site public ferait apparaître la barre du navigateur : le logo ramène à l'accueil de l'appli, le reste est masqué.
+      if (a.classList.contains("wordmark")) a.href = "/portail/login.html"; else a.style.display = "none";
+    });
+  });
+})();
