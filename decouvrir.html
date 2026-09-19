@@ -251,7 +251,6 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
     <p class="lead" data-r="right" style="--d:.5s">Un coach RESTUP à tes côtés, <b>une heure de pilotage par semaine</b> et un plan sur 16 semaines. Pas un rapport qui prend la poussière : des décisions, puis des actions. Chaque semaine.</p>
     <div class="ctas" data-r="up" style="--d:.7s"><a class="btn" href="contact.html">Demander mon audit gratuit <span aria-hidden="true">↗</span></a><a class="btn ghost" href="#methode">Voir comment ça marche</a></div>
   </div>
-  <div class="cue"><span>Scroll</span><i></i></div>
 </section>
 
 <div class="tick" aria-hidden="true"><div class="tr" id="t1"></div></div>
@@ -457,6 +456,32 @@ h2.h{font-size:clamp(38px,6.6vw,96px);margin-bottom:clamp(30px,5vw,60px)}
     if(i>=1){var t=$('.top');if(t)t.style.transition='transform 1s cubic-bezier(.3,1.4,.4,1)',t.style.transform='translateY(-4px)'}
     if(i>=2){$$('.ck').forEach(function(c,k){c.style.transition='stroke-dashoffset .8s ease '+(k*.5)+'s';c.style.strokeDashoffset='0'})}
     if(i>=3){var l=$('.ln2');if(l){l.style.transition='stroke-dashoffset 1.8s ease';l.style.strokeDashoffset='0'}var d=$('.dot');if(d){d.style.transition='opacity .4s ease 1.6s';d.style.opacity='1'}}}
+
+  // Méthode épinglée : un geste = une étape, toujours bien centrée (molette, clavier, barre de défilement)
+  (function(){
+    if(!hs) return;var lock=false,lastW=0,unlockAt=0,idleT=null,N=4;
+    var vh=function(){return innerHeight},top=function(){return hs.getBoundingClientRect().top+scrollY};
+    function pos(){return (scrollY-top())/vh()}
+    function go(i){lock=true;unlockAt=performance.now()+750;scrollTo({top:top()+i*vh(),behavior:'smooth'})}
+    function step(dir){var p=pos();var i=dir>0?Math.floor(p+.02)+1:Math.ceil(p-.02)-1;if(i<0||i>N-1)return false;go(i);return true}
+    function inZone(){var r=hs.getBoundingClientRect();return r.top<=2&&r.bottom>=vh()-2}
+    addEventListener('wheel',function(e){
+      if(!desk()||rm||e.ctrlKey)return;var now=performance.now(),dir=e.deltaY>0?1:-1;
+      if(Math.abs(e.deltaY)<1)return;
+      if(lock){if(now>unlockAt&&now-lastW>110)lock=false;lastW=now;if(lock){e.preventDefault();return}}
+      lastW=now;var r=hs.getBoundingClientRect();
+      if(inZone()){if(step(dir))e.preventDefault();return}
+      // Arrivée par le haut / par le bas : on se pose directement sur la première / dernière étape
+      if(dir>0&&r.top>0&&r.top<vh()*.85){e.preventDefault();go(0);return}
+      if(dir<0&&r.bottom<vh()&&r.bottom>vh()*.15){e.preventDefault();go(N-1);return}
+    },{passive:false});
+    addEventListener('keydown',function(e){
+      if(!desk()||rm||!inZone())return;var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
+      if(!dir||lock)return;if(step(dir))e.preventDefault();
+    });
+    addEventListener('scroll',function(){clearTimeout(idleT);if(!desk()||rm||lock)return;idleT=setTimeout(function(){if(!inZone())return;var p=pos(),n=Math.round(p);if(Math.abs(p-n)>.02){lock=true;unlockAt=performance.now()+700;scrollTo({top:top()+n*vh(),behavior:'smooth'})}},140)},{passive:true});
+    setInterval(function(){if(lock&&performance.now()>unlockAt&&performance.now()-lastW>110)lock=false},120);
+  })();
   requestAnimationFrame(tick);
   if(location.hash)setTimeout(function(){var t=document.querySelector(location.hash);t&&t.scrollIntoView()},300);
   if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(function(){})}
