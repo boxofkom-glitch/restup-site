@@ -232,7 +232,21 @@ html.mu-js .mu-fade.is-in {
   translate: 0 0;
 }
 
+/* Apparition du haut de page : en CSS pur, sans attendre le JavaScript */
+.mu-rise {
+  animation: mu-rise 0.8s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes mu-rise {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    translate: 0 10px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .mu-rise,
   .mu-shiny,
   .mu-shimmer__spark > span,
   .mu-shimmer__spark > span::before,
