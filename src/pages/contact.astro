@@ -3,7 +3,9 @@ import Layout from '~/layouts/PageLayout.astro';
 import ContactUs from '~/components/widgets/Contact.astro';
 import Features2 from '~/components/widgets/Features2.astro';
 
-const email = 'contact@restup-accompagnement.fr';
+import { CONTACT } from '~/contact';
+
+const email = CONTACT.email;
 
 const metadata = {
   title: 'Demander mon audit gratuit',
@@ -37,15 +39,16 @@ const metadata = {
     ]}
     textarea={{ label: 'Ton message', placeholder: 'Ce qui te bloque aujourd’hui, en quelques lignes.' }}
     button="Demander mon audit gratuit"
-    description={`Ta messagerie s'ouvre avec le message pré-rempli. Tu peux aussi écrire directement à ${email}.`}
+    description={`Ta messagerie s'ouvre avec le message pré-rempli. Tu peux aussi écrire à ${email} ou appeler ${CONTACT.name} au ${CONTACT.phone}.`}
   />
 
   <Features2
-    columns={3}
+    columns={2}
     items={[
       { title: 'Audit 100 % gratuit', description: 'Un premier échange pour comprendre ton établissement et tes objectifs.', icon: 'tabler:gift' },
-      { title: 'Réponse sous 48 h', description: 'On revient vers toi rapidement pour caler un créneau.', icon: 'tabler:clock' },
-      { title: 'Email', description: email, icon: 'tabler:mail' },
+      { title: `${CONTACT.name}, RESTUP`, description: `Ton interlocuteur, basé à ${CONTACT.city}.`, icon: 'tabler:map-pin' },
+      { title: 'Téléphone', description: CONTACT.phone, icon: 'tabler:phone', href: `tel:${CONTACT.phoneIntl}` },
+      { title: 'Email', description: email, icon: 'tabler:mail', href: `mailto:${email}` },
     ]}
   />
 </Layout>

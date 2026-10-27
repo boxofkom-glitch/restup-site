@@ -1,4 +1,5 @@
 import { getPermalink } from './utils/permalinks';
+import { CONTACT } from './contact';
 
 export const headerData = {
   links: [
@@ -22,6 +23,14 @@ export const footerData = {
         { text: 'La méthode', href: getPermalink('/#methode') },
         { text: "L'appli", href: getPermalink('/#appli') },
         { text: 'Questions fréquentes', href: getPermalink('/#questions') },
+      ],
+    },
+    {
+      title: 'Contact',
+      links: [
+        { text: `${CONTACT.name}, RESTUP · ${CONTACT.city}`, href: getPermalink('/contact') },
+        { text: CONTACT.phone, href: `tel:${CONTACT.phoneIntl}` },
+        { text: CONTACT.email, href: `mailto:${CONTACT.email}` },
       ],
     },
     {

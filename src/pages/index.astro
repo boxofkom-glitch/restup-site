@@ -7,6 +7,7 @@ import ShimmerLink from '~/components/ui/ShimmerLink.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE, I18N } from 'astrowind:config';
 import favIconSvg from '~/assets/favicons/favicon.svg';
+import { CONTACT } from '~/contact';
 
 const metadata = {
   title: 'RESTUP — Coaching de pilotage pour restaurateurs',
@@ -34,7 +35,11 @@ const structuredData = [
     url: SITE?.site,
     logo: new URL(favIconSvg.src, SITE?.site).toString(),
     slogan: 'Le partenaire de pilotage du restaurateur',
-    areaServed: { '@type': 'Country', name: 'France' },
+    email: CONTACT.email,
+    telephone: CONTACT.phoneIntl,
+    address: { '@type': 'PostalAddress', addressLocality: CONTACT.city, addressCountry: 'FR' },
+    founder: { '@type': 'Person', name: CONTACT.name },
+    areaServed: [{ '@type': 'City', name: CONTACT.city }, { '@type': 'Country', name: 'France' }],
   },
   {
     '@context': 'https://schema.org',
@@ -162,7 +167,7 @@ const after = [
           >Voir la méthode</a
         >
       </div>
-      <p class="mu-rise mt-4 text-sm text-muted" style="--delay:.3s">Audit 100 % gratuit · Réponse sous 48 h · Sans engagement</p>
+      <p class="mu-rise mt-4 text-sm text-muted" style="--delay:.3s">Basé à {CONTACT.city} · Audit 100 % gratuit · Réponse sous 48 h · Sans engagement</p>
 
       <!-- Maquettes de l'appli -->
       <div class="mu-rise relative mt-16 md:mt-20 max-w-5xl mx-auto" style="--delay:.35s">
