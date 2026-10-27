@@ -1,0 +1,324 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import ShimmerLink from '~/components/ui/ShimmerLink.astro';
+import StructuredData from '~/components/common/StructuredData.astro';
+import { SITE } from 'astrowind:config';
+
+const metadata = {
+  title: 'Nos offres',
+  description:
+    'Audit, pilotage, carte et fiches techniques, livraison, site internet, aménagement, création de concept et franchise : toutes les offres RESTUP pour les restaurateurs, avec leurs tarifs.',
+};
+
+// Tous les prix sont ici, hors taxes. Modifier uniquement cette liste pour les changer.
+const services = [
+  {
+    group: 'Comprendre',
+    icon: 'tabler:search',
+    title: 'Audit express',
+    result: 'Une heure pour identifier les 3 leviers prioritaires de ton restaurant.',
+    price: 'Gratuit',
+    unit: 'sans engagement',
+  },
+  {
+    group: 'Comprendre',
+    icon: 'tabler:report-analytics',
+    title: 'Audit 360°',
+    result:
+      'Diagnostic chiffré de ta marge, de tes achats, de ta masse salariale et de ton organisation, avec un plan sur 16 semaines remis par écrit.',
+    price: '1 500 – 2 500 €',
+    unit: 'déduit si tu signes un accompagnement',
+  },
+  {
+    group: 'Piloter',
+    icon: 'tabler:steering-wheel',
+    title: 'Pilotage RESTUP Essentiel',
+    result: 'Un point de pilotage toutes les deux semaines, l’appli RESTUP et le récap WhatsApp après chaque échange.',
+    price: '1 500 €',
+    unit: 'par mois',
+  },
+  {
+    group: 'Piloter',
+    icon: 'tabler:rocket',
+    title: 'Pilotage RESTUP Complet',
+    result: 'Une heure de pilotage chaque semaine, l’appli, le suivi de tes indicateurs et un coach disponible entre deux rendez-vous.',
+    price: '3 000 €',
+    unit: 'par mois',
+    highlight: true,
+  },
+  {
+    group: 'Piloter',
+    icon: 'tabler:building-store',
+    title: 'Pilotage multi-sites',
+    result: 'Le pilotage de ton groupe et la supervision administrative, RH et financière de tous tes établissements.',
+    price: 'Dès 4 500 €',
+    unit: 'par mois',
+  },
+  {
+    group: 'Optimiser',
+    icon: 'tabler:tools-kitchen-2',
+    title: 'Carte et fiches techniques',
+    result: 'Coût matière de chaque plat, prix de vente justes et une carte construite pour vendre ce qui rapporte.',
+    price: '1 200 – 2 500 €',
+    unit: 'selon le nombre de plats',
+  },
+  {
+    group: 'Optimiser',
+    icon: 'tabler:moped',
+    title: 'Livraison',
+    result:
+      'Ton menu Uber Eats et Deliveroo refait : catégories, suppléments, photos, TVA et codes produits, puis suivi des performances.',
+    price: '600 – 1 200 €',
+    unit: 'mise en place, puis 250 – 400 € par mois',
+  },
+  {
+    group: 'Optimiser',
+    icon: 'tabler:brand-instagram',
+    title: 'Contenu réseaux sociaux',
+    result: 'Des carrousels Instagram et TikTok tirés de situations réelles de restaurateurs, prêts à publier.',
+    price: '400 – 900 €',
+    unit: 'par mois',
+  },
+  {
+    group: 'Créer',
+    icon: 'tabler:world-www',
+    title: 'Site internet',
+    result: 'Un site professionnel pour ton restaurant ou ta franchise, ta carte en ligne et un référencement de base.',
+    price: '1 500 – 4 000 €',
+    unit: 'puis 50 – 100 € par mois',
+  },
+  {
+    group: 'Créer',
+    icon: 'tabler:ruler-measure',
+    title: 'Plan et aménagement du local',
+    result: 'Un plan coté de ton local et l’implantation de la cuisine et de la salle.',
+    price: '800 – 2 000 €',
+    unit: 'selon la surface',
+  },
+  {
+    group: 'Créer',
+    icon: 'tabler:sparkles',
+    title: 'Création de concept ou pack franchise',
+    result:
+      'Ta marque, ton identité visuelle, ta carte chiffrée, ton packaging, ton manuel d’exploitation et trois scénarios financiers.',
+    price: '6 000 – 15 000 €',
+    unit: 'selon le périmètre',
+  },
+];
+
+const groups = [
+  { name: 'Comprendre', text: 'Savoir où tu en es vraiment.' },
+  { name: 'Piloter', text: 'Décider et avancer chaque semaine.' },
+  { name: 'Optimiser', text: 'Gagner de la marge et des clients.' },
+  { name: 'Créer', text: 'Lancer, ouvrir ou dupliquer.' },
+];
+
+const packs = [
+  {
+    name: 'Démarrer',
+    for: 'Pour le resto qui perd de la marge sans savoir où.',
+    items: ['Audit 360°', 'Carte et fiches techniques', 'Plan d’action sur 16 semaines'],
+  },
+  {
+    name: 'Piloter',
+    for: 'Pour le resto qui tourne mais stagne.',
+    items: ['Pilotage RESTUP', 'Livraison optimisée', 'Contenu réseaux sociaux'],
+    highlight: true,
+  },
+  {
+    name: 'Dupliquer',
+    for: 'Pour l’enseigne qui veut ouvrir d’autres établissements.',
+    items: ['Pack franchise', 'Site internet', 'Plan du local', 'Pilotage multi-sites'],
+  },
+];
+
+const values = [
+  {
+    icon: 'tabler:user-check',
+    title: 'Un seul interlocuteur au lieu de cinq',
+    text: 'Consultant, agence web, graphiste, prestataire livraison, aménagement : tout est fait par la même équipe, avec la même vision de ton restaurant.',
+  },
+  {
+    icon: 'tabler:device-mobile',
+    title: '12 ans de terrain et des outils à nous',
+    text: 'L’appli RESTUP, le portail client et nos outils de création et de supervision nous permettent d’aller plus vite qu’une agence classique.',
+  },
+  {
+    icon: 'tabler:calculator',
+    title: 'Un retour sur investissement qui se calcule',
+    text: 'Pour un resto à 50 000 € de chiffre d’affaires par mois, gagner 2 points de coût matière, c’est environ 1 000 € de plus chaque mois. On le chiffre avec tes vrais chiffres pendant l’audit.',
+  },
+  {
+    icon: 'tabler:chart-dots',
+    title: 'Des résultats mesurés, pas promis',
+    text: 'Aucun résultat financier n’est garanti. Tout est suivi : actions, indicateurs, progrès. Tu vois chaque semaine ce qui a bougé.',
+  },
+];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'OfferCatalog',
+  name: 'Offres RESTUP',
+  url: `${SITE?.site}/offres`,
+  itemListElement: services.map((s) => ({
+    '@type': 'Offer',
+    name: s.title,
+    description: s.result,
+    priceSpecification: { '@type': 'PriceSpecification', priceCurrency: 'EUR', description: `${s.price} HT, ${s.unit}` },
+  })),
+};
+---
+
+<Layout metadata={metadata}>
+  <StructuredData slot="head" schema={structuredData} />
+
+  <!-- Héros -->
+  <section class="relative overflow-hidden">
+    <div class="mu-glow" aria-hidden="true"></div>
+    <div class="mu-dots" aria-hidden="true"></div>
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-10 text-center">
+      <p class="mu-rise text-sm font-semibold uppercase tracking-widest text-accent">Nos offres</p>
+      <h1 class="mu-rise mt-4 text-4xl md:text-6xl font-extrabold tracking-tight text-heading" style="--delay:.08s">
+        Tout ce qu’il faut à ton resto, <span class="mu-gradient-text">au même endroit.</span>
+      </h1>
+      <p class="mu-rise mt-5 text-lg text-muted" style="--delay:.16s">
+        Comprendre, piloter, optimiser, créer. Tu prends ce dont tu as besoin, on part toujours de tes chiffres.
+      </p>
+      <nav class="mu-rise mt-8 flex flex-wrap justify-center gap-2" style="--delay:.24s" aria-label="Familles d’offres">
+        {
+          groups.map((g) => (
+            <a href={`#${g.name.toLowerCase()}`} class="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-heading hover:border-primary/60">
+              {g.name}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <!-- Prestations par famille -->
+  {
+    groups.map((g) => (
+      <section id={g.name.toLowerCase()} class="max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20">
+        <div class="mu-fade flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-white/10 pb-4">
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-heading">{g.name}</h2>
+          <p class="text-muted">{g.text}</p>
+        </div>
+        <div class="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {services
+            .filter((s) => s.group === g.name)
+            .map((s, i) => (
+              <article
+                class:list={['mu-fade mu-card flex flex-col p-7', s.highlight && 'mu-card--hl']}
+                style={`--delay:${i * 0.08}s`}
+              >
+                {s.highlight && <div class="mu-beam" aria-hidden="true" />}
+                <div class="flex items-start justify-between gap-3">
+                  <span class="grid place-items-center w-11 h-11 rounded-xl bg-primary/15 text-accent">
+                    <Icon name={s.icon} class="w-6 h-6" />
+                  </span>
+                  {s.highlight && (
+                    <span class="rounded-full bg-primary/25 px-3 py-1 text-xs font-semibold text-accent">Le plus choisi</span>
+                  )}
+                </div>
+                <h3 class="mt-5 text-xl font-semibold text-heading">{s.title}</h3>
+                <p class="mt-2 text-muted flex-1">{s.result}</p>
+                <div class="mt-6 border-t border-white/10 pt-4">
+                  <p class="text-2xl font-extrabold text-heading">
+                    {s.price}
+                    {s.price !== 'Gratuit' && <span class="text-sm font-medium text-muted"> HT</span>}
+                  </p>
+                  <p class="text-sm text-muted">{s.unit}</p>
+                </div>
+              </article>
+            ))}
+        </div>
+      </section>
+    ))
+  }
+
+  <!-- Formules -->
+  <section class="relative py-20 overflow-hidden">
+    <div class="mu-glow opacity-60" style="top:10%" aria-hidden="true"></div>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mu-fade text-center max-w-2xl mx-auto">
+        <p class="text-sm font-semibold uppercase tracking-widest text-accent">Formules</p>
+        <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Trois façons de commencer</h2>
+        <p class="mt-4 text-lg text-muted">Chaque formule est ajustée après l’audit, selon ta situation.</p>
+      </div>
+      <div class="mt-12 grid md:grid-cols-3 gap-4">
+        {
+          packs.map((p, i) => (
+            <div
+              class:list={[
+                'mu-fade relative rounded-[1.25rem] border p-8',
+                p.highlight ? 'border-primary/50 bg-primary/10' : 'border-white/10 bg-white/[0.03]',
+              ]}
+              style={`--delay:${i * 0.1}s`}
+            >
+              {p.highlight && <div class="mu-beam" style="--duration:10s" aria-hidden="true" />}
+              <h3 class="text-2xl font-bold text-heading">{p.name}</h3>
+              <p class="mt-2 text-muted">{p.for}</p>
+              <ul class="mt-6 space-y-3">
+                {p.items.map((it) => (
+                  <li class="flex gap-3 text-heading">
+                    <Icon name="tabler:check" class="w-5 h-5 shrink-0 mt-0.5 text-accent" />
+                    {it}
+                  </li>
+                ))}
+              </ul>
+              <a href="/contact" class="mt-8 inline-flex items-center gap-1 font-semibold text-accent hover:underline">
+                En parler <Icon name="tabler:arrow-right" class="w-4 h-4" />
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Notre valeur -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+    <div class="mu-fade text-center max-w-2xl mx-auto">
+      <p class="text-sm font-semibold uppercase tracking-widest text-accent">Pourquoi RESTUP</p>
+      <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Ce que tu paies vraiment</h2>
+    </div>
+    <div class="mt-12 grid md:grid-cols-2 gap-4">
+      {
+        values.map((v, i) => (
+          <div class="mu-fade mu-card p-7 flex gap-5" style={`--delay:${i * 0.08}s`}>
+            <span class="grid place-items-center shrink-0 w-12 h-12 rounded-xl bg-primary/15 text-accent">
+              <Icon name={v.icon} class="w-6 h-6" />
+            </span>
+            <div>
+              <h3 class="text-xl font-semibold text-heading">{v.title}</h3>
+              <p class="mt-2 text-muted">{v.text}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-8 text-center text-sm text-muted">Tous les prix sont indiqués hors taxes. Le devis final est établi après l’audit.</p>
+  </section>
+
+  <!-- Appel final -->
+  <section class="px-4 sm:px-6 pb-24">
+    <div
+      class="mu-fade relative overflow-hidden max-w-5xl mx-auto rounded-[2rem] border border-white/10 bg-[#120b20] px-6 py-16 text-center"
+    >
+      <div class="mu-glow" style="top:-60%" aria-hidden="true"></div>
+      <div class="mu-dots" aria-hidden="true"></div>
+      <div class="mu-beam" style="--size:200px;--duration:12s" aria-hidden="true"></div>
+      <div class="relative">
+        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-heading">
+          Tu ne sais pas par où commencer ? <span class="mu-gradient-text">L’audit est gratuit.</span>
+        </h2>
+        <p class="mt-4 text-lg text-muted">En une heure, on identifie ce qui te fera gagner le plus, et l’offre qui va avec.</p>
+        <div class="mt-8 flex justify-center">
+          <ShimmerLink href="/contact">Demander mon audit gratuit</ShimmerLink>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

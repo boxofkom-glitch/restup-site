@@ -215,6 +215,13 @@
   pointer-events: none;
 }
 
+.mu-card--hl {
+  border-color: rgb(139 69 245 / 0.5);
+  background:
+    radial-gradient(260px circle at var(--x) var(--y), rgb(155 77 255 / 0.22), transparent 70%),
+    rgb(139 69 245 / 0.1);
+}
+
 /* Apparition douce au défilement (BlurFade) : seulement si le JavaScript tourne */
 html.mu-js .mu-fade {
   opacity: 0;

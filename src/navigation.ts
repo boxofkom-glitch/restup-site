@@ -2,9 +2,9 @@ import { getPermalink } from './utils/permalinks';
 
 export const headerData = {
   links: [
-    { text: 'Le constat', href: getPermalink('/#constat') },
     { text: 'La méthode', href: getPermalink('/#methode') },
     { text: "L'appli", href: getPermalink('/#appli') },
+    { text: 'Nos offres', href: getPermalink('/offres') },
     { text: 'Questions', href: getPermalink('/#questions') },
   ],
   actions: [
@@ -27,6 +27,7 @@ export const footerData = {
     {
       title: 'Démarrer',
       links: [
+        { text: 'Nos offres et tarifs', href: getPermalink('/offres') },
         { text: 'Demander mon audit gratuit', href: getPermalink('/contact') },
         { text: 'Espace client', href: '/portail/login.html' },
       ],
