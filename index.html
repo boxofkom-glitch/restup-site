@@ -7,6 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RESTUP — Reprenez les commandes de votre restaurant</title>
 <meta name="description" content="Rentabilité, équipe, organisation : RESTUP vous accompagne avec un coach et un rendez-vous de pilotage chaque semaine.">
+<link rel="canonical" href="https://restup.solutions/">
+<meta property="og:url" content="https://restup.solutions/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://restup.solutions/#org","name":"RESTUP","url":"https://restup.solutions/","logo":"https://restup.solutions/portail/icon-512.png","slogan":"Le partenaire de pilotage du restaurateur","description":"Coaching de pilotage pour restaurateurs : un coach, une heure de pilotage par semaine et un plan d'action sur 16 semaines (rentabilité, achats, équipe, organisation).","areaServed":{"@type":"Country","name":"France"},"knowsLanguage":"fr"},{"@type":"WebSite","@id":"https://restup.solutions/#site","url":"https://restup.solutions/","name":"RESTUP","inLanguage":"fr-FR","publisher":{"@id":"https://restup.solutions/#org"}}]}</script>
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
@@ -86,6 +89,9 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
 
 .mark{position:fixed;z-index:5;left:max(22px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top,0px) + 26px);font-family:Anton,Impact,sans-serif;font-size:28px;letter-spacing:-.01em;color:#fff;text-decoration:none;line-height:1}
 .mark span{color:#B37BFF}
+.links{position:fixed;z-index:5;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;padding:0 16px;font-size:12px;font-weight:600;opacity:0;transition:opacity 1.2s ease 1.4s}
+.arrived~.links,.links:focus-within{opacity:1}.links a{color:rgba(255,255,255,.55);text-decoration:none;padding:6px 2px}.links a:hover{color:#fff}
+@media (max-height:560px){.links{display:none}}
 @media (max-height:560px){.sub{display:none}h1{font-size:clamp(34px,13vh,80px)}.hero{padding-top:calc(env(safe-area-inset-top,0px) + 48px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 48px)}}
 @media (prefers-reduced-motion:reduce){.intro,video,.from-depth,.glow,.rays,.dim,.fb{transition:none}.fb i{animation:none;opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy))}}
 </style>
@@ -125,12 +131,13 @@ h1 b{display:block;font-weight:400;background:linear-gradient(180deg,#d2adff,#9B
   </div>
   <div class="glow"></div><div class="rays"></div>
   <div class="hero">
-    <h1 class="from-depth d1">Tu gères<b>tout.</b></h1>
-    <p class="sub from-depth d2">Et si tu recommençais<b>à diriger ?</b></p>
+    <h1 class="from-depth d1">Tu gères <b>tout.</b></h1>
+    <p class="sub from-depth d2">Et si tu recommençais <b>à diriger ?</b></p>
     <a class="cta from-depth d3" href="decouvrir.html">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="member from-depth d4" href="portail/login.html">Je suis déjà membre</a>
   </div>
 </main>
+<nav class="links" aria-label="Liens du site"><a href="decouvrir.html#methode">La méthode RESTUP</a><a href="livre.html">Le Livre du Restaurateur</a><a href="decouvrir.html#questions">Questions fréquentes</a><a href="contact.html">Audit gratuit</a></nav>
 <script>
 (function(){
   // Appli installée : un client déjà connecté va directement dans son espace

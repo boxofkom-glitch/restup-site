@@ -7,6 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" type="image/png" href="portail/icon-192.png">
 <title>Contact — RestUp, l'accompagnement stratégique des restaurateurs</title>
+<meta name="description" content="Demande ton audit stratégique gratuit RESTUP : un message suffit, réponse sous 48 h, sans engagement. Coaching de pilotage pour restaurateurs.">
+<link rel="canonical" href="https://restup.solutions/contact.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -53,8 +55,8 @@ p,label,.field label{font-weight:700;}
 
 <section class="page-hero reveal">
   <div class="eyebrow">Passez à l'action</div>
-  <h1 style="font-size:clamp(30px,4.5vw,48px);max-width:640px;margin:0 auto 24px;">Prêt à reprendre la main sur votre restaurant ?</h1>
-  <p style="max-width:520px;margin:0 auto;">Un message suffit. On revient vers vous sous 48h pour caler votre audit stratégique gratuit — sans engagement, sans blabla.</p>
+  <h1 style="font-size:clamp(30px,4.5vw,48px);max-width:640px;margin:0 auto 24px;">Prêt à reprendre la main sur ton restaurant ?</h1>
+  <p style="max-width:520px;margin:0 auto;">Un message suffit. On revient vers toi sous 48 h pour caler ton audit stratégique gratuit — sans engagement, sans blabla.</p>
 </section>
 
 <section>
@@ -63,7 +65,7 @@ p,label,.field label{font-weight:700;}
     <form id="contactForm">
       <div class="field"><label for="name">Nom</label><input id="name" required></div>
       <div class="field"><label for="email">Email</label><input id="email" type="email" required></div>
-      <div class="field"><label for="message">Votre message</label><textarea id="message" rows="5" required></textarea></div>
+      <div class="field"><label for="message">Ton message</label><textarea id="message" rows="5" required></textarea></div>
       <button class="btn-primary magnetic" type="submit" style="width:100%;">Candidater pour mon audit stratégique</button>
     </form>
     <div class="contact-trust">
@@ -90,7 +92,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e){
   window.location.href = `mailto:contact@restup-accompagnement.fr?subject=Nouveau message depuis le site&body=${body}`;
   const msg = document.getElementById('formMsg');
   msg.className = 'msg ok';
-  msg.textContent = 'Votre messagerie va s\'ouvrir avec le message pré-rempli.';
+  msg.textContent = 'Ta messagerie va s\'ouvrir avec le message pré-rempli.';
   if (window.toast) toast('Message prêt à être envoyé !', 'ok');
 });
 </script>

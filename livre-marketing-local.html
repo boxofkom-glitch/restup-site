@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta name="color-scheme" content="dark"><style>html,body{background:#050507}</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="portail/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.page-hero{padding:64px 16px;text-align:center;}
+.book-stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.book-stats .stat-pill{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;box-shadow:var(--shadow);min-width:110px;}
+.book-stats .stat-pill b{font-weight:900;font-size:21px;display:block;color:#fff;}
+.book-stats .stat-pill span{font-size:11.5px;color:var(--muted);}
+
+.book-search{max-width:560px;margin:28px auto 0;position:relative;}
+.book-search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:15px 22px 15px 46px;color:#fff;font-family:inherit;font-size:15px;}
+.book-search input:focus{outline:none;border-color:var(--lime);}
+.book-search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted-dim);pointer-events:none;}
+.book-search-empty{display:none;text-align:center;color:var(--muted-dim);font-size:13.5px;padding:30px 0;}
+
+.chapter-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1000px;margin:26px auto 24px;}
+.chapter-nav a{background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;text-decoration:none;transition:color .2s,border-color .2s;}
+.chapter-nav a:hover{color:#fff;border-color:var(--lime);}
+
+.chapter{scroll-margin-top:90px;max-width:1000px;margin:0 auto 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:22px 26px;box-shadow:var(--shadow);transition:border-color .2s;}
+.chapter.open{border-color:rgba(155,77,255,.35);}
+.chapter-head{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;}
+.chapter-num{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--lime-dim);color:var(--lime);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.chapter-head h2{font-size:clamp(17px,2.2vw,21px);color:#fff;}
+.chapter-sub{font-size:12px;color:var(--muted-dim);font-weight:600;flex:1 1 auto;}
+.chapter-toggle{flex:0 0 auto;color:var(--lime);font-size:22px;font-weight:400;transition:transform .3s ease;}
+.chapter.open .chapter-toggle{transform:rotate(45deg);}
+.chapter-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,.9,.3,1);}
+.chapter.open .chapter-body{max-height:5000px;}
+.chapter-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 20px;}
+.chapter-tags span{font-size:11px;font-weight:700;color:var(--muted-dim);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:4px 10px;border-radius:999px;}
+
+.situation-grid{display:flex;flex-direction:column;gap:10px;}
+.situation-item{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;transition:border-color .2s;}
+.situation-item.open{border-color:rgba(155,77,255,.4);}
+.situation-q{display:flex;align-items:center;gap:14px;padding:15px 18px;cursor:pointer;user-select:none;}
+.situation-q .sit-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:var(--muted-dim);}
+.situation-q .sit-head{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;row-gap:2px;}
+.situation-q b{font-weight:700;font-size:14px;color:#fff;line-height:1.35;}
+.situation-q .sit-teaser{font-size:12px;color:var(--muted-dim);line-height:1.4;}
+.situation-item.open .sit-teaser{display:none;}
+.situation-q .plus{flex:0 0 auto;transition:transform .25s ease;color:var(--lime);font-size:18px;}
+.situation-item.open .plus{transform:rotate(45deg);}
+.situation-a{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.situation-item.open .situation-a{max-height:700px;}
+.situation-a-inner{padding:0 18px 18px 58px;}
+.sit-block{margin-bottom:11px;}
+.sit-block:last-child{margin-bottom:0;}
+.sit-block b{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--lime);margin-bottom:3px;}
+.sit-block p{font-size:12.5px;line-height:1.55;color:#EDE4D6;}
+
+.book-cta{max-width:1000px;margin:36px auto 0;background:linear-gradient(120deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-xl);padding:36px 30px;text-align:center;}
+.book-cta h3{font-size:clamp(20px,2.8vw,28px);color:#fff;margin-bottom:12px;}
+.book-cta p{max-width:600px;margin:0 auto 22px;font-size:14.5px;}
+.book-cta .price-tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--lime-dim);border:1px solid rgba(155,77,255,.35);border-radius:999px;padding:8px 18px;margin-bottom:20px;}
+.book-cta .price-tag b{font-size:19px;font-weight:900;color:var(--lime);}
+.book-cta .price-tag span{font-size:12px;color:var(--muted);}
+</style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s750x1334.png">
+<title>Marketing local : situations et plans d'action pour restaurateurs — RESTUP</title>
+<meta name="description" content="Marketing local : 10 situations réelles de restaurateurs (acquisition locale, offre et ciblage, coût d'acquisition), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.">
+<link rel="canonical" href="https://restup.solutions/livre-marketing-local.html">
+<meta property="og:type" content="article"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="Marketing local — Le Livre du Restaurateur"><meta property="og:url" content="https://restup.solutions/livre-marketing-local.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Marketing local : 10 situations de restaurateur et leur plan d'action","description":"Marketing local : 10 situations réelles de restaurateurs (acquisition locale, offre et ciblage, coût d'acquisition), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.","inLanguage":"fr-FR","url":"https://restup.solutions/livre-marketing-local.html","dateModified":"2026-10-27","about":["acquisition locale","offre et ciblage","coût d'acquisition"],"author":{"@id":"https://restup.solutions/#org"},"publisher":{"@type":"Organization","@id":"https://restup.solutions/#org","name":"RESTUP","url":"https://restup.solutions/"},"isPartOf":{"@type":"Book","name":"Le Livre du Restaurateur","url":"https://restup.solutions/livre.html"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://restup.solutions/"},{"@type":"ListItem","position":2,"name":"Le Livre du Restaurateur","item":"https://restup.solutions/livre.html"},{"@type":"ListItem","position":3,"name":"Marketing local","item":"https://restup.solutions/livre-marketing-local.html"}]}]}</script>
+<style>.chapter.open .chapter-body{max-height:none}.situation-item.open .situation-a{max-height:none}.chap-pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1000px;margin:10px auto 0;padding:0 16px}.chap-pager a{color:var(--muted);font-weight:700;font-size:14px;text-decoration:none}.chap-pager a:hover{color:#fff}</style>
+</head>
+<body class="immersive">
+<div class="nav-outer">
+  <nav class="nav">
+    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+    </div>
+    <a class="nav-cta" href="portail/login.html">Espace client</a>
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu"><span></span></button>
+    <div class="nav-menu" id="navMenu">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+      <a href="portail/login.html" class="menu-cta">Espace client</a>
+    </div>
+  </nav>
+</div>
+
+<section class="page-hero reveal">
+  <div class="eyebrow"><a href="livre.html" style="color:inherit">Le Livre du Restaurateur</a> · Chapitre 8</div>
+  <h1 style="font-size:clamp(30px,4.5vw,48px);max-width:760px;margin:0 auto 14px;">Marketing local : 10 situations de restaurateur et leur plan d'action</h1>
+  <p style="max-width:620px;margin:0 auto;">Chaque situation suit la même structure : ce qui se passe, le diagnostic, l'action à mener, et l'indicateur qui prouve que ça marche. Thèmes couverts : acquisition locale, offre et ciblage, coût d'acquisition.</p>
+</section>
+
+<section>
+  <div id="chapters">
+
+  <div class="chapter reveal open" id="ch-marketing" data-chapter>
+    <div class="chapter-head"><span class="chapter-num">8</span><h2>Marketing local</h2><span class="chapter-sub">10 situations</span><span class="chapter-toggle">＋</span></div>
+    <div class="chapter-body">
+    <div class="chapter-tags"><span>acquisition locale</span><span>offre et ciblage</span><span>coût d'acquisition</span></div>
+    <div class="situation-grid">
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">01</span><div class="sit-head"><b>Un coût d'acquisition qui grimpe sans qu'on sache pourquoi</b><span class="sit-teaser">Le budget augmente, les nouveaux clients ne suivent pas</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le budget consacré à attirer de nouveaux clients (publicité, promotions de lancement, mise en avant sur les plateformes) augmente, sans que le nombre de nouveaux clients suive au même rythme.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Calculer le coût d'acquisition réel par canal (combien coûte un nouveau client via chaque levier utilisé) plutôt que de raisonner en budget global — certains canaux coûtent souvent 2 à 3 fois plus cher que d'autres pour un résultat comparable.</p></div>
+        <div class="sit-block"><b>Action</b><p>Réorienter le budget vers le ou les canaux au coût d'acquisition le plus bas identifiés, et réduire ou couper ceux qui ne se justifient plus.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le coût d'acquisition par canal chaque mois, pas seulement le nombre de nouveaux clients total — c'est ce chiffre qui dit si le budget marketing est bien utilisé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">02</span><div class="sit-head"><b>Une zone de chalandise mal identifiée</b><span class="sit-teaser">On cible une zone qui n'est pas la vraie</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Les actions marketing locales (flyers, publicité géolocalisée, partenariats) ciblent une zone qui ne correspond pas vraiment à celle d'où viennent réellement les clients.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Croiser les adresses de livraison ou les zones d'origine des clients (quand l'information est disponible) avec la zone actuellement ciblée par les actions marketing.</p></div>
+        <div class="sit-block"><b>Action</b><p>Recentrer les actions locales sur le rayon réel qui génère le plus de clients, plutôt que sur un rayon théorique autour de l'adresse du restaurant.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Revoir cette zone de chalandise réelle une fois par an, ou après tout changement notable (nouvelle concurrence, nouveau quartier en développement à proximité).</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">03</span><div class="sit-head"><b>Des offres qui attirent les mauvais clients</b><span class="sit-teaser">Des chasseurs de promo qui ne reviennent jamais au plein tarif</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Les promotions génèrent du monde, mais surtout des clients occasionnels attirés par le prix, qui ne reviennent jamais à tarif normal ensuite.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Suivre le taux de réachat spécifique des clients venus via une offre promotionnelle, comparé à ceux venus sans promotion — l'écart révèle si l'offre construit une clientèle ou seulement un pic ponctuel.</p></div>
+        <div class="sit-block"><b>Action</b><p>Orienter les offres vers la fidélisation de clients déjà venus (plutôt que l'acquisition pure), ou les réserver aux périodes réellement creuses où elles ne cannibalisent pas les ventes à plein tarif.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Mesurer la marge nette générée par une offre sur 3 mois, pas seulement le volume immédiat qu'elle a créé le jour J.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">04</span><div class="sit-head"><b>Une fiche Google Business laissée à l'abandon</b><span class="sit-teaser">Horaires, photos, infos : rien n'a été mis à jour</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Les horaires, photos ou informations de la fiche Google Business n'ont pas été mis à jour depuis longtemps, alors que c'est souvent le premier point de contact avec un client potentiel.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Consulter la fiche comme le ferait un client — horaires exacts, photos récentes, menu à jour — et noter chaque information obsolète ou manquante.</p></div>
+        <div class="sit-block"><b>Action</b><p>Mettre à jour l'ensemble en une seule session (photos récentes, horaires, description), puis planifier une vérification rapide mensuelle plutôt qu'un oubli prolongé.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le nombre de vues et d'actions (appel, itinéraire, clic site) sur la fiche chaque mois — une fiche à jour se traduit généralement par une hausse mesurable de ces interactions.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">05</span><div class="sit-head"><b>Une présence sur les réseaux qui s'essouffle après un bon démarrage</b><span class="sit-teaser">Un bel élan au lancement, puis plus rien</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le restaurant a publié activement à l'ouverture, puis la fréquence de publication a nettement ralenti, faute de temps ou d'idées.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Regarder la fréquence réelle de publication des 3 derniers mois — un rythme qui tombe sous 1-2 publications par semaine perd généralement en portée organique.</p></div>
+        <div class="sit-block"><b>Action</b><p>Fixer un rythme réaliste et tenable (même faible mais régulier) plutôt qu'un objectif ambitieux abandonné après deux semaines, en s'appuyant sur du contenu simple à produire (coulisses, plat du jour, équipe).</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre la régularité de publication autant que l'engagement — la constance dans le temps compte souvent plus que la qualité d'un post isolé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">06</span><div class="sit-head"><b>Un partenariat local jamais exploité après le lancement</b><span class="sit-teaser">Un partenariat lancé, puis oublié depuis</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un partenariat avec un commerce, une entreprise ou une association du quartier a été mis en place, mais n'a jamais été communiqué ni relancé depuis son démarrage.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Lister les partenariats ou contacts locaux existants et vérifier lesquels sont encore actifs concrètement (offre visible, flux de clients identifiable) versus oubliés.</p></div>
+        <div class="sit-block"><b>Action</b><p>Réactiver le partenariat le plus prometteur avec une action concrète et datée (offre croisée, événement commun), plutôt que de le laisser comme une bonne intention non suivie.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le nombre de clients ou de commandes identifiables comme venant de ce partenariat, pour juger s'il mérite d'être poursuivi ou remplacé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">07</span><div class="sit-head"><b>Une devanture qui ne donne pas envie d'entrer</b><span class="sit-teaser">Du flux piéton réel, mais peu de clients de passage</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le restaurant reçoit peu de clients « de passage » alors qu'il est situé dans une zone avec du flux piéton réel, ce qui peut signaler un problème de devanture plutôt que d'emplacement.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Observer la devanture avec un regard extérieur, comme le ferait un passant qui ne connaît pas encore l'établissement — visibilité de la carte, éclairage, propreté, ambiance perçue depuis la rue.</p></div>
+        <div class="sit-block"><b>Action</b><p>Corriger les points les plus évidents (carte visible et lisible de l'extérieur, éclairage engageant, vitrine dégagée) sans attendre un investissement lourd.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre l'évolution du flux entrant « spontané » (sans réservation) après ces ajustements, en le comparant à une période similaire avant changement.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">08</span><div class="sit-head"><b>Un concept mal compris par les passants</b><span class="sit-teaser">Les passants hésitent, ne comprennent pas l'offre</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Des passants hésitent ou passent leur chemin car ils ne comprennent pas immédiatement ce que propose le restaurant (type de cuisine, gamme de prix, format).</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Demander à quelques personnes extérieures (proches, clients occasionnels) ce qu'elles comprennent du concept en regardant seulement la devanture, sans autre explication.</p></div>
+        <div class="sit-block"><b>Action</b><p>Clarifier le message principal affiché à l'extérieur (type de cuisine, spécialité, gamme de prix) pour lever l'hésitation en quelques secondes.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre si la clientèle de passage évolue après cette clarification, signe que le message extérieur correspond mieux à l'offre réelle.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">09</span><div class="sit-head"><b>Une concurrence directe qui gagne du terrain sans qu'on le voie</b><span class="sit-teaser">Un nouveau concurrent, jamais vraiment évalué</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un nouvel établissement concurrent s'est installé ou a gagné en popularité à proximité, et son effet sur votre activité n'a jamais été formellement évalué.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer l'évolution de votre activité sur la période depuis l'arrivée ou la montée de ce concurrent, plutôt que d'attribuer une éventuelle baisse à des causes vagues.</p></div>
+        <div class="sit-block"><b>Action</b><p>Si un effet réel est confirmé, identifier ce qui différencie votre offre et le mettre davantage en avant, plutôt que d'essayer de copier directement le concurrent.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Garder un œil régulier (visite, avis en ligne, réseaux) sur les 2-3 concurrents directs les plus proches, pour ne pas être surpris par leur évolution.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">10</span><div class="sit-head"><b>Un bouche-à-oreille jamais activement encouragé</b><span class="sit-teaser">On compte dessus, sans jamais le faciliter</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le restaurant compte sur le bouche-à-oreille naturel de ses clients satisfaits, sans jamais chercher à l'encourager ou à le faciliter activement.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Vérifier si les clients satisfaits ont un moyen simple et naturel de recommander le restaurant (carte à partager, mention sur les réseaux, code de parrainage) ou si tout repose sur leur seule initiative.</p></div>
+        <div class="sit-block"><b>Action</b><p>Créer un moyen simple de transformer un client satisfait en ambassadeur actif (petit geste de parrainage, invitation à taguer le restaurant sur les réseaux), sans complexité excessive.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le nombre de nouveaux clients arrivés par recommandation identifiée, quand c'est mesurable (question simple en caisse ou à la réservation).</p></div>
+      </div></div>
+    </div>
+
+    </div>
+    </div>
+  </div>
+
+  </div>
+  <nav class="chap-pager" aria-label="Chapitres"><a href="livre-relation-client.html">← Relation client</a><a href="livre-equipe.html">Équipe →</a></nav>
+</section>
+
+<section>
+  <div class="chapter-nav">
+    <a href="livre-marge-prix.html">Marge &amp; prix</a>
+    <a href="livre-achats-stocks.html">Achats &amp; stocks</a>
+    <a href="livre-production.html">Production</a>
+    <a href="livre-rush-capacite.html">Rush &amp; capacité</a>
+    <a href="livre-livraison.html">Livraison</a>
+    <a href="livre-commande-directe.html">Commande directe</a>
+    <a href="livre-relation-client.html">Relation client</a>
+    <a href="livre-equipe.html">Équipe</a>
+    <a href="livre-pilotage.html">Pilotage</a>
+  </div>
+</section>
+
+<section>
+  <div class="book-cta reveal">
+    <div class="price-tag"><b>3 000€/mois</b><span>accompagnement complet, sans engagement</span></div>
+    <h3>Votre situation n'est pas encore dans le livre ?</h3>
+    <p>Normal — chaque restaurant a ses propres combinaisons de symptômes, de contexte et de chiffres. C'est exactement ce que couvre l'audit gratuit et l'accompagnement RestUp : on écrit VOTRE chapitre, avec vos vrais chiffres et un plan semaine par semaine pour l'exécuter.</p>
+    <a href="contact.html" class="btn-primary magnetic">Démarrer mon audit gratuit</a>
+  </div>
+</section>
+
+<footer>RestUp — Pilotez. Optimisez. Développez. · 12 ans d'expérience terrain</footer>
+<script src="script.js"></script>
+<script>
+document.querySelectorAll('[data-situation]').forEach(function(item){item.querySelector('.situation-q').addEventListener('click',function(){item.classList.toggle('open');});});
+</script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta name="color-scheme" content="dark"><style>html,body{background:#050507}</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="portail/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.page-hero{padding:64px 16px;text-align:center;}
+.book-stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.book-stats .stat-pill{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;box-shadow:var(--shadow);min-width:110px;}
+.book-stats .stat-pill b{font-weight:900;font-size:21px;display:block;color:#fff;}
+.book-stats .stat-pill span{font-size:11.5px;color:var(--muted);}
+
+.book-search{max-width:560px;margin:28px auto 0;position:relative;}
+.book-search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:15px 22px 15px 46px;color:#fff;font-family:inherit;font-size:15px;}
+.book-search input:focus{outline:none;border-color:var(--lime);}
+.book-search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted-dim);pointer-events:none;}
+.book-search-empty{display:none;text-align:center;color:var(--muted-dim);font-size:13.5px;padding:30px 0;}
+
+.chapter-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1000px;margin:26px auto 24px;}
+.chapter-nav a{background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;text-decoration:none;transition:color .2s,border-color .2s;}
+.chapter-nav a:hover{color:#fff;border-color:var(--lime);}
+
+.chapter{scroll-margin-top:90px;max-width:1000px;margin:0 auto 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:22px 26px;box-shadow:var(--shadow);transition:border-color .2s;}
+.chapter.open{border-color:rgba(155,77,255,.35);}
+.chapter-head{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;}
+.chapter-num{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--lime-dim);color:var(--lime);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.chapter-head h2{font-size:clamp(17px,2.2vw,21px);color:#fff;}
+.chapter-sub{font-size:12px;color:var(--muted-dim);font-weight:600;flex:1 1 auto;}
+.chapter-toggle{flex:0 0 auto;color:var(--lime);font-size:22px;font-weight:400;transition:transform .3s ease;}
+.chapter.open .chapter-toggle{transform:rotate(45deg);}
+.chapter-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,.9,.3,1);}
+.chapter.open .chapter-body{max-height:5000px;}
+.chapter-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 20px;}
+.chapter-tags span{font-size:11px;font-weight:700;color:var(--muted-dim);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:4px 10px;border-radius:999px;}
+
+.situation-grid{display:flex;flex-direction:column;gap:10px;}
+.situation-item{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;transition:border-color .2s;}
+.situation-item.open{border-color:rgba(155,77,255,.4);}
+.situation-q{display:flex;align-items:center;gap:14px;padding:15px 18px;cursor:pointer;user-select:none;}
+.situation-q .sit-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:var(--muted-dim);}
+.situation-q .sit-head{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;row-gap:2px;}
+.situation-q b{font-weight:700;font-size:14px;color:#fff;line-height:1.35;}
+.situation-q .sit-teaser{font-size:12px;color:var(--muted-dim);line-height:1.4;}
+.situation-item.open .sit-teaser{display:none;}
+.situation-q .plus{flex:0 0 auto;transition:transform .25s ease;color:var(--lime);font-size:18px;}
+.situation-item.open .plus{transform:rotate(45deg);}
+.situation-a{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.situation-item.open .situation-a{max-height:700px;}
+.situation-a-inner{padding:0 18px 18px 58px;}
+.sit-block{margin-bottom:11px;}
+.sit-block:last-child{margin-bottom:0;}
+.sit-block b{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--lime);margin-bottom:3px;}
+.sit-block p{font-size:12.5px;line-height:1.55;color:#EDE4D6;}
+
+.book-cta{max-width:1000px;margin:36px auto 0;background:linear-gradient(120deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-xl);padding:36px 30px;text-align:center;}
+.book-cta h3{font-size:clamp(20px,2.8vw,28px);color:#fff;margin-bottom:12px;}
+.book-cta p{max-width:600px;margin:0 auto 22px;font-size:14.5px;}
+.book-cta .price-tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--lime-dim);border:1px solid rgba(155,77,255,.35);border-radius:999px;padding:8px 18px;margin-bottom:20px;}
+.book-cta .price-tag b{font-size:19px;font-weight:900;color:var(--lime);}
+.book-cta .price-tag span{font-size:12px;color:var(--muted);}
+</style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s750x1334.png">
+<title>Marge &amp; prix : situations et plans d'action pour restaurateurs — RESTUP</title>
+<meta name="description" content="Marge &amp; prix : 10 situations réelles de restaurateurs (coût matière, prix de vente, marge contributive), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.">
+<link rel="canonical" href="https://restup.solutions/livre-marge-prix.html">
+<meta property="og:type" content="article"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="Marge &amp; prix — Le Livre du Restaurateur"><meta property="og:url" content="https://restup.solutions/livre-marge-prix.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Marge & prix : 10 situations de restaurateur et leur plan d'action","description":"Marge & prix : 10 situations réelles de restaurateurs (coût matière, prix de vente, marge contributive), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.","inLanguage":"fr-FR","url":"https://restup.solutions/livre-marge-prix.html","dateModified":"2026-10-27","about":["coût matière","prix de vente","marge contributive"],"author":{"@id":"https://restup.solutions/#org"},"publisher":{"@type":"Organization","@id":"https://restup.solutions/#org","name":"RESTUP","url":"https://restup.solutions/"},"isPartOf":{"@type":"Book","name":"Le Livre du Restaurateur","url":"https://restup.solutions/livre.html"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://restup.solutions/"},{"@type":"ListItem","position":2,"name":"Le Livre du Restaurateur","item":"https://restup.solutions/livre.html"},{"@type":"ListItem","position":3,"name":"Marge & prix","item":"https://restup.solutions/livre-marge-prix.html"}]}]}</script>
+<style>.chapter.open .chapter-body{max-height:none}.situation-item.open .situation-a{max-height:none}.chap-pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1000px;margin:10px auto 0;padding:0 16px}.chap-pager a{color:var(--muted);font-weight:700;font-size:14px;text-decoration:none}.chap-pager a:hover{color:#fff}</style>
+</head>
+<body class="immersive">
+<div class="nav-outer">
+  <nav class="nav">
+    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+    </div>
+    <a class="nav-cta" href="portail/login.html">Espace client</a>
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu"><span></span></button>
+    <div class="nav-menu" id="navMenu">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+      <a href="portail/login.html" class="menu-cta">Espace client</a>
+    </div>
+  </nav>
+</div>
+
+<section class="page-hero reveal">
+  <div class="eyebrow"><a href="livre.html" style="color:inherit">Le Livre du Restaurateur</a> · Chapitre 1</div>
+  <h1 style="font-size:clamp(30px,4.5vw,48px);max-width:760px;margin:0 auto 14px;">Marge &amp; prix : 10 situations de restaurateur et leur plan d'action</h1>
+  <p style="max-width:620px;margin:0 auto;">Chaque situation suit la même structure : ce qui se passe, le diagnostic, l'action à mener, et l'indicateur qui prouve que ça marche. Thèmes couverts : coût matière, prix de vente, marge contributive.</p>
+</section>
+
+<section>
+  <div id="chapters">
+
+  <div class="chapter reveal open" id="ch-marge" data-chapter>
+    <div class="chapter-head"><span class="chapter-num">1</span><h2>Marge &amp; prix</h2><span class="chapter-sub">10 situations</span><span class="chapter-toggle">＋</span></div>
+    <div class="chapter-body">
+    <div class="chapter-tags"><span>coût matière</span><span>prix de vente</span><span>marge contributive</span></div>
+    <div class="situation-grid">
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">01</span><div class="sit-head"><b>La marge recule alors que le CA tient</b><span class="sit-teaser">CA stable, marge en baisse : le mix de vente a glissé</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le CA mensuel est stable, voire en légère hausse, mais la marge nette continue de reculer trimestre après trimestre.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer le mix de ventes du trimestre à celui de l'an dernier — un glissement vers les produits à faible marge (souvent portés par les promos ou la livraison) suffit à faire baisser la marge globale sans que le CA bouge.</p></div>
+        <div class="sit-block"><b>Action</b><p>Recalculer la marge brute réelle des 10 produits les plus vendus, isoler ceux sous 60% de marge, et soit ajuster leur prix soit réduire leur mise en avant sur la carte et les plateformes.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre mensuellement la marge moyenne pondérée par le mix de ventes, pas seulement la marge par produit isolée — c'est le vrai indicateur qui bouge en premier.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">02</span><div class="sit-head"><b>Une hausse fournisseur qu'on n'a jamais vraiment répercutée</b><span class="sit-teaser">Le coût a grimpé, le prix de vente non</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un fournisseur clé a augmenté ses tarifs de 6 à 8% il y a plusieurs mois, et personne n'a formellement ajusté les prix de vente en conséquence.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Reprendre les fiches techniques des plats concernés avec le coût matière actualisé — l'écart entre le coût théorique d'origine et le coût réel actuel donne le vrai manque à gagner, souvent supérieur à ce qu'on imagine.</p></div>
+        <div class="sit-block"><b>Action</b><p>Augmenter le prix des 3 à 5 plats les plus touchés de 3 à 5%, en les accompagnant d'un ajustement perceptible (portion, présentation, garniture) pour que la hausse ne se voie pas comme une hausse sèche.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Mettre une alerte trimestrielle : dès qu'un fournisseur annonce une hausse de plus de 3%, ouvrir automatiquement une révision de la fiche technique concernée dans les 15 jours.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">03</span><div class="sit-head"><b>Une promo qui cannibalise les ventes à plein tarif</b><span class="sit-teaser">L'offre tourne bien, la marge du service recule</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Une offre ou un menu promotionnel tourne bien en volume, mais la marge globale du service ne suit pas, voire baisse pendant les périodes où la promo est active.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Vérifier si les clients qui auraient commandé à plein tarif basculent simplement vers l'offre promo (cannibalisation), plutôt que d'attirer de nouveaux clients supplémentaires.</p></div>
+        <div class="sit-block"><b>Action</b><p>Limiter la promo à des créneaux ou jours réellement creux (ceux où elle génère du volume additionnel plutôt que du transfert), et retirer les produits à forte marge de son périmètre.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le panier moyen et la marge par couvert pendant vs hors promo, sur les mêmes créneaux — pas seulement le volume de ventes de l'offre elle-même.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">04</span><div class="sit-head"><b>Un menu trop long qui dilue la marge moyenne</b><span class="sit-teaser">Trop de plats à faible volume et faible marge</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>La carte compte 40+ références, mais une poignée de plats portent l'essentiel du volume — les autres traînent en stock, en temps de prépa et en complexité sans contribuer vraiment au résultat.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Classer chaque plat selon deux axes — volume de ventes et marge dégagée — pour repérer ceux qui cumulent faible volume ET faible marge, les vrais candidats à la suppression.</p></div>
+        <div class="sit-block"><b>Action</b><p>Retirer ou remplacer les 15% de plats les moins performants sur les deux axes, sans attendre une refonte complète de la carte.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Revoir ce classement tous les 6 mois — une carte qui grossit sans jamais être nettoyée dilue mécaniquement la marge moyenne au fil du temps.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">05</span><div class="sit-head"><b>Un prix psychologique jamais retouché malgré l'inflation</b><span class="sit-teaser">Le prix rond n'a pas bougé depuis l'ouverture</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Certains prix sont restés figés à un seuil « rond » (9,90€, 14,90€...) depuis l'ouverture, alors que les coûts ont augmenté tout autour.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Calculer, plat par plat, le ratio coût matière/prix de vente actuel — un ratio qui grimpe année après année sur un prix qui n'a jamais bougé signale une marge qui s'érode en silence.</p></div>
+        <div class="sit-block"><b>Action</b><p>Augmenter légèrement (quelques dizaines de centimes) plutôt que de changer brutalement de palier psychologique — un ajustement discret passe mieux qu'un saut de prix visible.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Revoir chaque prix au moins une fois par an, même de quelques centimes, pour éviter d'avoir à faire un rattrapage douloureux d'un coup.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">06</span><div class="sit-head"><b>Une remise systématique accordée sans cadre</b><span class="sit-teaser">Des gestes commerciaux jamais additionnés sur l'année</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>L'équipe (ou le dirigeant) accorde des remises ponctuelles — client fidèle, petite erreur, geste commercial — sans règle claire, et leur poids cumulé sur l'année n'est jamais mesuré.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Additionner le total des remises accordées sur un mois type et le rapporter au CA — ce pourcentage, une fois visible, est souvent plus élevé que ce que chacun pense individuellement.</p></div>
+        <div class="sit-block"><b>Action</b><p>Fixer un cadre simple (montant max, motifs autorisés, qui peut valider) pour que le geste commercial reste un outil et non une fuite de marge non pilotée.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le montant total de remises accordées chaque mois comme un poste à part entière, au même titre que le food cost ou les charges.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">07</span><div class="sit-head"><b>Une carte des boissons largement sous-exploitée en marge</b><span class="sit-teaser">Les boissons se vendent seules, sans jamais être proposées</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Les boissons (softs, vins, bières) sont vendues, mais sans réelle stratégie de mise en avant, alors qu'elles comptent parmi les marges les plus élevées de la carte.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer le taux d'attachement boisson (part des additions avec au moins une boisson vendue) à la moyenne du secteur — un taux faible signale une marge facile laissée de côté.</p></div>
+        <div class="sit-block"><b>Action</b><p>Former l'équipe à proposer systématiquement une boisson à l'accueil ou à la prise de commande, plutôt que d'attendre que le client la demande.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le taux d'attachement boisson par service, et viser une progression progressive plutôt qu'un objectif brutal du jour au lendemain.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">08</span><div class="sit-head"><b>Un plat signature vendu en dessous de son vrai coût</b><span class="sit-teaser">Le plat vitrine cache une marge faible, voire négative</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le plat « vitrine » du restaurant, souvent mis en avant en photo ou en tête de carte, dégage en réalité une marge très faible voire négative une fois tous les coûts comptés.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Recalculer son coût matière complet, garnitures et sauces incluses, souvent oubliées dans le calcul initial du prix.</p></div>
+        <div class="sit-block"><b>Action</b><p>Soit ajuster légèrement le prix, soit revoir la garniture ou la portion pour rééquilibrer la marge, sans dénaturer ce qui fait le succès du plat.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Revoir le coût complet de chaque plat « signature » au moins une fois par an, car ce sont souvent eux qui évoluent le moins alors que leurs coûts annexes bougent.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">09</span><div class="sit-head"><b>Un menu du jour qui écrase la marge du service</b><span class="sit-teaser">La formule attire du monde, mais rapporte peu</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>La formule ou le menu du jour attire du monde à midi, mais sa marge est nettement plus faible que celle de la carte classique, sans que cet écart soit vraiment piloté.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Calculer la marge réelle de la formule, en incluant tous ses composants, et la comparer à la marge moyenne du service midi hors formule.</p></div>
+        <div class="sit-block"><b>Action</b><p>Ajuster la composition de la formule (un accompagnement moins coûteux, une boisson en option plutôt qu'incluse) pour réduire l'écart sans la rendre moins attractive.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre la marge du menu du jour séparément du reste de la carte, comme un produit à part entière avec son propre objectif.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">10</span><div class="sit-head"><b>Une TVA mal appliquée qui fausse la marge perçue</b><span class="sit-teaser">Un taux de TVA erroné qui fausse tous les calculs</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Certains produits (sur place, à emporter, boissons alcoolisées) ont des taux de TVA différents, et une erreur d'application fausse silencieusement le calcul de marge réelle.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Vérifier, avec le comptable ou le logiciel de caisse, que chaque catégorie de produit applique bien le taux de TVA correspondant à son mode de consommation réel.</p></div>
+        <div class="sit-block"><b>Action</b><p>Corriger le paramétrage caisse si un écart est détecté, et recalculer la marge réelle sur les produits concernés une fois la correction faite.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Faire vérifier ce paramétrage une fois par an, en particulier après toute évolution réglementaire ou changement de logiciel de caisse.</p></div>
+      </div></div>
+    </div>
+
+    </div>
+    </div>
+  </div>
+
+  </div>
+  <nav class="chap-pager" aria-label="Chapitres"><a href="livre.html">← Sommaire du livre</a><a href="livre-achats-stocks.html">Achats &amp; stocks →</a></nav>
+</section>
+
+<section>
+  <div class="chapter-nav">
+    <a href="livre-achats-stocks.html">Achats &amp; stocks</a>
+    <a href="livre-production.html">Production</a>
+    <a href="livre-rush-capacite.html">Rush &amp; capacité</a>
+    <a href="livre-livraison.html">Livraison</a>
+    <a href="livre-commande-directe.html">Commande directe</a>
+    <a href="livre-relation-client.html">Relation client</a>
+    <a href="livre-marketing-local.html">Marketing local</a>
+    <a href="livre-equipe.html">Équipe</a>
+    <a href="livre-pilotage.html">Pilotage</a>
+  </div>
+</section>
+
+<section>
+  <div class="book-cta reveal">
+    <div class="price-tag"><b>3 000€/mois</b><span>accompagnement complet, sans engagement</span></div>
+    <h3>Votre situation n'est pas encore dans le livre ?</h3>
+    <p>Normal — chaque restaurant a ses propres combinaisons de symptômes, de contexte et de chiffres. C'est exactement ce que couvre l'audit gratuit et l'accompagnement RestUp : on écrit VOTRE chapitre, avec vos vrais chiffres et un plan semaine par semaine pour l'exécuter.</p>
+    <a href="contact.html" class="btn-primary magnetic">Démarrer mon audit gratuit</a>
+  </div>
+</section>
+
+<footer>RestUp — Pilotez. Optimisez. Développez. · 12 ans d'expérience terrain</footer>
+<script src="script.js"></script>
+<script>
+document.querySelectorAll('[data-situation]').forEach(function(item){item.querySelector('.situation-q').addEventListener('click',function(){item.classList.toggle('open');});});
+</script>
+</body>
+</html>

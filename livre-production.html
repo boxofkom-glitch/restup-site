@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta name="color-scheme" content="dark"><style>html,body{background:#050507}</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="portail/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.page-hero{padding:64px 16px;text-align:center;}
+.book-stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.book-stats .stat-pill{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;box-shadow:var(--shadow);min-width:110px;}
+.book-stats .stat-pill b{font-weight:900;font-size:21px;display:block;color:#fff;}
+.book-stats .stat-pill span{font-size:11.5px;color:var(--muted);}
+
+.book-search{max-width:560px;margin:28px auto 0;position:relative;}
+.book-search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:15px 22px 15px 46px;color:#fff;font-family:inherit;font-size:15px;}
+.book-search input:focus{outline:none;border-color:var(--lime);}
+.book-search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted-dim);pointer-events:none;}
+.book-search-empty{display:none;text-align:center;color:var(--muted-dim);font-size:13.5px;padding:30px 0;}
+
+.chapter-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1000px;margin:26px auto 24px;}
+.chapter-nav a{background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;text-decoration:none;transition:color .2s,border-color .2s;}
+.chapter-nav a:hover{color:#fff;border-color:var(--lime);}
+
+.chapter{scroll-margin-top:90px;max-width:1000px;margin:0 auto 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);padding:22px 26px;box-shadow:var(--shadow);transition:border-color .2s;}
+.chapter.open{border-color:rgba(155,77,255,.35);}
+.chapter-head{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;}
+.chapter-num{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--lime-dim);color:var(--lime);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.chapter-head h2{font-size:clamp(17px,2.2vw,21px);color:#fff;}
+.chapter-sub{font-size:12px;color:var(--muted-dim);font-weight:600;flex:1 1 auto;}
+.chapter-toggle{flex:0 0 auto;color:var(--lime);font-size:22px;font-weight:400;transition:transform .3s ease;}
+.chapter.open .chapter-toggle{transform:rotate(45deg);}
+.chapter-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,.9,.3,1);}
+.chapter.open .chapter-body{max-height:5000px;}
+.chapter-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 20px;}
+.chapter-tags span{font-size:11px;font-weight:700;color:var(--muted-dim);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:4px 10px;border-radius:999px;}
+
+.situation-grid{display:flex;flex-direction:column;gap:10px;}
+.situation-item{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;transition:border-color .2s;}
+.situation-item.open{border-color:rgba(155,77,255,.4);}
+.situation-q{display:flex;align-items:center;gap:14px;padding:15px 18px;cursor:pointer;user-select:none;}
+.situation-q .sit-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:var(--muted-dim);}
+.situation-q .sit-head{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;row-gap:2px;}
+.situation-q b{font-weight:700;font-size:14px;color:#fff;line-height:1.35;}
+.situation-q .sit-teaser{font-size:12px;color:var(--muted-dim);line-height:1.4;}
+.situation-item.open .sit-teaser{display:none;}
+.situation-q .plus{flex:0 0 auto;transition:transform .25s ease;color:var(--lime);font-size:18px;}
+.situation-item.open .plus{transform:rotate(45deg);}
+.situation-a{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.situation-item.open .situation-a{max-height:700px;}
+.situation-a-inner{padding:0 18px 18px 58px;}
+.sit-block{margin-bottom:11px;}
+.sit-block:last-child{margin-bottom:0;}
+.sit-block b{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--lime);margin-bottom:3px;}
+.sit-block p{font-size:12.5px;line-height:1.55;color:#EDE4D6;}
+
+.book-cta{max-width:1000px;margin:36px auto 0;background:linear-gradient(120deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-xl);padding:36px 30px;text-align:center;}
+.book-cta h3{font-size:clamp(20px,2.8vw,28px);color:#fff;margin-bottom:12px;}
+.book-cta p{max-width:600px;margin:0 auto 22px;font-size:14.5px;}
+.book-cta .price-tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--lime-dim);border:1px solid rgba(155,77,255,.35);border-radius:999px;padding:8px 18px;margin-bottom:20px;}
+.book-cta .price-tag b{font-size:19px;font-weight:900;color:var(--lime);}
+.book-cta .price-tag span{font-size:12px;color:var(--muted);}
+</style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/portail/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="RESTUP">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/portail/splash/s1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/portail/splash/s750x1334.png">
+<title>Production : situations et plans d'action pour restaurateurs — RESTUP</title>
+<meta name="description" content="Production : 10 situations réelles de restaurateurs (temps de préparation, poste de production, temps de cycle), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.">
+<link rel="canonical" href="https://restup.solutions/livre-production.html">
+<meta property="og:type" content="article"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="Production — Le Livre du Restaurateur"><meta property="og:url" content="https://restup.solutions/livre-production.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Production : 10 situations de restaurateur et leur plan d'action","description":"Production : 10 situations réelles de restaurateurs (temps de préparation, poste de production, temps de cycle), chacune avec diagnostic, action et KPI. Extrait du Livre du Restaurateur RESTUP.","inLanguage":"fr-FR","url":"https://restup.solutions/livre-production.html","dateModified":"2026-10-27","about":["temps de préparation","poste de production","temps de cycle"],"author":{"@id":"https://restup.solutions/#org"},"publisher":{"@type":"Organization","@id":"https://restup.solutions/#org","name":"RESTUP","url":"https://restup.solutions/"},"isPartOf":{"@type":"Book","name":"Le Livre du Restaurateur","url":"https://restup.solutions/livre.html"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://restup.solutions/"},{"@type":"ListItem","position":2,"name":"Le Livre du Restaurateur","item":"https://restup.solutions/livre.html"},{"@type":"ListItem","position":3,"name":"Production","item":"https://restup.solutions/livre-production.html"}]}]}</script>
+<style>.chapter.open .chapter-body{max-height:none}.situation-item.open .situation-a{max-height:none}.chap-pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1000px;margin:10px auto 0;padding:0 16px}.chap-pager a{color:var(--muted);font-weight:700;font-size:14px;text-decoration:none}.chap-pager a:hover{color:#fff}</style>
+</head>
+<body class="immersive">
+<div class="nav-outer">
+  <nav class="nav">
+    <a href="index.html" class="nav-logo"><span class="wm">REST<span>UP</span></span></a>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+    </div>
+    <a class="nav-cta" href="portail/login.html">Espace client</a>
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu"><span></span></button>
+    <div class="nav-menu" id="navMenu">
+      <a href="index.html">Accueil</a><a href="methode.html">Méthode</a><a href="realisations.html">Réalisations</a><a href="offre.html">Offre</a><a href="contact.html">Contact</a>
+      <a href="portail/login.html" class="menu-cta">Espace client</a>
+    </div>
+  </nav>
+</div>
+
+<section class="page-hero reveal">
+  <div class="eyebrow"><a href="livre.html" style="color:inherit">Le Livre du Restaurateur</a> · Chapitre 3</div>
+  <h1 style="font-size:clamp(30px,4.5vw,48px);max-width:760px;margin:0 auto 14px;">Production : 10 situations de restaurateur et leur plan d'action</h1>
+  <p style="max-width:620px;margin:0 auto;">Chaque situation suit la même structure : ce qui se passe, le diagnostic, l'action à mener, et l'indicateur qui prouve que ça marche. Thèmes couverts : temps de préparation, poste de production, temps de cycle.</p>
+</section>
+
+<section>
+  <div id="chapters">
+
+  <div class="chapter reveal open" id="ch-production" data-chapter>
+    <div class="chapter-head"><span class="chapter-num">3</span><h2>Production</h2><span class="chapter-sub">10 situations</span><span class="chapter-toggle">＋</span></div>
+    <div class="chapter-body">
+    <div class="chapter-tags"><span>temps de préparation</span><span>poste de production</span><span>temps de cycle</span></div>
+    <div class="situation-grid">
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">01</span><div class="sit-head"><b>Un poste qui devient le goulot d'étranglement du service</b><span class="sit-teaser">Tout ralentit toujours au même poste en rush</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Pendant le rush, tout le service ralentit systématiquement au même poste (plancha, friture, dressage...), même quand le reste de l'équipe est prêt à suivre.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Chronométrer le temps de cycle réel de ce poste sur un service complet — comparé aux autres postes, il révèle souvent un déséquilibre d'organisation plus qu'un problème de compétence individuelle.</p></div>
+        <div class="sit-block"><b>Action</b><p>Rééquilibrer les tâches autour de ce poste (préparer certains éléments en amont, ajouter un renfort ponctuel, ou simplifier une étape), plutôt que de simplement demander à la personne d'aller plus vite.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre le temps de cycle de ce poste précis chaque semaine pendant le rush identifié, jusqu'à stabilisation sous le seuil visé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">02</span><div class="sit-head"><b>Un temps de préparation qui dérive sans qu'on le mesure</b><span class="sit-teaser">Le plat met plus longtemps à sortir qu'avant</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le temps entre la prise de commande et la sortie plat s'est allongé progressivement, sans qu'aucune décision n'ait été prise en ce sens.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Chronométrer 10 sorties de plats consécutives sur le plat le plus vendu et comparer au temps théorique de la fiche technique — l'écart révèle souvent un geste ou une étape qui s'est complexifiée au fil du temps.</p></div>
+        <div class="sit-block"><b>Action</b><p>Reprendre la fiche technique du plat avec l'équipe en cuisine, retirer ou simplifier l'étape qui a le plus dérivé, et valider le nouveau temps sur un service test.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Contrôler le temps de sortie sur les 3 plats les plus vendus une fois par mois — un dérapage se corrige facilement tôt, difficilement une fois ancré comme habitude.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">03</span><div class="sit-head"><b>Une nouvelle recette qui casse le rythme de cuisine</b><span class="sit-teaser">Un plat trop long déséquilibre toute la ligne</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un nouveau plat ajouté à la carte ralentit tout le service, même s'il ne représente qu'une petite part des ventes.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer son temps de préparation réel à celui des autres plats du même poste — un plat qui prend 2 à 3 fois plus de temps déséquilibre la cadence de toute la ligne, pas seulement sa propre sortie.</p></div>
+        <div class="sit-block"><b>Action</b><p>Simplifier la recette pour la rapprocher du temps de cycle du poste, ou la réserver à des créneaux moins tendus (hors rush) si elle ne peut pas être simplifiée sans perdre en qualité.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Tester systématiquement le temps de préparation de toute nouvelle recette en conditions de rush avant validation définitive à la carte — pas seulement en cuisine calme.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">04</span><div class="sit-head"><b>Une mise en place jamais terminée avant le coup de feu</b><span class="sit-teaser">Le service démarre alors que rien n'est prêt</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le service démarre alors que la mise en place n'est pas complètement terminée, obligeant l'équipe à préparer en même temps qu'elle sert.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Chronométrer le temps réel de mise en place nécessaire et le comparer au temps réellement disponible avant l'ouverture — l'écart montre si c'est un problème d'organisation ou de temps insuffisant.</p></div>
+        <div class="sit-block"><b>Action</b><p>Réordonner les tâches de mise en place par priorité (ce qui est utilisé dès la première commande en premier), ou avancer l'heure d'arrivée d'une personne si le temps disponible est structurellement trop court.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre un simple indicateur oui/non chaque jour : la mise en place était-elle terminée à l'heure d'ouverture ? Un taux de « non » élevé pointe un problème récurrent à corriger, pas un accident isolé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">05</span><div class="sit-head"><b>Un gaspillage de production invisible car réparti sur toute la journée</b><span class="sit-teaser">De petites pertes partout, un vrai trou en cumulé</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Personne ne remarque de gros gaspillage ponctuel, mais additionnées, les petites pertes de production (chutes, ratés, surproduction) pèsent significativement sur le food cost.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Faire peser ou noter les pertes de production sur une seule journée type, poste par poste — le total surprend souvent, car chaque perte individuelle semblait négligeable.</p></div>
+        <div class="sit-block"><b>Action</b><p>Identifier le poste ou le produit qui génère le plus de perte ce jour-là, et ajuster une seule pratique (portionnage, réutilisation des chutes, ajustement de recette) avant de s'attaquer aux autres.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Répéter ce relevé une fois par trimestre sur une journée type — suivre la tendance plutôt qu'un chiffre isolé.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">06</span><div class="sit-head"><b>Une cuisine qui tourne différemment selon qui est aux fourneaux</b><span class="sit-teaser">Le même plat, jamais tout à fait pareil</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Le même plat n'a pas tout à fait le même goût, la même présentation ou le même temps de sortie selon quel cuisinier le prépare.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer la fiche technique officielle (quantités, gestes, temps) à ce que chaque personne fait réellement en observant discrètement un service.</p></div>
+        <div class="sit-block"><b>Action</b><p>Reformer l'équipe sur les points d'écart identifiés, avec la fiche technique comme référence commune, plutôt que de laisser chacun garder sa propre version « qui marche ».</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Faire goûter/comparer le même plat préparé par deux personnes différentes une fois par trimestre, pour vérifier que l'écart s'est réduit.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">07</span><div class="sit-head"><b>Une fiche technique jamais mise à jour après un changement de fournisseur</b><span class="sit-teaser">L'ingrédient a changé, la fiche non</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un ingrédient a été remplacé (fournisseur, marque, calibre) sans que la fiche technique du plat concerné n'ait été révisée en conséquence.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Vérifier si les quantités, temps de cuisson ou coûts de la fiche technique correspondent encore à l'ingrédient réellement utilisé aujourd'hui.</p></div>
+        <div class="sit-block"><b>Action</b><p>Mettre à jour la fiche technique dès qu'un changement de ce type est fait, en testant si nécessaire la recette avec le nouvel ingrédient avant de généraliser.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Intégrer une révision systématique de la fiche technique concernée à chaque changement de fournisseur ou de référence produit, comme une étape obligatoire et non optionnelle.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">08</span><div class="sit-head"><b>Une organisation de poste qui oblige à des déplacements inutiles</b><span class="sit-teaser">Des allers-retours en cuisine qui s'additionnent tout le service</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un cuisinier doit régulièrement se déplacer d'un bout à l'autre de la cuisine pour accéder à un ingrédient ou un outil utilisé à chaque plat.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Observer un service et compter le nombre de déplacements évitables sur un poste donné — ils paraissent souvent anodins un par un, mais s'accumulent sur tout un service.</p></div>
+        <div class="sit-block"><b>Action</b><p>Réorganiser physiquement le poste ou le rangement des ingrédients les plus utilisés pour réduire ces déplacements, même avec des ajustements simples et peu coûteux.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Revoir l'agencement du poste après tout changement notable de carte ou de volume d'activité, pas seulement à l'ouverture du restaurant.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">09</span><div class="sit-head"><b>Un matériel de cuisine sous-dimensionné pour le volume réel</b><span class="sit-teaser">Un équipement devient le vrai facteur limitant du service</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un équipement (four, plancha, friteuse) devient le facteur limitant du service, sans que cela soit clairement identifié comme un problème de capacité matérielle plutôt qu'humaine.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer la capacité réelle de l'équipement (quantité traitée par cycle, temps de cycle) au volume qu'il doit absorber pendant le rush.</p></div>
+        <div class="sit-block"><b>Action</b><p>Si l'investissement dans un équipement plus grand n'est pas immédiatement possible, réorganiser la production pour lisser la charge sur cet équipement (préparation anticipée, cuisson par lots optimisés).</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Suivre si ce même équipement reste le facteur limitant après ajustement, pour objectiver si un investissement matériel devient réellement nécessaire.</p></div>
+      </div></div>
+    </div>
+
+    <div class="situation-item open" data-situation>
+      <div class="situation-q"><span class="sit-num">10</span><div class="sit-head"><b>Une cuisson qui varie selon l'heure du service</b><span class="sit-teaser">Le même plat, cuit différemment en début et en fin de rush</span></div><span class="plus">＋</span></div>
+      <div class="situation-a"><div class="situation-a-inner">
+        <div class="sit-block"><b>Situation</b><p>Un plat cuit différemment (plus ou moins bien, plus ou moins vite) selon qu'il est préparé en début ou en fin de rush, sans que ce soit intentionnel.</p></div>
+        <div class="sit-block"><b>Diagnostic</b><p>Comparer la cuisson réelle du même plat en début et en fin de service — la fatigue, la pression du temps ou un équipement qui chauffe différemment en continu peuvent expliquer l'écart.</p></div>
+        <div class="sit-block"><b>Action</b><p>Identifier la cause précise (repère visuel insuffisant, minuteur non utilisé, équipement qui dérive) et donner à l'équipe un repère fiable et simple à suivre quelle que soit la pression du moment.</p></div>
+        <div class="sit-block"><b>Prévention &amp; KPI</b><p>Goûter ou vérifier ponctuellement ce même plat à différents moments d'un service pour confirmer que la régularité s'est améliorée.</p></div>
+      </div></div>
+    </div>
+
+    </div>
+    </div>
+  </div>
+
+  </div>
+  <nav class="chap-pager" aria-label="Chapitres"><a href="livre-achats-stocks.html">← Achats &amp; stocks</a><a href="livre-rush-capacite.html">Rush &amp; capacité →</a></nav>
+</section>
+
+<section>
+  <div class="chapter-nav">
+    <a href="livre-marge-prix.html">Marge &amp; prix</a>
+    <a href="livre-achats-stocks.html">Achats &amp; stocks</a>
+    <a href="livre-rush-capacite.html">Rush &amp; capacité</a>
+    <a href="livre-livraison.html">Livraison</a>
+    <a href="livre-commande-directe.html">Commande directe</a>
+    <a href="livre-relation-client.html">Relation client</a>
+    <a href="livre-marketing-local.html">Marketing local</a>
+    <a href="livre-equipe.html">Équipe</a>
+    <a href="livre-pilotage.html">Pilotage</a>
+  </div>
+</section>
+
+<section>
+  <div class="book-cta reveal">
+    <div class="price-tag"><b>3 000€/mois</b><span>accompagnement complet, sans engagement</span></div>
+    <h3>Votre situation n'est pas encore dans le livre ?</h3>
+    <p>Normal — chaque restaurant a ses propres combinaisons de symptômes, de contexte et de chiffres. C'est exactement ce que couvre l'audit gratuit et l'accompagnement RestUp : on écrit VOTRE chapitre, avec vos vrais chiffres et un plan semaine par semaine pour l'exécuter.</p>
+    <a href="contact.html" class="btn-primary magnetic">Démarrer mon audit gratuit</a>
+  </div>
+</section>
+
+<footer>RestUp — Pilotez. Optimisez. Développez. · 12 ans d'expérience terrain</footer>
+<script src="script.js"></script>
+<script>
+document.querySelectorAll('[data-situation]').forEach(function(item){item.querySelector('.situation-q').addEventListener('click',function(){item.classList.toggle('open');});});
+</script>
+</body>
+</html>
