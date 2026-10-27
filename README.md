@@ -291,20 +291,6 @@ client les verra dans son historique.
    `portail/config.js` et remplacez `GOOGLE_MAPS_API_KEY`. Sans cette
    clé, le champ reste un simple texte libre — rien ne casse.
 
-## Vidéo de présentation (optionnel)
-
-La page d'accueil a une section vidéo juste sous le premier écran. Tant que
-vous n'avez pas de vidéo, elle affiche un message "bientôt disponible" —
-rien ne casse. Pour l'activer :
-
-1. Mettez votre vidéo en ligne sur YouTube ou Vimeo (ou hébergez un fichier
-   .mp4 quelque part).
-2. Ouvrez `video-config.js` (à la racine du site) et remplacez
-   `INTRO_VIDEO_URL` par le lien de votre vidéo.
-3. Sauvegardez, re-glissez le dossier dans Netlify. La vidéo s'affiche
-   avec un bouton "lecture" — elle ne se charge qu'au clic, pour ne pas
-   ralentir la page.
-
 ## Étape 1quater — Réservation de call synchronisée (Cal.com, optionnel)
 
 Pour que le client réserve un créneau qui s'ajoute automatiquement à VOTRE
