@@ -58,19 +58,20 @@ const structuredData = [
   },
 ];
 
+// [fichier, nom, style] : "fill" remplit le rond, "dk" pose le logo sur fond sombre
 const logos = [
-  ['ultra-clean.png', 'Ultra'],
-  ['breakys-clean.png', 'Breakys'],
-  ['coup-de-food.png', 'Coup de Food'],
-  ['kfb.jpg', 'KFB'],
-  ['super-kroustif-wok.jpg', 'Super Kroustif Wok'],
-  ['my-khao.jpg', 'My Khao'],
-  ['pitaya.png', 'Pitaya'],
-  ['crousty-game-clean.png', 'Crousty Game'],
-  ['streat-burger-clean.png', 'Streat Burger'],
-  ['chamas-tacos-clean.png', 'Chamas Tacos'],
-  ['dangerous-burger.jpg', 'Dangerous Burger'],
-  ['la-kazdalerie.png', 'La Kazdalerie'],
+  ["ultra-clean.png", "Ultra", ""],
+  ["breakys-clean.png", "Breakys", "dk"],
+  ["coup-de-food.png", "Coup de Food", ""],
+  ["kfb.jpg", "KFB", "fill"],
+  ["super-kroustif-wok.jpg", "Super Kroustif Wok", "fill"],
+  ["my-khao.jpg", "My Khao", "fill"],
+  ["pitaya.png", "Pitaya", "fill"],
+  ["crousty-game-clean.png", "Crousty Game", ""],
+  ["dangerous-burger.jpg", "Dangerous Burger", "fill"],
+  ["chamas-tacos-clean.png", "Chamas Tacos", ""],
+  ["streat-burger-clean.png", "Str’Eat Burger", ""],
+  ["la-kazdalerie.png", "La Kazdalerie", "fill"],
 ];
 ---
 
@@ -205,11 +206,22 @@ const logos = [
 
   <WidgetWrapper id="references">
     <Headline tagline="12 ans de terrain" title="Des enseignes qui nous ont fait confiance" />
-    <ul class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+    <ul class="flex flex-wrap justify-center gap-4 md:gap-5">
       {
-        logos.map(([file, name]) => (
-          <li class="flex items-center justify-center aspect-[3/2] rounded-xl bg-[#110c1c] p-3">
-            <Image src={`~/assets/images/clients/${file}`} alt={name} width={160} height={110} class="max-h-14 w-auto object-contain" />
+        logos.map(([file, name, style]) => (
+          <li
+            class:list={[
+              "grid place-items-center w-24 h-24 rounded-full overflow-hidden border-2 border-[#2b2536]",
+              style === "dk" ? "bg-[#1c0e33]" : "bg-white",
+            ]}
+          >
+            <Image
+              src={`~/assets/images/clients/${file}`}
+              alt={name}
+              width={192}
+              height={192}
+              class:list={["w-full h-full", style === "fill" ? "object-cover" : "object-contain p-2.5"]}
+            />
           </li>
         ))
       }
