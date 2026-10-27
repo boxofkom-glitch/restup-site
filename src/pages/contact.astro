@@ -1,0 +1,54 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import ContactUs from '~/components/widgets/Contact.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+
+const email = 'contact@restup-accompagnement.fr';
+
+const metadata = {
+  title: 'Demander mon audit gratuit',
+  description:
+    'Demande ton audit stratégique gratuit RESTUP : un message suffit, réponse sous 48 h, sans engagement. Coaching de pilotage pour restaurateurs.',
+};
+---
+
+<Layout metadata={metadata}>
+  <HeroText
+    tagline="Audit gratuit"
+    title="Prêt à reprendre la main sur ton restaurant ?"
+    subtitle="Un message suffit. On revient vers toi sous 48 h pour caler ton audit stratégique gratuit, sans engagement."
+  />
+
+  <ContactUs
+    id="form"
+    title="Parle-nous de ton restaurant"
+    inputs={[
+      { type: 'text', name: 'name', label: 'Nom', autocomplete: 'name' },
+      { type: 'text', name: 'restaurant', label: 'Restaurant et ville', autocomplete: 'organization' },
+      { type: 'email', name: 'email', label: 'Email', autocomplete: 'email' },
+    ]}
+    textarea={{ label: 'Ton message', placeholder: 'Ce qui te bloque aujourd’hui, en quelques lignes.' }}
+    button="Demander mon audit gratuit"
+    description={`Ta messagerie s'ouvre avec le message pré-rempli. Tu peux aussi écrire directement à ${email}.`}
+  />
+
+  <Features2
+    columns={3}
+    items={[
+      { title: 'Audit 100 % gratuit', description: 'Un premier échange pour comprendre ton établissement et tes objectifs.', icon: 'tabler:gift' },
+      { title: 'Réponse sous 48 h', description: 'On revient vers toi rapidement pour caler un créneau.', icon: 'tabler:clock' },
+      { title: 'Email', description: email, icon: 'tabler:mail' },
+    ]}
+  />
+</Layout>
+
+<script define:vars={{ email }}>
+  const form = document.querySelector('#form form');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = (n) => (form.elements.namedItem(n)?.value || '').trim();
+    const body = `Nom : ${v('name')}\nRestaurant : ${v('restaurant')}\nEmail : ${v('email')}\n\n${v('message')}`;
+    location.href = `mailto:${email}?subject=${encodeURIComponent('Demande d’audit gratuit')}&body=${encodeURIComponent(body)}`;
+  });
+</script>

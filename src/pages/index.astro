@@ -1,0 +1,264 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import Features from '~/components/widgets/Features.astro';
+import Steps2 from '~/components/widgets/Steps2.astro';
+import Content from '~/components/widgets/Content.astro';
+import Comparison from '~/components/widgets/Comparison.astro';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Headline from '~/components/ui/Headline.astro';
+import Image from '~/components/common/Image.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import StructuredData from '~/components/common/StructuredData.astro';
+import { SITE, I18N } from 'astrowind:config';
+import favIconSvg from '~/assets/favicons/favicon.svg';
+
+const metadata = {
+  title: 'RESTUP — Coaching de pilotage pour restaurateurs',
+  ignoreTitleTemplate: true,
+  description:
+    "Ton resto tourne, ta marge non ? Un coach RESTUP, une heure de pilotage par semaine et un plan d'action sur 16 semaines. Audit gratuit et sans engagement.",
+};
+
+const organizationId = `${SITE?.site}/#organization`;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE?.site}/#website`,
+    name: SITE?.name,
+    url: SITE?.site,
+    inLanguage: I18N?.language,
+    publisher: { '@id': organizationId },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: SITE?.name,
+    url: SITE?.site,
+    logo: new URL(favIconSvg.src, SITE?.site).toString(),
+    slogan: 'Le partenaire de pilotage du restaurateur',
+    areaServed: { '@type': 'Country', name: 'France' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Coaching de pilotage pour restaurateurs',
+    serviceType: 'Accompagnement et conseil en gestion de restaurant',
+    provider: { '@id': organizationId },
+    areaServed: { '@type': 'Country', name: 'France' },
+    audience: { '@type': 'BusinessAudience', audienceType: 'Restaurateurs, gérants et franchisés de restaurants' },
+    description:
+      "Un coach RESTUP, une heure de pilotage par semaine et un plan d'action sur 16 semaines : rentabilité, coût matière, achats, équipe, organisation.",
+    offers: { '@type': 'Offer', name: 'Audit stratégique', price: '0', priceCurrency: 'EUR' },
+  },
+];
+
+const logos = [
+  ['ultra-clean.png', 'Ultra'],
+  ['breakys-clean.png', 'Breakys'],
+  ['coup-de-food.png', 'Coup de Food'],
+  ['kfb.jpg', 'KFB'],
+  ['super-kroustif-wok.jpg', 'Super Kroustif Wok'],
+  ['my-khao.jpg', 'My Khao'],
+  ['pitaya.png', 'Pitaya'],
+  ['crousty-game-clean.png', 'Crousty Game'],
+  ['streat-burger-clean.png', 'Streat Burger'],
+  ['chamas-tacos-clean.png', 'Chamas Tacos'],
+  ['dangerous-burger.jpg', 'Dangerous Burger'],
+  ['la-kazdalerie.png', 'La Kazdalerie'],
+];
+---
+
+<Layout metadata={metadata}>
+  <StructuredData slot="head" schema={structuredData} />
+
+  <Hero
+    tagline="Coaching de pilotage pour restaurateurs"
+    actions={[
+      { variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact', icon: 'tabler:arrow-right' },
+      { text: 'Voir la méthode', href: '#methode' },
+    ]}
+  >
+    <Fragment slot="title">
+      Ton resto tourne. Ta marge, non. <span class="text-primary">On règle ça.</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Un coach RESTUP à tes côtés, <strong>une heure de pilotage par semaine</strong> et un plan sur 16 semaines. Pas un
+      rapport qui prend la poussière : des décisions, puis des actions. Chaque semaine.
+    </Fragment>
+  </Hero>
+
+  <Stats
+    stats={[
+      { amount: '16 sem.', title: 'de plan construit avec toi' },
+      { amount: '1 h', title: 'de pilotage par semaine' },
+      { amount: '1', title: 'priorité à la fois' },
+      { amount: '72 h', title: 'pour ta première action' },
+    ]}
+  />
+
+  <Features
+    id="constat"
+    tagline="Le constat"
+    title="Tu reconnais ton quotidien ?"
+    subtitle="Ton comptable te dit ce qui s'est passé. Nous, on te dit quoi faire lundi."
+    columns={3}
+    items={[
+      {
+        title: 'Le chiffre rentre. La marge reste floue.',
+        description:
+          'Les achats montent, la trésorerie serre, et tu ne sais pas quel levier tirer en premier.',
+        icon: 'tabler:chart-line',
+      },
+      {
+        title: 'Tout finit par revenir vers toi.',
+        description:
+          'Plannings, imprévus, décisions : tu es indispensable au service, et ton rôle de dirigeant attend dehors.',
+        icon: 'tabler:users',
+      },
+      {
+        title: 'Tu sais qu’il faut changer un truc.',
+        description: 'Il te manque du recul, un ordre de priorité, et quelqu’un pour tenir le cap avec toi.',
+        icon: 'tabler:compass',
+      },
+    ]}
+  />
+
+  <Steps2
+    id="methode"
+    tagline="La méthode"
+    title="Quatre temps. Zéro blabla."
+    subtitle="Une à trois priorités, pas trente. Chacune avec un responsable et une échéance."
+    callToAction={{ variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact' }}
+    items={[
+      {
+        title: '1. Comprendre',
+        description:
+          'On regarde où tu en es vraiment : rentabilité, achats, équipe, organisation. Un diagnostic de ta situation et de tes objectifs, pas une opinion.',
+        icon: 'tabler:search',
+      },
+      {
+        title: '2. Prioriser',
+        description: 'Une à trois priorités. Chacune avec un responsable et une échéance. Le reste peut attendre.',
+        icon: 'tabler:list-numbers',
+      },
+      {
+        title: '3. Agir',
+        description:
+          'Chaque semaine, ton coach t’aide à décider, débloquer et tenir le cap. Une action à la fois, jamais dix.',
+        icon: 'tabler:bolt',
+      },
+      {
+        title: '4. Ajuster',
+        description:
+          'On vérifie ce qui a bougé. Les indicateurs utiles sont suivis et le plan est ajusté à ta réalité. Aucun résultat n’est garanti, tout est mesuré.',
+        icon: 'tabler:adjustments',
+      },
+    ]}
+  />
+
+  <Content
+    id="appli"
+    tagline="L'appli RESTUP"
+    title="Ton coach est dans ta poche."
+    items={[
+      {
+        title: 'Une priorité à la fois',
+        description: 'La suivante apparaît quand tu as terminé. Pas un tableau de bord de plus à ne jamais ouvrir.',
+      },
+      {
+        title: 'Ton plan semaine par semaine',
+        description: 'Avec ce qui est validé par ton coach.',
+      },
+      {
+        title: 'Un récap clair après chaque échange',
+        description: 'Ce qui est décidé, ce que tu fais, ce que fait ton coach. Là où tu es déjà : WhatsApp.',
+      },
+    ]}
+  >
+    <Fragment slot="content">
+      Une appli qui te dit une seule chose : <strong>ce que tu fais maintenant</strong>.
+    </Fragment>
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-violet-50"></div>
+    </Fragment>
+  </Content>
+
+  <Comparison
+    tagline="Avant / après"
+    title="Ce qui change avec RESTUP"
+    mode="versus"
+    firstColumnLabel=""
+    columns={[{ title: 'Sans RESTUP' }, { title: 'Avec RESTUP', highlight: true }]}
+    rows={[
+      { label: 'Tes chiffres', values: ['Tu les découvres trop tard', 'Tu sais quoi changer lundi, et pourquoi'] },
+      { label: 'Tes priorités', values: ['Tu réponds à l’urgent', 'Une priorité claire, chaque semaine'] },
+      { label: 'Tes décisions', values: ['À l’instinct', 'Avec un coach qui te relance et t’aide à décider'] },
+      { label: 'Ton rôle', values: ['Dans ton resto, 7 jours sur 7', 'Sur ton resto, plus seulement dedans'] },
+    ]}
+  />
+
+  <WidgetWrapper id="references">
+    <Headline tagline="12 ans de terrain" title="Des enseignes qui nous ont fait confiance" />
+    <ul class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+      {
+        logos.map(([file, name]) => (
+          <li class="flex items-center justify-center aspect-[3/2] rounded-xl bg-[#110c1c] p-3">
+            <Image src={`~/assets/images/clients/${file}`} alt={name} width={160} height={110} class="max-h-14 w-auto object-contain" />
+          </li>
+        ))
+      }
+    </ul>
+  </WidgetWrapper>
+
+  <FAQs
+    id="questions"
+    tagline="Questions"
+    title="Les questions qu'on nous pose"
+    subtitle="Des réponses franches. Aucun résultat financier n'est garanti : les objectifs dépendent du diagnostic."
+    schema
+    items={[
+      {
+        title: "Je n'ai déjà pas le temps. Comment faire ?",
+        description:
+          'Une heure de pilotage par semaine et un nombre limité d’actions prioritaires. Leur mise en œuvre demande aussi ton implication : on cadre cette charge ensemble.',
+      },
+      {
+        title: "J'ai déjà un expert-comptable.",
+        description:
+          'Il reste un partenaire essentiel. RESTUP transforme les informations disponibles en décisions opérationnelles : achats, carte, organisation, équipe et suivi des actions.',
+      },
+      {
+        title: 'Je ne connais pas mes ratios.',
+        description:
+          'On part des données disponibles dans ta caisse, ta comptabilité et tes documents, puis on identifie les quelques indicateurs utiles à ta situation.',
+      },
+      {
+        title: 'Est-ce adapté à mon restaurant ?',
+        description:
+          'Le premier échange sert à comprendre ton établissement, tes difficultés et tes objectifs, et à vérifier l’adéquation avec tes besoins et ta capacité à mettre les actions en œuvre.',
+      },
+      {
+        title: 'Qui réalise les actions ?',
+        description:
+          'RESTUP analyse, priorise, construit le plan avec toi et suit son exécution. Toi et ton équipe réalisez les actions dans le restaurant. Les responsabilités sont clarifiées dès le départ.',
+      },
+      {
+        title: 'Comment mesure-t-on les progrès ?',
+        description:
+          'On suit les actions chaque semaine et les indicateurs au rythme pertinent : chiffre d’affaires, coût matière, masse salariale, charges, rentabilité.',
+      },
+    ]}
+  />
+
+  <CallToAction
+    title="Alors, on reprend les commandes ?"
+    subtitle="Audit gratuit et sans engagement. Un message suffit : on revient vers toi sous 48 h."
+    actions={[{ variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact', icon: 'tabler:arrow-right' }]}
+  />
+</Layout>

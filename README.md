@@ -1,6 +1,21 @@
-# RestUp — Mode d'emploi
+# RESTUP — Mode d'emploi
 
-Tout le site est déjà codé : pages publiques (Accueil, Méthode, Offre, Contact)
+## Organisation du dépôt (octobre 2026)
+
+- **Site public** (accueil, contact) : construit avec [Astro](https://astro.build) à partir du modèle
+  open source [AstroWind](https://github.com/arthelokyo/astrowind) (licence MIT, voir `LICENSE-ASTROWIND.md`).
+  Le contenu de l'accueil est dans `src/pages/index.astro`, le contact dans `src/pages/contact.astro`,
+  le menu dans `src/navigation.ts`, les couleurs dans `src/components/CustomStyles.astro`.
+- **Portail client et espace coach** : inchangés, dans `public/portail/` (copiés tels quels).
+- **Mise en ligne** : chaque envoi sur `main` construit le site et le publie sur GitHub Pages
+  (`.github/workflows/deploy.yml`). Pour tester en local : `npm install`, puis `npm run dev`.
+
+Les étapes ci-dessous (Supabase, espace coach…) restent valables ; les chemins `portail/...`
+correspondent maintenant à `public/portail/...`.
+
+---
+
+Tout le site est déjà codé : pages publiques (Accueil, Contact)
 + portail client (connexion, création de compte, tableau de bord) + votre
 propre espace coach pour tout piloter.
 

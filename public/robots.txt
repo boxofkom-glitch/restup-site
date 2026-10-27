@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /portail/
+Disallow: /carrousel.html
+Disallow: /assets/data/
+
+Sitemap: https://restup.solutions/sitemap-index.xml
