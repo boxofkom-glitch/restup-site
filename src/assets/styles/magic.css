@@ -1,0 +1,249 @@
+/*
+ * Effets inspirés de Magic UI (https://github.com/magicuidesign/magicui, licence MIT),
+ * réécrits en CSS pur pour Astro. Tout s'arrête si le visiteur a demandé moins d'animations.
+ */
+
+/* Fond à points (DotPattern), fondu vers les bords */
+.mu-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 30%, transparent 75%);
+}
+
+/* Halo violet derrière le héros */
+.mu-glow {
+  position: absolute;
+  left: 50%;
+  top: -10%;
+  width: min(900px, 120vw);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(155 77 255 / 0.35), rgb(74 36 130 / 0.12) 55%, transparent 75%);
+}
+
+/* Texte en dégradé */
+.mu-gradient-text {
+  background: linear-gradient(180deg, #e9d8ff 0%, #b37bff 55%, #8b45f5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Badge au texte brillant (AnimatedShinyText) */
+.mu-shiny {
+  --shiny-width: 90px;
+  color: rgb(212 196 255 / 0.75);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.9) 50%, transparent) 0 0 / var(--shiny-width) 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: mu-shiny 8s infinite;
+}
+@keyframes mu-shiny {
+  0%,
+  90%,
+  100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+  }
+  30%,
+  60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+  }
+}
+
+/* Bouton scintillant (ShimmerButton) */
+.mu-shimmer {
+  --speed: 3s;
+  --cut: 0.08em;
+  --bg: linear-gradient(180deg, #8b45f5, #6d28d9);
+  position: relative;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  padding: 0.85rem 1.6rem;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--bg);
+  box-shadow: 0 10px 40px -10px rgb(139 69 245 / 0.7);
+}
+.mu-shimmer__spark {
+  position: absolute;
+  inset: 0;
+  z-index: -30;
+  overflow: visible;
+  filter: blur(2px);
+  container-type: size;
+}
+.mu-shimmer__spark > span {
+  position: absolute;
+  inset: 0;
+  height: 100cqh;
+  aspect-ratio: 1;
+  animation: mu-shimmer-slide var(--speed) ease-in-out infinite alternate;
+}
+.mu-shimmer__spark > span::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(from 225deg, transparent 0, #fff 90deg, transparent 90deg);
+  animation: mu-spin-around calc(var(--speed) * 2) infinite linear;
+}
+.mu-shimmer__backdrop {
+  position: absolute;
+  inset: var(--cut);
+  z-index: -20;
+  border-radius: 999px;
+  background: var(--bg);
+}
+.mu-shimmer:hover {
+  box-shadow: 0 12px 48px -8px rgb(139 69 245 / 0.9), inset 0 -6px 10px rgb(255 255 255 / 0.25);
+}
+@keyframes mu-shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+@keyframes mu-spin-around {
+  0% {
+    transform: rotate(0);
+  }
+  15%,
+  35% {
+    transform: rotate(90deg);
+  }
+  65%,
+  85% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Faisceau lumineux qui fait le tour d'une carte (BorderBeam) */
+.mu-beam {
+  --size: 120px;
+  --duration: 9s;
+  --from: #ffb3f0;
+  --to: #9b4dff;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+  border: 1.5px solid transparent;
+  mask:
+    linear-gradient(transparent, transparent) padding-box,
+    linear-gradient(#000, #000) border-box;
+  mask-composite: intersect;
+}
+.mu-beam::after {
+  content: '';
+  position: absolute;
+  width: var(--size);
+  aspect-ratio: 1;
+  background: linear-gradient(to left, var(--from), var(--to), transparent);
+  offset-path: rect(0 auto auto 0 round var(--size));
+  animation: mu-beam var(--duration) linear infinite;
+}
+@keyframes mu-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* Défilement infini (Marquee) */
+.mu-marquee {
+  --gap: 1.25rem;
+  --duration: 45s;
+  display: flex;
+  gap: var(--gap);
+  overflow: hidden;
+  padding: 0.5rem 0;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.mu-marquee__track {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--gap);
+  animation: mu-marquee var(--duration) linear infinite;
+}
+.mu-marquee--reverse .mu-marquee__track {
+  animation-direction: reverse;
+}
+.mu-marquee:hover .mu-marquee__track {
+  animation-play-state: paused;
+}
+@keyframes mu-marquee {
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+/* Carte avec projecteur qui suit la souris (MagicCard) */
+.mu-card {
+  --x: -300px;
+  --y: -300px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background:
+    radial-gradient(260px circle at var(--x) var(--y), rgb(155 77 255 / 0.18), transparent 70%),
+    rgb(255 255 255 / 0.03);
+}
+.mu-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(220px circle at var(--x) var(--y), rgb(179 123 255 / 0.7), transparent 70%);
+  mask:
+    linear-gradient(#000, #000) content-box,
+    linear-gradient(#000, #000);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Apparition douce au défilement (BlurFade) : seulement si le JavaScript tourne */
+html.mu-js .mu-fade {
+  opacity: 0;
+  filter: blur(6px);
+  translate: 0 10px;
+  transition:
+    opacity 0.7s ease,
+    filter 0.7s ease,
+    translate 0.7s ease;
+  transition-delay: var(--delay, 0s);
+}
+html.mu-js .mu-fade.is-in {
+  opacity: 1;
+  filter: none;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mu-shiny,
+  .mu-shimmer__spark > span,
+  .mu-shimmer__spark > span::before,
+  .mu-beam::after,
+  .mu-marquee__track {
+    animation: none !important;
+  }
+  html.mu-js .mu-fade {
+    opacity: 1;
+    filter: none;
+    translate: 0 0;
+    transition: none;
+  }
+}

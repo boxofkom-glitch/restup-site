@@ -5,33 +5,27 @@
 ---
 
 <style is:inline>
-  :root {
+  :root,
+  .dark {
     --aw-font-sans: var(--font-inter);
     --aw-font-serif: var(--font-inter);
     --aw-font-heading: var(--font-inter);
 
-    --aw-color-primary: rgb(109 40 217);
-    --aw-color-secondary: rgb(91 33 182);
-    --aw-color-accent: rgb(109 40 217);
+    --aw-color-primary: rgb(139 69 245);
+    --aw-color-secondary: rgb(109 40 217);
+    --aw-color-accent: rgb(179 123 255);
+    --aw-color-link: rgb(179 123 255);
 
-    --aw-color-text-heading: rgb(17 17 24);
-    --aw-color-text-default: rgb(31 31 40);
-    --aw-color-text-muted: rgb(31 31 40 / 68%);
-    --aw-color-bg-page: rgb(255 255 255);
+    --aw-color-text-heading: rgb(250 248 255);
+    --aw-color-text-default: rgb(226 222 236);
+    --aw-color-text-muted: rgb(226 222 236 / 62%);
+    --aw-color-bg-page: rgb(9 6 16);
 
-    --aw-color-bg-page-dark: rgb(17 12 28);
+    --aw-color-bg-page-dark: rgb(9 6 16);
 
     ::selection {
-      background-color: rgb(237 233 254);
+      background-color: rgb(139 69 245 / 0.45);
+      color: #fff;
     }
-  }
-
-  /* Site sans animation */
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
   }
 </style>

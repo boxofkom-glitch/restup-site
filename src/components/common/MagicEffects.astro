@@ -1,0 +1,62 @@
+---
+// Petits scripts des effets Magic UI : apparition au défilement, compteurs, projecteur des cartes.
+---
+
+<script is:inline>
+  document.documentElement.classList.add('mu-js');
+</script>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Apparition douce (BlurFade)
+  const fades = document.querySelectorAll<HTMLElement>('.mu-fade');
+  if (reduce || !('IntersectionObserver' in window)) {
+    fades.forEach((el) => el.classList.add('is-in'));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }),
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+    );
+    fades.forEach((el) => io.observe(el));
+  }
+
+  // Compteurs (NumberTicker) : le HTML contient déjà la vraie valeur
+  document.querySelectorAll<HTMLElement>('[data-ticker]').forEach((el) => {
+    const target = Number(el.dataset.ticker);
+    if (reduce || !target) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / 1400);
+        el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 4))));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      el.textContent = '0';
+      requestAnimationFrame(step);
+    });
+    io.observe(el);
+  });
+
+  // Projecteur qui suit la souris (MagicCard)
+  if (matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll<HTMLElement>('.mu-card').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--x', `${e.clientX - r.left}px`);
+        card.style.setProperty('--y', `${e.clientY - r.top}px`);
+      });
+      card.addEventListener('pointerleave', () => {
+        card.style.setProperty('--x', '-300px');
+        card.style.setProperty('--y', '-300px');
+      });
+    });
+  }
+</script>

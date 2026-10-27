@@ -1,17 +1,9 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
-
-import Hero from '~/components/widgets/Hero.astro';
-import Stats from '~/components/widgets/Stats.astro';
-import Features from '~/components/widgets/Features.astro';
-import Steps2 from '~/components/widgets/Steps2.astro';
-import Content from '~/components/widgets/Content.astro';
-import Comparison from '~/components/widgets/Comparison.astro';
-import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
-import Headline from '~/components/ui/Headline.astro';
-import Image from '~/components/common/Image.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
+import Image from '~/components/common/Image.astro';
+import ShimmerLink from '~/components/ui/ShimmerLink.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE, I18N } from 'astrowind:config';
 import favIconSvg from '~/assets/favicons/favicon.svg';
@@ -60,174 +52,356 @@ const structuredData = [
 
 // [fichier, nom, style] : "fill" remplit le rond, "dk" pose le logo sur fond sombre
 const logos = [
-  ["ultra-clean.png", "Ultra", ""],
-  ["breakys-clean.png", "Breakys", "dk"],
-  ["coup-de-food.png", "Coup de Food", ""],
-  ["kfb.jpg", "KFB", "fill"],
-  ["super-kroustif-wok.jpg", "Super Kroustif Wok", "fill"],
-  ["my-khao.jpg", "My Khao", "fill"],
-  ["pitaya.png", "Pitaya", "fill"],
-  ["crousty-game-clean.png", "Crousty Game", ""],
-  ["dangerous-burger.jpg", "Dangerous Burger", "fill"],
-  ["chamas-tacos-clean.png", "Chamas Tacos", ""],
-  ["streat-burger-clean.png", "Str’Eat Burger", ""],
-  ["la-kazdalerie.png", "La Kazdalerie", "fill"],
+  ['ultra-clean.png', 'Ultra', ''],
+  ['breakys-clean.png', 'Breakys', 'dk'],
+  ['coup-de-food.png', 'Coup de Food', ''],
+  ['kfb.jpg', 'KFB', 'fill'],
+  ['super-kroustif-wok.jpg', 'Super Kroustif Wok', 'fill'],
+  ['my-khao.jpg', 'My Khao', 'fill'],
+  ['pitaya.png', 'Pitaya', 'fill'],
+  ['crousty-game-clean.png', 'Crousty Game', ''],
+  ['dangerous-burger.jpg', 'Dangerous Burger', 'fill'],
+  ['chamas-tacos-clean.png', 'Chamas Tacos', ''],
+  ['streat-burger-clean.png', 'Str’Eat Burger', ''],
+  ['la-kazdalerie.png', 'La Kazdalerie', 'fill'],
+];
+
+const stats = [
+  { value: 16, unit: 'sem.', label: 'de plan construit avec toi' },
+  { value: 1, unit: 'h', label: 'de pilotage chaque semaine' },
+  { value: 1, unit: '', label: 'priorité à la fois, jamais dix' },
+  { value: 72, unit: 'h', label: 'pour passer à ta première action' },
+];
+
+const pains = [
+  {
+    icon: 'tabler:chart-line',
+    title: 'Le chiffre rentre. La marge reste floue.',
+    text: 'Les achats montent, la trésorerie serre, et tu ne sais pas quel levier tirer en premier.',
+  },
+  {
+    icon: 'tabler:users',
+    title: 'Tout finit par revenir vers toi.',
+    text: 'Plannings, imprévus, décisions : tu es indispensable au service, et ton rôle de dirigeant attend dehors.',
+  },
+  {
+    icon: 'tabler:compass',
+    title: 'Tu sais qu’il faut changer un truc.',
+    text: 'Il te manque du recul, un ordre de priorité, et quelqu’un pour tenir le cap avec toi.',
+  },
+];
+
+const steps = [
+  {
+    icon: 'tabler:search',
+    title: 'Comprendre',
+    text: 'On regarde où tu en es vraiment : rentabilité, achats, équipe, organisation. Un diagnostic, pas une opinion.',
+  },
+  {
+    icon: 'tabler:list-numbers',
+    title: 'Prioriser',
+    text: 'Une à trois priorités, pas trente. Chacune avec un responsable et une échéance. Le reste attendra.',
+  },
+  {
+    icon: 'tabler:bolt',
+    title: 'Agir',
+    text: 'Chaque semaine, ton coach t’aide à décider, débloquer et tenir le cap. Une action à la fois.',
+  },
+  {
+    icon: 'tabler:adjustments',
+    title: 'Ajuster',
+    text: 'On vérifie ce qui a bougé et on ajuste le plan à ta réalité. Aucun résultat n’est garanti, tout est mesuré.',
+  },
+];
+
+const before = [
+  'Tu subis tes chiffres, tu les découvres trop tard.',
+  'Tu réponds à l’urgent, jamais à l’important.',
+  'Tu improvises tes décisions à l’instinct.',
+  'Tu travailles dans ton resto, 7 jours sur 7.',
+];
+const after = [
+  'Tu sais quoi changer lundi, et pourquoi.',
+  'Une priorité claire, chaque semaine.',
+  'Un coach qui te relance et t’aide à décider.',
+  'Tu travailles sur ton resto, plus seulement dedans.',
 ];
 ---
 
 <Layout metadata={metadata}>
   <StructuredData slot="head" schema={structuredData} />
 
-  <Hero
-    tagline="Coaching de pilotage pour restaurateurs"
-    actions={[
-      { variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact', icon: 'tabler:arrow-right' },
-      { text: 'Voir la méthode', href: '#methode' },
-    ]}
-  >
-    <Fragment slot="title">
-      Ton resto tourne. Ta marge, non. <span class="text-primary">On règle ça.</span>
-    </Fragment>
-    <Fragment slot="subtitle">
-      Un coach RESTUP à tes côtés, <strong>une heure de pilotage par semaine</strong> et un plan sur 16 semaines. Pas un
-      rapport qui prend la poussière : des décisions, puis des actions. Chaque semaine.
-    </Fragment>
-  </Hero>
+  <!-- Héros -->
+  <section class="relative overflow-hidden">
+    <div class="mu-glow" aria-hidden="true"></div>
+    <div class="mu-dots" aria-hidden="true"></div>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-16 text-center">
+      <a
+        href="#appli"
+        class="mu-fade inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm"
+      >
+        <span class="mu-shiny">✦ Nouveau : ton coach dans l’appli RESTUP</span>
+        <Icon name="tabler:arrow-right" class="w-4 h-4 text-accent" />
+      </a>
+      <h1
+        class="mu-fade mt-6 text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-heading"
+        style="--delay:.08s"
+      >
+        Ton resto tourne.<br />
+        <span class="mu-gradient-text">Ta marge, non.</span>
+      </h1>
+      <p class="mu-fade mt-6 max-w-2xl mx-auto text-lg md:text-xl text-muted" style="--delay:.16s">
+        Un coach RESTUP à tes côtés, <strong class="text-heading">une heure de pilotage par semaine</strong> et un plan
+        sur 16 semaines. Des décisions, puis des actions. Chaque semaine.
+      </p>
+      <div class="mu-fade mt-9 flex flex-col sm:flex-row gap-3 justify-center items-center" style="--delay:.24s">
+        <ShimmerLink href="/contact">Demander mon audit gratuit</ShimmerLink>
+        <a
+          href="#methode"
+          class="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 font-semibold text-heading hover:bg-white/5"
+          >Voir la méthode</a
+        >
+      </div>
+      <p class="mu-fade mt-4 text-sm text-muted" style="--delay:.3s">Audit 100 % gratuit · Réponse sous 48 h · Sans engagement</p>
 
-  <Stats
-    stats={[
-      { amount: '16 sem.', title: 'de plan construit avec toi' },
-      { amount: '1 h', title: 'de pilotage par semaine' },
-      { amount: '1', title: 'priorité à la fois' },
-      { amount: '72 h', title: 'pour ta première action' },
-    ]}
-  />
+      <!-- Maquettes de l'appli -->
+      <div class="mu-fade relative mt-16 md:mt-20 max-w-5xl mx-auto" style="--delay:.35s">
+        <div class="relative rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-3 md:p-4">
+          <div class="mu-beam" aria-hidden="true"></div>
+          <div class="grid md:grid-cols-3 gap-3 text-left">
+            <div class="rounded-2xl bg-[#140e22] border border-white/5 p-5">
+              <p class="text-xs uppercase tracking-wider text-accent">Accueil</p>
+              <p class="mt-2 text-heading font-semibold">Bonjour, Le Petit Bouchon</p>
+              <div class="mt-4 rounded-xl bg-primary/15 border border-primary/30 p-4">
+                <p class="text-xs text-muted">Ta priorité maintenant</p>
+                <p class="mt-1 text-heading font-semibold">Relever les pertes cuisine pendant 7 jours</p>
+                <p class="mt-2 text-xs text-accent">À voir d’ici 72 h</p>
+              </div>
+              <div class="mt-3 rounded-xl bg-white/5 p-4">
+                <p class="text-xs text-muted">Prochain rendez-vous</p>
+                <p class="mt-1 text-heading font-semibold">Jeudi · 10 h 00</p>
+              </div>
+            </div>
+            <div class="rounded-2xl bg-[#140e22] border border-white/5 p-5">
+              <p class="text-xs uppercase tracking-wider text-accent">Plan · semaine 3</p>
+              <p class="mt-2 text-heading font-semibold">Cap sur la marge</p>
+              <div class="mt-4 h-2 rounded-full bg-white/10"><div class="h-2 w-[70%] rounded-full bg-primary"></div></div>
+              <ul class="mt-4 space-y-3 text-sm">
+                <li class="flex items-center gap-2"><Icon name="tabler:circle-check-filled" class="w-5 h-5 text-accent" /> Relever les pertes</li>
+                <li class="flex items-center gap-2"><Icon name="tabler:circle-check-filled" class="w-5 h-5 text-accent" /> Renégocier 2 fournisseurs</li>
+                <li class="flex items-center gap-2"><Icon name="tabler:circle-check-filled" class="w-5 h-5 text-accent" /> Mettre à jour la carte</li>
+                <li class="flex items-center gap-2 text-muted"><Icon name="tabler:circle" class="w-5 h-5" /> Point équipe du lundi</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl bg-[#140e22] border border-white/5 p-5">
+              <p class="text-xs uppercase tracking-wider text-accent">WhatsApp · récap</p>
+              <p class="mt-2 text-heading font-semibold">Après ton call</p>
+              <div class="mt-4 space-y-2 text-sm">
+                <p class="rounded-2xl rounded-tl-sm bg-white/5 px-3 py-2">Bonjour Karim, merci pour notre échange. Voici l’essentiel :</p>
+                <p class="rounded-2xl rounded-tl-sm bg-white/5 px-3 py-2"><b class="text-heading">Décidé :</b> on relève les pertes 7 jours.</p>
+                <p class="rounded-2xl rounded-tl-sm bg-white/5 px-3 py-2"><b class="text-heading">Toi :</b> envoyer les fiches d’achats avant vendredi.</p>
+                <p class="rounded-2xl rounded-tl-sm bg-white/5 px-3 py-2"><b class="text-heading">Moi :</b> te transmettre le modèle demain.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-3 text-xs text-muted">Exemple illustratif</p>
+      </div>
+    </div>
+  </section>
 
-  <Features
-    id="constat"
-    tagline="Le constat"
-    title="Tu reconnais ton quotidien ?"
-    subtitle="Ton comptable te dit ce qui s'est passé. Nous, on te dit quoi faire lundi."
-    columns={3}
-    items={[
+  <!-- Logos clients -->
+  <section class="py-12 border-y border-white/5 bg-white/[0.015]">
+    <p class="px-4 text-center text-sm uppercase tracking-widest text-muted">12 ans de terrain · Des enseignes qui nous ont fait confiance</p>
+    <div class="mu-marquee mt-8" style="--duration:50s">
       {
-        title: 'Le chiffre rentre. La marge reste floue.',
-        description:
-          'Les achats montent, la trésorerie serre, et tu ne sais pas quel levier tirer en premier.',
-        icon: 'tabler:chart-line',
-      },
-      {
-        title: 'Tout finit par revenir vers toi.',
-        description:
-          'Plannings, imprévus, décisions : tu es indispensable au service, et ton rôle de dirigeant attend dehors.',
-        icon: 'tabler:users',
-      },
-      {
-        title: 'Tu sais qu’il faut changer un truc.',
-        description: 'Il te manque du recul, un ordre de priorité, et quelqu’un pour tenir le cap avec toi.',
-        icon: 'tabler:compass',
-      },
-    ]}
-  />
-
-  <Steps2
-    id="methode"
-    tagline="La méthode"
-    title="Quatre temps. Zéro blabla."
-    subtitle="Une à trois priorités, pas trente. Chacune avec un responsable et une échéance."
-    callToAction={{ variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact' }}
-    items={[
-      {
-        title: '1. Comprendre',
-        description:
-          'On regarde où tu en es vraiment : rentabilité, achats, équipe, organisation. Un diagnostic de ta situation et de tes objectifs, pas une opinion.',
-        icon: 'tabler:search',
-      },
-      {
-        title: '2. Prioriser',
-        description: 'Une à trois priorités. Chacune avec un responsable et une échéance. Le reste peut attendre.',
-        icon: 'tabler:list-numbers',
-      },
-      {
-        title: '3. Agir',
-        description:
-          'Chaque semaine, ton coach t’aide à décider, débloquer et tenir le cap. Une action à la fois, jamais dix.',
-        icon: 'tabler:bolt',
-      },
-      {
-        title: '4. Ajuster',
-        description:
-          'On vérifie ce qui a bougé. Les indicateurs utiles sont suivis et le plan est ajusté à ta réalité. Aucun résultat n’est garanti, tout est mesuré.',
-        icon: 'tabler:adjustments',
-      },
-    ]}
-  />
-
-  <Content
-    id="appli"
-    tagline="L'appli RESTUP"
-    title="Ton coach est dans ta poche."
-    items={[
-      {
-        title: 'Une priorité à la fois',
-        description: 'La suivante apparaît quand tu as terminé. Pas un tableau de bord de plus à ne jamais ouvrir.',
-      },
-      {
-        title: 'Ton plan semaine par semaine',
-        description: 'Avec ce qui est validé par ton coach.',
-      },
-      {
-        title: 'Un récap clair après chaque échange',
-        description: 'Ce qui est décidé, ce que tu fais, ce que fait ton coach. Là où tu es déjà : WhatsApp.',
-      },
-    ]}
-  >
-    <Fragment slot="content">
-      Une appli qui te dit une seule chose : <strong>ce que tu fais maintenant</strong>.
-    </Fragment>
-    <Fragment slot="bg">
-      <div class="absolute inset-0 bg-violet-50"></div>
-    </Fragment>
-  </Content>
-
-  <Comparison
-    tagline="Avant / après"
-    title="Ce qui change avec RESTUP"
-    mode="versus"
-    firstColumnLabel=""
-    columns={[{ title: 'Sans RESTUP' }, { title: 'Avec RESTUP', highlight: true }]}
-    rows={[
-      { label: 'Tes chiffres', values: ['Tu les découvres trop tard', 'Tu sais quoi changer lundi, et pourquoi'] },
-      { label: 'Tes priorités', values: ['Tu réponds à l’urgent', 'Une priorité claire, chaque semaine'] },
-      { label: 'Tes décisions', values: ['À l’instinct', 'Avec un coach qui te relance et t’aide à décider'] },
-      { label: 'Ton rôle', values: ['Dans ton resto, 7 jours sur 7', 'Sur ton resto, plus seulement dedans'] },
-    ]}
-  />
-
-  <WidgetWrapper id="references">
-    <Headline tagline="12 ans de terrain" title="Des enseignes qui nous ont fait confiance" />
-    <ul class="flex flex-wrap justify-center gap-4 md:gap-5">
-      {
-        logos.map(([file, name, style]) => (
-          <li
-            class:list={[
-              "grid place-items-center w-24 h-24 rounded-full overflow-hidden border-2 border-[#2b2536]",
-              style === "dk" ? "bg-[#1c0e33]" : "bg-white",
-            ]}
-          >
-            <Image
-              src={`~/assets/images/clients/${file}`}
-              alt={name}
-              width={192}
-              height={192}
-              class:list={["w-full h-full", style === "fill" ? "object-cover" : "object-contain p-2.5"]}
-            />
-          </li>
+        [0, 1].map((copy) => (
+          <ul class="mu-marquee__track" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {logos.map(([file, name, style]) => (
+              <li
+                class:list={[
+                  'grid place-items-center w-24 h-24 shrink-0 rounded-full overflow-hidden border-2 border-[#2b2536]',
+                  style === 'dk' ? 'bg-[#1c0e33]' : 'bg-white',
+                ]}
+              >
+                <Image
+                  src={`~/assets/images/clients/${file}`}
+                  alt={copy === 0 ? name : ''}
+                  width={192}
+                  height={192}
+                  class:list={['w-full h-full', style === 'fill' ? 'object-cover' : 'object-contain p-2.5']}
+                />
+              </li>
+            ))}
+          </ul>
         ))
       }
-    </ul>
-  </WidgetWrapper>
+    </div>
+  </section>
 
+  <!-- Chiffres -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {
+        stats.map((s, i) => (
+          <div class="mu-fade mu-card p-6 text-center" style={`--delay:${i * 0.08}s`}>
+            <p class="text-4xl md:text-5xl font-extrabold text-heading">
+              <span data-ticker={s.value}>{s.value}</span>
+              <span class="text-2xl md:text-3xl text-accent"> {s.unit}</span>
+            </p>
+            <p class="mt-2 text-sm text-muted">{s.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Le constat -->
+  <section id="constat" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
+    <div class="mu-fade text-center max-w-2xl mx-auto">
+      <p class="text-sm font-semibold uppercase tracking-widest text-accent">Le constat</p>
+      <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Tu reconnais ton quotidien ?</h2>
+      <p class="mt-4 text-lg text-muted">Ton comptable te dit ce qui s’est passé. Nous, on te dit quoi faire lundi.</p>
+    </div>
+    <div class="mt-12 grid md:grid-cols-3 gap-4">
+      {
+        pains.map((p, i) => (
+          <div class="mu-fade mu-card p-7" style={`--delay:${i * 0.1}s`}>
+            <span class="grid place-items-center w-11 h-11 rounded-xl bg-primary/15 text-accent">
+              <Icon name={p.icon} class="w-6 h-6" />
+            </span>
+            <h3 class="mt-5 text-xl font-semibold text-heading">{p.title}</h3>
+            <p class="mt-2 text-muted">{p.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- La méthode -->
+  <section id="methode" class="relative py-20 scroll-mt-20 overflow-hidden">
+    <div class="mu-glow opacity-60" style="top:20%" aria-hidden="true"></div>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mu-fade text-center max-w-2xl mx-auto">
+        <p class="text-sm font-semibold uppercase tracking-widest text-accent">La méthode</p>
+        <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Quatre temps. Zéro blabla.</h2>
+        <p class="mt-4 text-lg text-muted">Une à trois priorités, pas trente. Chacune avec un responsable et une échéance.</p>
+      </div>
+      <ol class="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {
+          steps.map((s, i) => (
+            <li class="mu-fade mu-card p-7" style={`--delay:${i * 0.1}s`}>
+              <div class="flex items-center justify-between">
+                <span class="grid place-items-center w-11 h-11 rounded-xl bg-primary/15 text-accent">
+                  <Icon name={s.icon} class="w-6 h-6" />
+                </span>
+                <span class="text-5xl font-extrabold text-white/10">0{i + 1}</span>
+              </div>
+              <h3 class="mt-5 text-xl font-semibold text-heading">{s.title}</h3>
+              <p class="mt-2 text-muted">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- L'appli -->
+  <section id="appli" class="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 scroll-mt-20">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="mu-fade">
+        <p class="text-sm font-semibold uppercase tracking-widest text-accent">L’appli RESTUP</p>
+        <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Ton coach est dans ta poche.</h2>
+        <p class="mt-4 text-lg text-muted">
+          Pas un tableau de bord de plus à ne jamais ouvrir. Une appli qui te dit une seule chose :
+          <strong class="text-heading">ce que tu fais maintenant</strong>.
+        </p>
+        <ul class="mt-8 space-y-5">
+          {
+            [
+              ['tabler:target-arrow', 'Une priorité à la fois', 'La suivante apparaît quand tu as terminé.'],
+              ['tabler:calendar-week', 'Ton plan semaine par semaine', 'Avec ce qui est validé par ton coach.'],
+              ['tabler:brand-whatsapp', 'Un récap clair après chaque échange', 'Là où tu es déjà : WhatsApp.'],
+            ].map(([icon, title, text]) => (
+              <li class="flex gap-4">
+                <span class="grid place-items-center shrink-0 w-10 h-10 rounded-lg bg-primary/15 text-accent">
+                  <Icon name={icon} class="w-5 h-5" />
+                </span>
+                <div>
+                  <p class="font-semibold text-heading">{title}</p>
+                  <p class="text-muted">{text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="mu-fade relative mx-auto w-full max-w-sm" style="--delay:.1s">
+        <div class="relative rounded-[2.5rem] border border-white/10 bg-[#120c1e] p-3 shadow-2xl shadow-primary/20">
+          <div class="mu-beam" style="--duration:7s" aria-hidden="true"></div>
+          <div class="rounded-[2rem] bg-[#0d0817] p-6 min-h-[440px]">
+            <div class="mx-auto h-1.5 w-20 rounded-full bg-white/10"></div>
+            <p class="mt-6 text-sm text-muted">Bonjour Karim</p>
+            <p class="text-2xl font-bold text-heading">Ta priorité</p>
+            <div class="mt-5 rounded-2xl bg-gradient-to-br from-primary to-secondary p-5 text-white">
+              <p class="text-xs uppercase tracking-wider text-white/70">Semaine 3 · Marge</p>
+              <p class="mt-2 text-lg font-semibold">Relever les pertes cuisine pendant 7 jours</p>
+              <p class="mt-4 inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-xs">
+                <Icon name="tabler:clock" class="w-4 h-4" /> À voir d’ici 72 h
+              </p>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div class="rounded-xl bg-white/5 p-3"><p class="text-muted text-xs">Plan</p><p class="text-heading font-semibold">3 / 4 faits</p></div>
+              <div class="rounded-xl bg-white/5 p-3"><p class="text-muted text-xs">Coach</p><p class="text-heading font-semibold">Jeudi 10 h</p></div>
+            </div>
+            <div class="mt-3 rounded-xl bg-white/5 p-3 text-sm">
+              <p class="text-muted text-xs">Dernier récap</p>
+              <p class="text-heading">Fiches d’achats à envoyer avant vendredi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Avant / après -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <div class="mu-fade text-center max-w-2xl mx-auto">
+      <p class="text-sm font-semibold uppercase tracking-widest text-accent">Avant / après</p>
+      <h2 class="mt-3 text-4xl md:text-5xl font-bold tracking-tight text-heading">Travaille sur ton resto, plus seulement dedans.</h2>
+    </div>
+    <div class="mt-12 grid md:grid-cols-2 gap-4">
+      <div class="mu-fade rounded-[1.25rem] border border-white/10 bg-white/[0.02] p-8">
+        <p class="text-lg font-semibold text-muted">Sans RESTUP</p>
+        <ul class="mt-6 space-y-4">
+          {
+            before.map((t) => (
+              <li class="flex gap-3 text-muted">
+                <Icon name="tabler:x" class="w-5 h-5 shrink-0 mt-0.5 text-white/30" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="mu-fade relative rounded-[1.25rem] border border-primary/40 bg-primary/10 p-8" style="--delay:.1s">
+        <div class="mu-beam" style="--duration:11s" aria-hidden="true"></div>
+        <p class="text-lg font-semibold text-heading">Avec RESTUP</p>
+        <ul class="mt-6 space-y-4">
+          {
+            after.map((t) => (
+              <li class="flex gap-3 text-heading">
+                <Icon name="tabler:check" class="w-5 h-5 shrink-0 mt-0.5 text-accent" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
   <FAQs
     id="questions"
     tagline="Questions"
@@ -268,9 +442,23 @@ const logos = [
     ]}
   />
 
-  <CallToAction
-    title="Alors, on reprend les commandes ?"
-    subtitle="Audit gratuit et sans engagement. Un message suffit : on revient vers toi sous 48 h."
-    actions={[{ variant: 'primary', text: 'Demander mon audit gratuit', href: '/contact', icon: 'tabler:arrow-right' }]}
-  />
+  <!-- Appel final -->
+  <section class="px-4 sm:px-6 pb-24">
+    <div
+      class="mu-fade relative overflow-hidden max-w-5xl mx-auto rounded-[2rem] border border-white/10 bg-[#120b20] px-6 py-16 md:py-20 text-center"
+    >
+      <div class="mu-glow" style="top:-60%" aria-hidden="true"></div>
+      <div class="mu-dots" aria-hidden="true"></div>
+      <div class="mu-beam" style="--size:200px;--duration:12s" aria-hidden="true"></div>
+      <div class="relative">
+        <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-heading">
+          Alors, on reprend <span class="mu-gradient-text">les commandes ?</span>
+        </h2>
+        <p class="mt-4 text-lg text-muted">Audit gratuit et sans engagement. Un message suffit : on revient vers toi sous 48 h.</p>
+        <div class="mt-8 flex justify-center">
+          <ShimmerLink href="/contact">Demander mon audit gratuit</ShimmerLink>
+        </div>
+      </div>
+    </div>
+  </section>
 </Layout>
