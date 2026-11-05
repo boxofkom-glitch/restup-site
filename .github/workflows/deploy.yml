@@ -42,16 +42,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Étape ponctuelle : libère le déploiement Pages resté bloqué (commit d609d5f).
-      - name: Libérer le déploiement bloqué
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          STUCK: d609d5f87ac7d123b6adadcbf0070fa4056a3c14
-        run: |
-          echo "--- état avant"; gh api repos/${{ github.repository }}/pages/deployments/$STUCK || true
-          echo "--- annulation"; gh api -X POST -i repos/${{ github.repository }}/pages/deployments/$STUCK/cancel || true
-          sleep 20
-          echo "--- état après"; gh api repos/${{ github.repository }}/pages/deployments/$STUCK || true
       - id: deployment
         uses: actions/deploy-pages@v4
