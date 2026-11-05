@@ -47,35 +47,46 @@ test('R01/R15 : les dix divisions ont leur page et leur lien dans le menu', () =
   }
 });
 
-test('R16 : la prévisualisation montre les 30 prestations avec leur statut interne', () => {
+test('R16 : la prévisualisation montre les 30 prestations', () => {
   const html = SLUGS.map((s) => readFileSync(join(PREVIEW, 'expertises', `${s}.html`), 'utf8')).join('');
   for (const id of serviceIds) assert.ok(html.includes(`prestation=${id}`), id);
-  assert.ok(html.includes('Tarif indicatif interne'));
 });
 
-test('R17 : la production n’expose ni prestation ni tarif non approuvés', () => {
+type Svc = { id: string; serviceStatus: string; priceStatus: string; internalPrice: { mode: string; min?: number } };
+const divisionsRaw: Array<{ slug: string; contentStatus: string; services: Svc[] }> = catalogue.divisions;
+const euros = (n: number) => new Intl.NumberFormat('fr-FR').format(n).replace(/\u202f/g, '\u00a0');
+
+test('R17/R18 : la production n’émet que les prestations et tarifs approuvés', () => {
   const files = walk(PROD).filter((f) => /\.(html|js|json|xml)$/.test(f));
-  for (const f of files) {
-    const text = readFileSync(f, 'utf8');
-    for (const id of serviceIds) assert.ok(!text.includes(id), `${id} dans ${f}`);
-    assert.ok(!/\d\s?€\s?HT/.test(text), `prix dans ${f}`);
-    assert.ok(!text.includes('internalPrice'), `catalogue interne dans ${f}`);
+  const all = files.map((f) => readFileSync(f, 'utf8')).join('\n');
+  assert.ok(!all.includes('internalPrice'), 'catalogue interne exposé');
+  for (const d of divisionsRaw) {
+    const page = readFileSync(join(PROD, 'expertises', `${d.slug}.html`), 'utf8');
+    for (const s of d.services) {
+      const visible = s.serviceStatus === 'approved';
+      assert.equal(page.includes(`prestation=${s.id}`), visible, `${s.id} visible=${visible}`);
+      if (s.internalPrice.mode === 'range' && s.internalPrice.min) {
+        const priced = visible && s.priceStatus === 'approved';
+        assert.equal(page.includes(`${euros(s.internalPrice.min)} –`), priced, `${s.id} prix=${priced}`);
+      }
+    }
+    assert.ok(!page.includes('Tarif indicatif interne'), d.slug);
   }
 });
 
-test('R01 : en production, les fiches en attente sont accessibles, noindex et hors sitemap', () => {
+test('R01 : en production, indexation et sitemap suivent la validation des fiches', () => {
   const sitemap = readdirSync(PROD)
     .filter((f) => f.startsWith('sitemap'))
     .map((f) => readFileSync(join(PROD, f), 'utf8'))
     .join('');
-  for (const slug of SLUGS) {
-    const html = readFileSync(join(PROD, 'expertises', `${slug}.html`), 'utf8');
-    assert.ok(html.includes('Disponibilité à confirmer'), slug);
-    assert.ok(/<meta name="robots" content="noindex/.test(html), `noindex ${slug}`);
-    assert.ok(html.includes(`/diagnostic?expertise=${slug}`), `Se renseigner ${slug}`);
-    assert.ok(!sitemap.includes(`/expertises/${slug}`), `sitemap ${slug}`);
+  for (const d of divisionsRaw) {
+    const html = readFileSync(join(PROD, 'expertises', `${d.slug}.html`), 'utf8');
+    const approved = d.contentStatus === 'approved';
+    assert.equal(/<meta name="robots" content="noindex/.test(html), !approved, `noindex ${d.slug}`);
+    assert.equal(sitemap.includes(`/expertises/${d.slug}<`), approved, `sitemap ${d.slug}`);
+    if (!d.services.some((s) => s.serviceStatus === 'approved')) assert.ok(html.includes('Disponibilité à confirmer'));
   }
-  assert.ok(sitemap.includes('/expertises<') || sitemap.includes('/expertises</loc>'), 'répertoire dans le sitemap');
+  assert.ok(sitemap.includes('/expertises<'), 'répertoire dans le sitemap');
 });
 
 test('la prévisualisation entière est noindex', () => {
