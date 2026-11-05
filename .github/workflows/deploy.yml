@@ -42,11 +42,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Étape ponctuelle : libère un déploiement Pages resté bloqué « en cours » (commit d609d5f).
-      - name: Annuler le déploiement bloqué
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api -X POST repos/${{ github.repository }}/pages/deployments/d609d5f87ac7d123b6adadcbf0070fa4056a3c14/cancel
       - id: deployment
         uses: actions/deploy-pages@v4
