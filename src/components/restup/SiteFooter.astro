@@ -22,7 +22,7 @@ const year = new Date().getFullYear();
           ordered.map((d) => (
             <li>
               <a href={d.path} class="hover:text-white hover:underline">
-                {d.name}
+                {DIVISION_LABELS[d.slug].label}
               </a>
             </li>
           ))

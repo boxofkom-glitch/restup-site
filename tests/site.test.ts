@@ -94,6 +94,7 @@ test('la prévisualisation entière est noindex', () => {
     const html = readFileSync(f, 'utf8');
     if (html.includes('http-equiv="refresh"')) continue;
     if (html.includes('Générateur de carrousels')) continue;
+    if (f.includes(`${join(PREVIEW, 'experience')}`)) continue; // page autonome (prototype WebGL)
     assert.ok(/<meta name="robots" content="noindex/.test(html), f);
   }
 });
