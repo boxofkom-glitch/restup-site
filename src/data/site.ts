@@ -220,7 +220,8 @@ export const LEGAL = {
   // Entrepreneur individuel : prénom et NOM suivis de « EI » (mention obligatoire), puis le nom commercial.
   editorName: 'Hissam BOUHIZA EI · RESTUP',
   legalForm: 'Entrepreneur individuel (EI), régime micro-entreprise',
-  address: '', // adresse de l'établissement ou de domiciliation
+  // Adresse complète à préciser (obligatoire pour un entrepreneur individuel) : seule la ville est indiquée pour l'instant.
+  address: 'Bordeaux (Gironde) · adresse postale communiquée sur demande à box.of.kom@gmail.com',
   registration:
     'SIREN 105 615 702 · SIRET 105 615 702 00013 · Inscrit au Registre national des entreprises (RNE) depuis le 28 mai 2026',
   vatNumber: '', // le cas échéant
