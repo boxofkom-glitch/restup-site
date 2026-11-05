@@ -218,14 +218,14 @@ export const OFFERS = [
  */
 export const LEGAL = {
   // Entrepreneur individuel : prénom et NOM suivis de « EI » (mention obligatoire), puis le nom commercial.
-  editorName: '', // ex. « Prénom NOM EI · RESTUP »
+  editorName: 'Hissam BOUHIZA EI · RESTUP',
   legalForm: 'Entrepreneur individuel (EI), régime micro-entreprise',
   address: '', // adresse de l'établissement ou de domiciliation
   registration:
     'SIREN 105 615 702 · SIRET 105 615 702 00013 · Inscrit au Registre national des entreprises (RNE) depuis le 28 mai 2026',
   vatNumber: '', // le cas échéant
-  publicationDirector: '', // prénom et NOM de l'entrepreneur
-  contactEmail: 'h.bouhiza@yahoo.fr',
+  publicationDirector: 'Hissam BOUHIZA',
+  contactEmail: 'box.of.kom@gmail.com',
   phone: '07 67 73 39 70',
   host: {
     name: 'GitHub, Inc. (GitHub Pages)',
@@ -233,7 +233,7 @@ export const LEGAL = {
     contact: 'https://support.github.com',
   },
   privacy: {
-    rightsContact: 'h.bouhiza@yahoo.fr',
+    rightsContact: 'box.of.kom@gmail.com',
     retentionLeads:
       'Les demandes sont conservées 3 ans à compter du dernier échange, puis supprimées. Si une mission est signée, les données utiles sont conservées pendant la relation contractuelle et les durées légales qui s’appliquent ensuite.',
     processors:
