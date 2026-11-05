@@ -1,0 +1,53 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import DivisionCard from '~/components/restup/DivisionCard.astro';
+import CtaBlock from '~/components/restup/CtaBlock.astro';
+import { NEEDS } from '~/data/site';
+import { divisionBySlug } from '~/lib/catalogue';
+
+const metadata = {
+  title: 'Expertises et services pour restaurants · RESTUP',
+  ignoreTitleTemplate: true,
+  description:
+    'Trouvez l’expertise RESTUP adaptée à votre besoin, du pilotage des coûts à la livraison, à l’équipe ou au développement en réseau.',
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-14 pb-12 md:pt-20">
+      <h1 class="ru-display ru-h1">Les expertises RESTUP</h1>
+      <p class="ru-lead mt-5">
+        Retrouvez les divisions RESTUP par besoin. Chaque fiche explique ce qui peut être examiné, le livrable prévu et
+        comment démarrer.
+      </p>
+    </div>
+  </section>
+
+  {
+    NEEDS.map((need, i) => (
+      <section class:list={['ru-section', i % 2 ? 'ru-dark' : 'ru-deep']} aria-labelledby={`besoin-${i}`}>
+        <div class="ru-container">
+          <h2 id={`besoin-${i}`} class="ru-display ru-h2">
+            {need.title}
+          </h2>
+          <p class="ru-lead mt-3">{need.text}</p>
+          <ul class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {need.divisions.map((slug) => (
+              <li>
+                <DivisionCard division={divisionBySlug(slug)!} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+
+  <CtaBlock
+    title="Vous hésitez entre plusieurs expertises ?"
+    text="Décrivez votre projet et nous vous orienterons."
+    cta="Présenter mon projet"
+    href="/diagnostic"
+  />
+</Layout>

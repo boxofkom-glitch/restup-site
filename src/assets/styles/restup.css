@@ -1,0 +1,472 @@
+/*
+ * Composants RESTUP : boutons, cartes, titres de campagne, décors diagonaux, formulaires.
+ * Les couleurs viennent des variables --ru-* définies dans CustomStyles.astro.
+ */
+
+/* Couche « components » : les utilitaires Tailwind (hidden, sm:flex…) gardent la priorité. */
+@layer components {
+  .ru-container {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 48px);
+  }
+
+  /* Lien d'évitement */
+  .ru-skip {
+    position: absolute;
+    left: 12px;
+    top: -100px;
+    z-index: 100;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--ru-yellow);
+    color: var(--ru-ink);
+    font-weight: 700;
+  }
+  .ru-skip:focus {
+    top: 12px;
+  }
+
+  /* Focus visible sur toutes les surfaces */
+  :where(a, button, input, select, textarea, summary):focus-visible {
+    outline: 3px solid var(--ru-cyan);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .ru-light :where(a, button, input, select, textarea, summary):focus-visible {
+    outline-color: var(--ru-brand-800);
+  }
+
+  /* Titres de campagne : capitales, très gras, italiques */
+  .ru-display {
+    font-family: var(--aw-font-heading);
+    font-style: italic;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    color: var(--ru-white);
+  }
+  .ru-h1 {
+    font-size: clamp(2rem, 1.2rem + 3.6vw, 3.75rem);
+  }
+  .ru-h2 {
+    font-size: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
+  }
+  .ru-h3 {
+    font-family: var(--aw-font-heading);
+    font-weight: 800;
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+  }
+
+  /* Bandeau jaune incliné (« niveau supérieur ») : seul le fond est incliné */
+  .ru-band {
+    position: relative;
+    z-index: 0;
+    color: var(--ru-ink);
+    padding-inline: 0.18em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    background: linear-gradient(var(--ru-yellow), var(--ru-yellow)) no-repeat;
+    background-size: 100% 88%;
+    background-position: 0 60%;
+  }
+
+  .ru-eyebrow {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ru-cyan);
+  }
+  .ru-light .ru-eyebrow {
+    color: var(--ru-brand-800);
+  }
+
+  .ru-signature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    font-size: clamp(0.8rem, 0.7rem + 0.4vw, 1rem);
+    color: var(--ru-white);
+  }
+  .ru-signature::before,
+  .ru-signature::after {
+    content: '';
+    flex: 0 0 36px;
+    height: 4px;
+    background: var(--ru-yellow);
+  }
+
+  .ru-lead {
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--ru-text-soft);
+    max-width: 68ch;
+  }
+
+  /* Boutons */
+  .ru-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .ru-btn-primary {
+    background: var(--ru-yellow);
+    color: var(--ru-ink);
+  }
+  .ru-btn-primary:hover {
+    background: #fff07a;
+  }
+  .ru-btn-ghost {
+    border-color: rgb(255 255 255 / 0.55);
+    color: var(--ru-white);
+  }
+  .ru-btn-ghost:hover {
+    background: rgb(255 255 255 / 0.1);
+    border-color: var(--ru-white);
+  }
+  .ru-light .ru-btn-primary {
+    background: var(--ru-ink);
+    color: var(--ru-white);
+  }
+  .ru-light .ru-btn-primary:hover {
+    background: var(--ru-brand-800);
+  }
+  .ru-light .ru-btn-ghost {
+    border-color: var(--ru-ink);
+    color: var(--ru-ink);
+  }
+  .ru-light .ru-btn-ghost:hover {
+    background: rgb(36 6 56 / 0.06);
+  }
+  .ru-btn[disabled] {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  /* Liens dans le texte : soulignés */
+  .ru-prose a,
+  a.ru-link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: var(--ru-yellow);
+    font-weight: 600;
+  }
+  .ru-light .ru-prose a,
+  .ru-light a.ru-link {
+    color: var(--ru-brand-800);
+  }
+
+  /* Sections */
+  .ru-section {
+    padding-block: clamp(48px, 7vw, 96px);
+  }
+  .ru-dark {
+    background: var(--ru-brand-900);
+  }
+  .ru-deep {
+    background: var(--ru-brand-950);
+  }
+  .ru-light {
+    background: var(--ru-surface);
+    color: var(--ru-ink);
+  }
+  .ru-light .ru-display,
+  .ru-light h1,
+  .ru-light h2,
+  .ru-light h3 {
+    color: var(--ru-ink);
+  }
+  .ru-light .ru-lead,
+  .ru-light .ru-soft {
+    color: var(--ru-muted-light);
+  }
+  .ru-soft {
+    color: var(--ru-text-soft);
+  }
+
+  /* Cartes violettes */
+  .ru-card {
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: linear-gradient(160deg, rgb(66 9 105 / 0.9), rgb(43 7 70 / 0.95));
+    padding: clamp(20px, 2.5vw, 28px);
+  }
+  .ru-card-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      transform 0.15s ease;
+  }
+  .ru-card-link:hover {
+    border-color: var(--ru-yellow);
+  }
+  .ru-light .ru-card {
+    background: #fff;
+    border-color: var(--ru-border-light);
+    color: var(--ru-ink);
+  }
+  .ru-price {
+    font-family: var(--aw-font-heading);
+    font-weight: 900;
+    font-style: italic;
+    color: var(--ru-yellow);
+    font-size: 1.375rem;
+  }
+  .ru-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    background: rgb(40 207 242 / 0.14);
+    color: #b9f1fd;
+    border: 1px solid rgb(40 207 242 / 0.4);
+  }
+  .ru-tag-warn {
+    background: rgb(255 224 0 / 0.12);
+    color: #fff3a3;
+    border-color: rgb(255 224 0 / 0.45);
+  }
+  .ru-light .ru-tag {
+    background: #eaf9fd;
+    color: #0b5566;
+    border-color: #8fd9ea;
+  }
+  .ru-light .ru-tag-warn {
+    background: #fff8cc;
+    color: #5c4a00;
+    border-color: #e6c800;
+  }
+  .ru-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgb(255 224 0 / 0.12);
+    color: var(--ru-yellow);
+  }
+
+  /* Décors diagonaux dans les coins (aucun débordement horizontal) */
+  .ru-corners {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ru-corners::before,
+  .ru-corners::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .ru-corners::before {
+    top: 0;
+    left: 0;
+    width: min(34vw, 340px);
+    height: min(16vw, 150px);
+    background: var(--ru-yellow);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    opacity: 0.95;
+  }
+  .ru-corners::after {
+    right: 0;
+    bottom: 0;
+    width: min(30vw, 300px);
+    height: min(14vw, 130px);
+    background: linear-gradient(
+      115deg,
+      transparent 0 46%,
+      var(--ru-cyan) 46% 52%,
+      transparent 52% 60%,
+      var(--ru-yellow) 60%
+    );
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+  .ru-glow {
+    position: absolute;
+    inset: auto;
+    z-index: -1;
+    pointer-events: none;
+    width: 70vw;
+    max-width: 900px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(135 0 201 / 0.45), transparent 72%);
+  }
+
+  /* Fil d'Ariane */
+  .ru-crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--ru-text-soft);
+  }
+  .ru-crumbs li + li::before {
+    content: '/';
+    margin-right: 6px;
+    opacity: 0.6;
+  }
+  .ru-crumbs a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* FAQ */
+  .ru-faq details {
+    border-bottom: 1px solid rgb(255 255 255 / 0.16);
+  }
+  .ru-light .ru-faq details {
+    border-color: var(--ru-border-light);
+  }
+  .ru-faq summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 0;
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+  .ru-faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .ru-faq summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--ru-yellow);
+  }
+  .ru-light .ru-faq summary::after {
+    color: var(--ru-brand-800);
+  }
+  .ru-faq details[open] summary::after {
+    content: '–';
+  }
+  .ru-faq details > div {
+    padding-bottom: 18px;
+  }
+
+  /* Formulaires (surface claire) */
+  .ru-form label,
+  .ru-form legend {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .ru-form .ru-req {
+    color: var(--ru-error);
+    font-weight: 700;
+  }
+  .ru-form input,
+  .ru-form select,
+  .ru-form textarea {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 10px;
+    border: 1.5px solid var(--ru-input-border);
+    background: #fff;
+    color: var(--ru-ink);
+    padding: 10px 12px;
+    font-size: 1rem;
+  }
+  .ru-form textarea {
+    min-height: 160px;
+  }
+  .ru-form .ru-help {
+    font-size: 0.9rem;
+    color: var(--ru-muted-light);
+    margin-top: 4px;
+  }
+  .ru-form [aria-invalid='true'] {
+    border-color: var(--ru-error);
+    box-shadow: 0 0 0 1px var(--ru-error);
+  }
+  .ru-form .ru-error {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    color: var(--ru-error);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 6px;
+  }
+  .ru-form .ru-error:empty {
+    display: none;
+  }
+  .ru-alert {
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 2px solid var(--ru-error);
+    background: #fdf0f3;
+    color: var(--ru-ink);
+  }
+  .ru-alert-info {
+    border-color: var(--ru-brand-800);
+    background: #f1e9f8;
+  }
+  .ru-hp {
+    position: absolute !important;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Bandeau de prévisualisation */
+  .ru-preview-banner {
+    background: repeating-linear-gradient(-45deg, #ffe000 0 14px, #f2c800 14px 28px);
+    color: var(--ru-ink);
+    font-weight: 800;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 6px 12px;
+  }
+
+  /* Décor réduit pour les blocs d'appel (le texte reste lisible) */
+  .ru-corners-sm::before {
+    width: min(22vw, 150px);
+    height: min(10vw, 64px);
+  }
+  .ru-corners-sm::after {
+    width: min(20vw, 140px);
+    height: min(9vw, 60px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

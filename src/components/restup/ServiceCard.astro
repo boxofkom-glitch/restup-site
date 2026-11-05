@@ -1,0 +1,22 @@
+---
+import type { PublicService } from '~/lib/catalogue';
+
+export interface Props {
+  service: PublicService;
+  divisionName: string;
+}
+const { service: s, divisionName } = Astro.props;
+---
+
+<article class="ru-card flex flex-col" aria-labelledby={`svc-${s.id}`}>
+  {s.internalNote && <span class="ru-tag ru-tag-warn self-start mb-3">{s.internalNote}</span>}
+  <h3 id={`svc-${s.id}`} class="ru-h3 text-white">{s.name}</h3>
+  <p class="mt-2 ru-soft flex-1">{s.scope}</p>
+  <p class="mt-5">
+    <span class="ru-price">{s.price}</span>
+    {s.unit && <span class="block text-sm ru-soft mt-1">{s.unit}</span>}
+  </p>
+  <a href={s.quotePath} class="ru-btn ru-btn-primary mt-5">
+    Demander un devis<span class="sr-only"> : {s.name}, {divisionName}</span>
+  </a>
+</article>

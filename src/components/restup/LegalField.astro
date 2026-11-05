@@ -1,0 +1,16 @@
+---
+// Valeur légale fournie par RESTUP, ou marqueur visible en prévisualisation uniquement
+// (la compilation de production échoue tant qu'un champ obligatoire manque).
+export interface Props {
+  value?: string;
+}
+const { value } = Astro.props;
+---
+
+{
+  value ? (
+    <span>{value}</span>
+  ) : (
+    <mark class="bg-[#fff8cc] text-[var(--ru-ink)] px-1 rounded">À compléter par RESTUP</mark>
+  )
+}

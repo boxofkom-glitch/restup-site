@@ -1,0 +1,435 @@
+---
+// Formulaire Diagnostic ou Contact. Le HTML fonctionne sans script pour la lecture ;
+// l'envoi passe par l'adaptateur configuré (voir README) et n'affiche jamais un faux succès.
+import { Icon } from 'astro-icon/components';
+import { formChoices } from '~/lib/catalogue';
+import { LEGAL } from '~/data/site';
+import { STAGES, SITES, DEADLINES, SUBJECTS, LIMITS, HELP_ME, type FormType } from '~/lib/leads/schema';
+
+export interface Props {
+  type: FormType;
+}
+const { type } = Astro.props;
+const isDiag = type === 'diagnostic';
+const editor = LEGAL.editorName || 'RESTUP';
+const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT || '';
+const adapter = import.meta.env.PUBLIC_LEADS_ADAPTER || 'http';
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
+---
+
+<form
+  class="ru-form ru-card space-y-6"
+  novalidate
+  data-lead-form
+  data-type={type}
+  data-endpoint={endpoint}
+  data-adapter={adapter}
+  data-anon={anonKey}
+  data-choices={isDiag ? JSON.stringify(formChoices) : undefined}
+  data-help={HELP_ME}
+>
+  <div data-summary tabindex="-1" class="ru-alert hidden" role="alert" aria-live="assertive"></div>
+  {
+    isDiag && (
+      <div data-selection class="ru-alert ru-alert-info hidden" aria-live="polite">
+        <p data-selection-division />
+        <p data-selection-service />
+      </div>
+    )
+  }
+
+  <p class="text-sm text-[var(--ru-muted-light)]">
+    Les champs marqués <span class="ru-req">*</span> sont obligatoires.
+  </p>
+
+  <div class="grid sm:grid-cols-2 gap-5">
+    <div>
+      <label for="f-name">Nom <span class="ru-req" aria-hidden="true">*</span></label>
+      <input
+        id="f-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        maxlength={LIMITS.name}
+        required
+        aria-describedby="e-name"
+      />
+      <p id="e-name" class="ru-error" data-error="name"></p>
+    </div>
+    <div>
+      <label for="f-email">E-mail <span class="ru-req" aria-hidden="true">*</span></label>
+      <input
+        id="f-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        maxlength={LIMITS.email}
+        required
+        aria-describedby="e-email"
+      />
+      <p id="e-email" class="ru-error" data-error="email"></p>
+    </div>
+  </div>
+
+  {
+    isDiag ? (
+      <>
+        <fieldset aria-describedby="e-stage">
+          <legend>
+            Stade du projet{' '}
+            <span class="ru-req" aria-hidden="true">
+              *
+            </span>
+          </legend>
+          <div class="grid sm:grid-cols-2 gap-2 mt-1">
+            {STAGES.map((s, i) => (
+              <label class="!font-normal flex items-center gap-3 rounded-lg border border-[var(--ru-border-light)] px-3 py-3 cursor-pointer">
+                <input type="radio" name="stage" value={s} required class="!w-5 !min-h-0 !h-5" id={`f-stage-${i}`} />
+                {s}
+              </label>
+            ))}
+          </div>
+          <p id="e-stage" class="ru-error" data-error="stage" />
+        </fieldset>
+
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="f-need">
+              Besoin principal{' '}
+              <span class="ru-req" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <select id="f-need" name="need" required aria-describedby="e-need">
+              <option value="">Choisissez</option>
+              {formChoices.map((d) => (
+                <option value={d.slug}>{d.name}</option>
+              ))}
+              <option value={HELP_ME}>Aidez-moi à choisir</option>
+            </select>
+            <p id="e-need" class="ru-error" data-error="need" />
+          </div>
+          <div>
+            <label for="f-service">Prestation souhaitée</label>
+            <select id="f-service" name="service" aria-describedby="h-service e-service">
+              <option value="">Je souhaite être conseillé</option>
+            </select>
+            <p id="h-service" class="ru-help">
+              Choisissez une prestation ou décrivez votre besoin dans le message.
+            </p>
+            <p id="e-service" class="ru-error" data-error="service" />
+            <p class="sr-only" aria-live="polite" data-service-status />
+          </div>
+        </div>
+
+        <div>
+          <label for="f-offer">Format envisagé</label>
+          <select id="f-offer" name="offer">
+            <option value="">Je ne sais pas encore</option>
+            <option value="diagnostic">Diagnostic ciblé</option>
+            <option value="sprint">Sprint opérationnel</option>
+            <option value="suivi">Suivi de pilotage</option>
+          </select>
+          <p class="ru-error" data-error="offer" />
+        </div>
+      </>
+    ) : (
+      <div>
+        <label for="f-subject">
+          Sujet{' '}
+          <span class="ru-req" aria-hidden="true">
+            *
+          </span>
+        </label>
+        <select id="f-subject" name="subject" required aria-describedby="e-subject">
+          <option value="">Choisissez</option>
+          {SUBJECTS.map((s) => (
+            <option value={s}>{s}</option>
+          ))}
+        </select>
+        <p id="e-subject" class="ru-error" data-error="subject" />
+      </div>
+    )
+  }
+
+  <div class="grid sm:grid-cols-2 gap-5">
+    <div>
+      <label for="f-establishment">Établissement</label>
+      <input
+        id="f-establishment"
+        name="establishment"
+        type="text"
+        autocomplete="organization"
+        maxlength={LIMITS.establishment}
+      />
+      <p class="ru-error" data-error="establishment"></p>
+    </div>
+    <div>
+      <label for="f-city">Ville</label>
+      <input id="f-city" name="city" type="text" autocomplete="address-level2" maxlength={LIMITS.city} />
+      <p class="ru-error" data-error="city"></p>
+    </div>
+    <div>
+      <label for="f-phone">Téléphone</label>
+      <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength={LIMITS.phone} />
+      <p class="ru-error" data-error="phone"></p>
+    </div>
+    {
+      isDiag && (
+        <div>
+          <label for="f-sites">Nombre de sites</label>
+          <select id="f-sites" name="sites">
+            <option value="">Non précisé</option>
+            {SITES.map((s) => (
+              <option value={s}>{s}</option>
+            ))}
+          </select>
+          <p class="ru-error" data-error="sites" />
+        </div>
+      )
+    }
+  </div>
+
+  {
+    isDiag && (
+      <div>
+        <label for="f-deadline">Échéance</label>
+        <select id="f-deadline" name="deadline">
+          <option value="">Non précisée</option>
+          {DEADLINES.map((s) => (
+            <option value={s}>{s}</option>
+          ))}
+        </select>
+        <p class="ru-error" data-error="deadline" />
+      </div>
+    )
+  }
+
+  <div>
+    <label for="f-message">Message <span class="ru-req" aria-hidden="true">*</span></label>
+    <textarea
+      id="f-message"
+      name="message"
+      required
+      minlength={LIMITS.messageMin}
+      maxlength={LIMITS.messageMax}
+      aria-describedby="h-message e-message"></textarea>
+    <p id="h-message" class="ru-help">
+      {
+        isDiag
+          ? 'Vous pouvez indiquer le sujet sans joindre de documents ni communiquer de données sensibles.'
+          : 'Entre 20 et 1 500 caractères.'
+      }
+    </p>
+    <p id="e-message" class="ru-error" data-error="message"></p>
+  </div>
+
+  <div class="ru-hp" aria-hidden="true">
+    <label for="f-website">Ne pas remplir</label>
+    <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button type="submit" class="ru-btn ru-btn-primary w-full sm:w-auto" data-submit>
+    <span data-submit-label>Envoyer ma demande</span>
+  </button>
+
+  {
+    isDiag && (
+      <p class="text-sm text-[var(--ru-muted-light)]">
+        L’envoi du formulaire ne vous engage pas à commander une prestation.
+      </p>
+    )
+  }
+
+  <p class="text-sm text-[var(--ru-muted-light)]">
+    {editor} utilise les informations saisies pour traiter votre demande. Les champs indiqués comme obligatoires sont nécessaires
+    à son traitement. Pour connaître les durées de conservation et exercer vos droits, consultez notre
+    <a href="/confidentialite" class="ru-link">politique de confidentialité</a>.
+  </p>
+  <noscript>
+    <p class="ru-alert">
+      <Icon name="tabler:alert-circle" class="inline w-5 h-5" aria-hidden="true" /> L’envoi du formulaire nécessite JavaScript.
+    </p>
+  </noscript>
+</form>
+
+<script>
+  import { validate, normalize, MESSAGES, type Allowlist } from '~/lib/leads/schema';
+
+  type Choice = { slug: string; name: string; services: Array<{ id: string; name: string }> };
+
+  const NOT_SAVED = 'Votre demande n’a pas pu être enregistrée. Réessayez dans un instant.';
+  const UNAVAILABLE = 'Le formulaire est temporairement indisponible. Réessayez plus tard.';
+  const TOO_MANY = 'Plusieurs tentatives ont été effectuées. Patientez quelques minutes avant de réessayer.';
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-lead-form]')) {
+    const type = form.dataset.type as 'diagnostic' | 'contact';
+    const choices: Choice[] = form.dataset.choices ? JSON.parse(form.dataset.choices) : [];
+    const allow: Allowlist = {
+      divisions: choices.map((c) => ({ slug: c.slug, services: c.services.map((s) => s.id) })),
+    };
+    const summary = form.querySelector<HTMLElement>('[data-summary]')!;
+    const button = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const label = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const need = form.querySelector<HTMLSelectElement>('[name="need"]');
+    const service = form.querySelector<HTMLSelectElement>('[name="service"]');
+    const offer = form.querySelector<HTMLSelectElement>('[name="offer"]');
+    const status = form.querySelector<HTMLElement>('[data-service-status]');
+    const selection = form.querySelector<HTMLElement>('[data-selection]');
+
+    // Liste des prestations filtrée par division ; une sélection incompatible s'efface.
+    const fillServices = (announce: boolean) => {
+      if (!need || !service) return;
+      const current = service.value;
+      const division = choices.find((c) => c.slug === need.value);
+      service.replaceChildren(new Option('Je souhaite être conseillé', ''));
+      division?.services.forEach((s) => service.add(new Option(s.name, s.id)));
+      service.value = division?.services.some((s) => s.id === current) ? current : '';
+      if (announce && status) status.textContent = 'La liste des prestations a été mise à jour.';
+      updateSelection();
+    };
+    const updateSelection = () => {
+      if (!selection || !need || !service) return;
+      const division = choices.find((c) => c.slug === need.value);
+      const svc = division?.services.find((s) => s.id === service.value);
+      selection.classList.toggle('hidden', !division);
+      selection.querySelector('[data-selection-division]')!.textContent = division
+        ? `Votre demande concerne ${division.name}`
+        : '';
+      selection.querySelector('[data-selection-service]')!.textContent = svc
+        ? `Prestation souhaitée · ${svc.name}`
+        : '';
+    };
+    need?.addEventListener('change', () => fillServices(true));
+    service?.addEventListener('change', updateSelection);
+
+    // Présélection depuis l'URL : uniquement des valeurs autorisées, toujours modifiables.
+    const params = new URLSearchParams(location.search);
+    if (need && service) {
+      const expertise = params.get('expertise');
+      if (expertise && choices.some((c) => c.slug === expertise)) {
+        need.value = expertise;
+        fillServices(false);
+        const prestation = params.get('prestation');
+        if (prestation && choices.find((c) => c.slug === expertise)!.services.some((s) => s.id === prestation)) {
+          service.value = prestation;
+          updateSelection();
+        }
+      }
+    }
+    const offre = params.get('offre');
+    if (offer && offre && [...offer.options].some((o) => o.value === offre)) offer.value = offre;
+
+    const showErrors = (errors: Record<string, string>) => {
+      form.querySelectorAll<HTMLElement>('[data-error]').forEach((el) => (el.textContent = ''));
+      form.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+      const entries = Object.entries(errors);
+      for (const [field, msg] of entries) {
+        const slot = form.querySelector<HTMLElement>(`[data-error="${field}"]`);
+        if (slot) slot.textContent = msg;
+        form.querySelectorAll(`[name="${field}"]`).forEach((el) => el.setAttribute('aria-invalid', 'true'));
+      }
+      if (!entries.length) return;
+      summary.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'font-bold';
+      p.textContent = entries.length > 1 ? `${entries.length} champs sont à corriger :` : 'Un champ est à corriger :';
+      const ul = document.createElement('ul');
+      ul.className = 'list-disc pl-5 mt-1';
+      for (const [field, msg] of entries) {
+        const li = document.createElement('li');
+        const target = form.querySelector<HTMLElement>(`[name="${field}"]`);
+        const a = document.createElement('a');
+        a.href = `#${target?.id ?? ''}`;
+        a.className = 'underline';
+        a.textContent = msg;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          target?.focus();
+        });
+        li.append(a);
+        ul.append(li);
+      }
+      summary.append(p, ul);
+      showSummary();
+    };
+    const showSummary = (message?: string) => {
+      if (message) summary.textContent = message;
+      summary.classList.remove('hidden');
+      summary.focus();
+    };
+
+    // Clé d'idempotence : la même tant que le contenu ne change pas.
+    let lastKey = '';
+    let lastBody = '';
+    const keyFor = (body: string) => {
+      if (body !== lastBody) {
+        lastBody = body;
+        lastKey = crypto.randomUUID();
+      }
+      return lastKey;
+    };
+
+    let sending = false;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sending) return;
+      summary.classList.add('hidden');
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      data.formType = type;
+      if ((data.website ?? '').trim()) return; // champ piège rempli : on ignore silencieusement
+      const errors = validate(data, allow);
+      if (Object.keys(errors).length) return showErrors(errors);
+      showErrors({});
+
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) return showSummary(UNAVAILABLE);
+
+      const lead = normalize(data);
+      const body = JSON.stringify(lead);
+      const key = keyFor(body);
+      sending = true;
+      button.disabled = true;
+      label.textContent = 'Envoi en cours…';
+      try {
+        const supabase = form.dataset.adapter === 'supabase';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: supabase
+            ? {
+                'Content-Type': 'application/json',
+                apikey: form.dataset.anon!,
+                Authorization: `Bearer ${form.dataset.anon}`,
+              }
+            : { 'Content-Type': 'application/json', 'Idempotency-Key': key },
+          body: supabase ? JSON.stringify({ payload: lead, idempotency_key: key }) : body,
+        });
+        let result: { status?: number; errors?: Record<string, string> } = {};
+        try {
+          result = await res.json();
+        } catch {
+          /* réponse vide */
+        }
+        const code = supabase && res.ok ? (result.status ?? 503) : res.status;
+        if (code === 201 || code === 200) {
+          location.assign('/merci');
+          return;
+        }
+        if (code === 422 && result.errors) {
+          const mapped = Object.fromEntries(
+            Object.keys(result.errors).map((f) => [f, (MESSAGES as Record<string, string>)[f] ?? MESSAGES.invalid])
+          );
+          showErrors(mapped);
+        } else if (code === 429) showSummary(TOO_MANY);
+        else if (code === 503) showSummary(UNAVAILABLE);
+        else showSummary(NOT_SAVED);
+      } catch {
+        showSummary(NOT_SAVED);
+      } finally {
+        sending = false;
+        button.disabled = false;
+        label.textContent = 'Envoyer ma demande';
+      }
+    });
+  }
+</script>

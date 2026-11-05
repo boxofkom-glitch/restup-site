@@ -1,0 +1,109 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import Crumbs from '~/components/restup/Crumbs.astro';
+import ServiceCard from '~/components/restup/ServiceCard.astro';
+import DivisionCard from '~/components/restup/DivisionCard.astro';
+import Faq from '~/components/restup/Faq.astro';
+import CtaBlock from '~/components/restup/CtaBlock.astro';
+import { divisions, divisionBySlug, type PublicDivision } from '~/lib/catalogue';
+import { DIVISION_META, DIVISION_FAQ, QUOTE_NOTE } from '~/data/site';
+
+export function getStaticPaths() {
+  return divisions.map((d) => ({ params: { slug: d.slug }, props: { division: d } }));
+}
+
+const { division: d } = Astro.props as { division: PublicDivision };
+const meta = DIVISION_META[d.slug];
+const metadata = {
+  title: meta.title,
+  ignoreTitleTemplate: true,
+  description: meta.description,
+  robots: d.indexable ? undefined : { index: false, follow: true },
+};
+const related = d.relatedSlugs.map((s) => divisionBySlug(s)!);
+const ctaHref = `/diagnostic?expertise=${d.slug}`;
+const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-8 pb-14 md:pb-20">
+      <Crumbs items={[{ text: 'Accueil', href: '/' }, { text: 'Expertises', href: '/expertises' }, { text: d.name }]} />
+      <p class="mt-10 text-lg font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</p>
+      <h1 class="ru-display ru-h1 mt-3 max-w-4xl">{d.h1}</h1>
+      <p class="ru-lead mt-5">{d.summary}</p>
+      {!d.available && <p class="ru-tag ru-tag-warn mt-5">Disponibilité à confirmer</p>}
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <a href={ctaHref} class="ru-btn ru-btn-primary">{d.available ? d.cta : 'Se renseigner'}</a>
+        {
+          d.available && (
+            <a href="#prestations" class="ru-btn ru-btn-ghost">
+              Voir les prestations
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="ru-section ru-light" aria-labelledby="perimetre">
+    <div class="ru-container grid md:grid-cols-2 gap-10">
+      <div>
+        <h2 id="perimetre" class="ru-display ru-h2">Ce que nous examinons</h2>
+        <p class="ru-lead mt-4">{d.scope}</p>
+      </div>
+      <div class="ru-card">
+        <span class="ru-icon bg-[#fff8cc] text-[var(--ru-ink)]" aria-hidden="true"
+          ><Icon name="tabler:file-description" class="w-7 h-7" /></span
+        >
+        <h2 class="ru-h3 mt-4">Ce que vous recevez</h2>
+        <p class="mt-2 text-[var(--ru-muted-light)]">{d.deliverable}</p>
+      </div>
+    </div>
+  </section>
+
+  {
+    d.available && (
+      <section id="prestations" class="ru-section ru-deep scroll-mt-32" aria-labelledby="tarifs">
+        <div class="ru-container">
+          <h2 id="tarifs" class="ru-display ru-h2">
+            Prestations et tarifs
+          </h2>
+          <ul class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {d.services.map((s) => (
+              <li>
+                <ServiceCard service={s} divisionName={d.name} />
+              </li>
+            ))}
+          </ul>
+          {hasPrices && <p class="mt-6 ru-soft max-w-3xl text-sm">{QUOTE_NOTE}</p>}
+        </div>
+      </section>
+    )
+  }
+
+  <Faq items={[DIVISION_FAQ[d.slug]]} title="Question fréquente" />
+
+  <section class="ru-section ru-deep" aria-labelledby="associees">
+    <div class="ru-container">
+      <h2 id="associees" class="ru-display ru-h2">Divisions associées</h2>
+      <ul class="mt-8 grid sm:grid-cols-2 gap-4">
+        {
+          related.map((r) => (
+            <li>
+              <DivisionCard division={r} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlock
+    title={d.available ? d.cta : `Se renseigner sur ${d.name}`}
+    text="Décrivez votre établissement et la décision à prendre. La demande ne vous engage pas."
+    cta={d.available ? 'Demander un devis' : 'Se renseigner'}
+    href={ctaHref}
+  />
+</Layout>

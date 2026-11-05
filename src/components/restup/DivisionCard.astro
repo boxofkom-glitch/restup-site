@@ -1,0 +1,23 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { PublicDivision } from '~/lib/catalogue';
+
+export interface Props {
+  division: PublicDivision;
+  headingLevel?: 'h2' | 'h3';
+}
+const { division: d, headingLevel: H = 'h3' } = Astro.props;
+const label = d.available ? `Découvrir ${d.name}` : 'Voir la division';
+---
+
+<a href={d.path} class="ru-card ru-card-link group flex flex-col">
+  <span class="text-sm font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</span>
+  <H class="ru-h3 mt-2 text-white">{d.h1}</H>
+  <p class="mt-2 ru-soft flex-1">{d.summary}</p>
+  {!d.available && <span class="ru-tag ru-tag-warn mt-4 self-start">Disponibilité à confirmer</span>}
+  <span class="mt-5 inline-flex items-center gap-2 font-bold text-white group-hover:text-[var(--ru-yellow)]">
+    {label}
+    <span class="sr-only"> : {d.name}</span>
+    <Icon name="tabler:arrow-right" class="w-5 h-5" aria-hidden="true" />
+  </span>
+</a>

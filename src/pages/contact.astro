@@ -1,61 +1,30 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import ContactUs from '~/components/widgets/Contact.astro';
-import Features2 from '~/components/widgets/Features2.astro';
-
-const email = 'contact@restup-accompagnement.fr';
+import LeadForm from '~/components/restup/LeadForm.astro';
 
 const metadata = {
-  title: 'Demander mon audit gratuit',
-  description:
-    'Demande ton audit stratégique gratuit RESTUP : un message suffit, réponse sous 48 h, sans engagement. Coaching de pilotage pour restaurateurs.',
+  title: 'Contacter RESTUP',
+  ignoreTitleTemplate: true,
+  description: 'Posez une question sur les expertises RESTUP ou présentez une proposition de partenariat.',
 };
 ---
 
 <Layout metadata={metadata}>
-  <section class="relative overflow-hidden">
-    <div class="mu-glow" aria-hidden="true"></div>
-    <div class="mu-dots" aria-hidden="true"></div>
-    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-4 text-center">
-      <p class="mu-rise text-sm font-semibold uppercase tracking-widest text-accent">Audit gratuit</p>
-      <h1 class="mu-rise mt-4 text-4xl md:text-6xl font-extrabold tracking-tight text-heading" style="--delay:.08s">
-        Prêt à reprendre la main <span class="mu-gradient-text">sur ton restaurant ?</span>
-      </h1>
-      <p class="mu-rise mt-5 text-lg text-muted" style="--delay:.16s">
-        Un message suffit. On revient vers toi sous 48 h pour caler ton audit stratégique gratuit, sans engagement.
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-14 pb-12 md:pt-20">
+      <h1 class="ru-display ru-h1">Contacter RESTUP</h1>
+      <p class="ru-lead mt-5">
+        Une question sur le groupe, une expertise ou un partenariat ? Indiquez le sujet de votre message et les
+        coordonnées auxquelles vous joindre.
+      </p>
+      <p class="mt-4">
+        <a href="/diagnostic" class="ru-link">Pour un besoin d’accompagnement, demandez un diagnostic.</a>
       </p>
     </div>
   </section>
-
-  <ContactUs
-    id="form"
-    title="Parle-nous de ton restaurant"
-    inputs={[
-      { type: 'text', name: 'name', label: 'Nom', autocomplete: 'name' },
-      { type: 'text', name: 'restaurant', label: 'Restaurant et ville', autocomplete: 'organization' },
-      { type: 'email', name: 'email', label: 'Email', autocomplete: 'email' },
-    ]}
-    textarea={{ label: 'Ton message', placeholder: 'Ce qui te bloque aujourd’hui, en quelques lignes.' }}
-    button="Demander mon audit gratuit"
-    description={`Ta messagerie s'ouvre avec le message pré-rempli. Tu peux aussi écrire directement à ${email}.`}
-  />
-
-  <Features2
-    columns={3}
-    items={[
-      { title: 'Audit 100 % gratuit', description: 'Un premier échange pour comprendre ton établissement et tes objectifs.', icon: 'tabler:gift' },
-      { title: 'Réponse sous 48 h', description: 'On revient vers toi rapidement pour caler un créneau.', icon: 'tabler:clock' },
-      { title: 'Email', description: email, icon: 'tabler:mail' },
-    ]}
-  />
+  <section class="ru-section ru-light">
+    <div class="ru-container max-w-3xl">
+      <LeadForm type="contact" />
+    </div>
+  </section>
 </Layout>
-
-<script define:vars={{ email }}>
-  const form = document.querySelector('#form form');
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const v = (n) => (form.elements.namedItem(n)?.value || '').trim();
-    const body = `Nom : ${v('name')}\nRestaurant : ${v('restaurant')}\nEmail : ${v('email')}\n\n${v('message')}`;
-    location.href = `mailto:${email}?subject=${encodeURIComponent('Demande d’audit gratuit')}&body=${encodeURIComponent(body)}`;
-  });
-</script>

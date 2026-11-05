@@ -1,0 +1,68 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import F from '~/components/restup/LegalField.astro';
+import { LEGAL } from '~/data/site';
+
+const metadata = {
+  title: 'Politique de confidentialité · RESTUP',
+  ignoreTitleTemplate: true,
+  description: 'Traitement des données transmises via les formulaires du site RESTUP et exercice de vos droits.',
+  robots: { index: false, follow: true },
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-section ru-light">
+    <div class="ru-container max-w-3xl ru-prose space-y-8">
+      <h1 class="ru-display ru-h1">Politique de confidentialité</h1>
+      <section>
+        <h2 class="ru-h3">Responsable du traitement</h2>
+        <p class="mt-3"><F value={LEGAL.privacy.controller} /></p>
+      </section>
+      <section>
+        <h2 class="ru-h3">Données collectées et finalités</h2>
+        <p class="mt-3">
+          <strong>Demande de diagnostic :</strong> nom, e-mail, stade du projet, besoin principal, prestation et format éventuels,
+          établissement, ville, téléphone, nombre de sites, échéance et message. Ces données servent à étudier votre demande
+          et à vous recontacter pour préparer une éventuelle proposition.
+        </p>
+        <p class="mt-3">
+          <strong>Prise de contact :</strong> nom, e-mail, sujet, établissement, ville, téléphone et message. Ces données
+          servent à répondre à votre question ou à votre proposition de partenariat.
+        </p>
+        <p class="mt-3">
+          Les champs marqués d’un astérisque sont nécessaires au traitement de la demande : sans eux, nous ne pouvons
+          pas y répondre. Aucune donnée financière ni aucun fichier n’est demandé.
+        </p>
+      </section>
+      <section>
+        <h2 class="ru-h3">Base légale</h2>
+        <p class="mt-3">
+          <F value="" /> (par exemple mesures précontractuelles prises à votre demande pour un diagnostic, intérêt légitime
+          documenté pour une prise de contact générale : à valider par RESTUP).
+        </p>
+      </section>
+      <section>
+        <h2 class="ru-h3">Destinataires et sous-traitants</h2>
+        <p class="mt-3">
+          Les personnes de RESTUP chargées de répondre aux demandes. Sous-traitants : <F
+            value={LEGAL.privacy.processors}
+          />
+        </p>
+      </section>
+      <section>
+        <h2 class="ru-h3">Durée de conservation</h2>
+        <p class="mt-3"><F value={LEGAL.privacy.retentionLeads} /></p>
+      </section>
+      <section>
+        <h2 class="ru-h3">Vos droits</h2>
+        <p class="mt-3">
+          Vous pouvez demander l’accès à vos données, leur rectification, leur effacement, la limitation du traitement,
+          vous y opposer et, le cas échéant, demander leur portabilité. Contact : <F
+            value={LEGAL.privacy.rightsContact}
+          />. Vous pouvez également adresser une réclamation à la CNIL (<a href="https://www.cnil.fr">cnil.fr</a>).
+        </p>
+      </section>
+    </div>
+  </section>
+</Layout>

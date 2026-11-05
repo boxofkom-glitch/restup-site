@@ -8,12 +8,12 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1px);
+  background-image: radial-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px);
   background-size: 18px 18px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 30%, transparent 75%);
 }
 
-/* Halo violet derrière le héros */
+/* Halo violet et cyan derrière le héros */
 .mu-glow {
   position: absolute;
   left: 50%;
@@ -22,12 +22,12 @@
   aspect-ratio: 1;
   translate: -50% 0;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgb(155 77 255 / 0.35), rgb(74 36 130 / 0.12) 55%, transparent 75%);
+  background: radial-gradient(closest-side, rgb(120 40 190 / 0.45), rgb(40 207 242 / 0.08) 55%, transparent 75%);
 }
 
 /* Texte en dégradé */
 .mu-gradient-text {
-  background: linear-gradient(180deg, #e9d8ff 0%, #b37bff 55%, #8b45f5 100%);
+  background: linear-gradient(180deg, #fff38a 0%, #ffe000 60%, #f2c800 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -36,7 +36,7 @@
 /* Badge au texte brillant (AnimatedShinyText) */
 .mu-shiny {
   --shiny-width: 90px;
-  color: rgb(212 196 255 / 0.75);
+  color: rgb(255 236 150 / 0.85);
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.9) 50%, transparent) 0 0 / var(--shiny-width) 100% no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
@@ -58,7 +58,7 @@
 .mu-shimmer {
   --speed: 3s;
   --cut: 0.08em;
-  --bg: linear-gradient(180deg, #8b45f5, #6d28d9);
+  --bg: linear-gradient(180deg, #ffea4d, #ffe000);
   position: relative;
   z-index: 0;
   display: inline-flex;
@@ -69,11 +69,11 @@
   border-radius: 999px;
   border: 1px solid rgb(255 255 255 / 0.12);
   padding: 0.85rem 1.6rem;
-  color: #fff;
-  font-weight: 600;
+  color: #240638;
+  font-weight: 800;
   white-space: nowrap;
   background: var(--bg);
-  box-shadow: 0 10px 40px -10px rgb(139 69 245 / 0.7);
+  box-shadow: 0 10px 40px -10px rgb(255 224 0 / 0.55);
 }
 .mu-shimmer__spark {
   position: absolute;
@@ -105,7 +105,7 @@
   background: var(--bg);
 }
 .mu-shimmer:hover {
-  box-shadow: 0 12px 48px -8px rgb(139 69 245 / 0.9), inset 0 -6px 10px rgb(255 255 255 / 0.25);
+  box-shadow: 0 12px 48px -8px rgb(255 224 0 / 0.8), inset 0 -6px 10px rgb(255 255 255 / 0.35);
 }
 @keyframes mu-shimmer-slide {
   to {
@@ -133,8 +133,8 @@
 .mu-beam {
   --size: 120px;
   --duration: 9s;
-  --from: #ffb3f0;
-  --to: #9b4dff;
+  --from: #28cff2;
+  --to: #ffe000;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -198,7 +198,7 @@
   border-radius: 1.25rem;
   border: 1px solid rgb(255 255 255 / 0.08);
   background:
-    radial-gradient(260px circle at var(--x) var(--y), rgb(155 77 255 / 0.18), transparent 70%),
+    radial-gradient(260px circle at var(--x) var(--y), rgb(255 224 0 / 0.1), transparent 70%),
     rgb(255 255 255 / 0.03);
 }
 .mu-card::before {
@@ -207,7 +207,7 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: radial-gradient(220px circle at var(--x) var(--y), rgb(179 123 255 / 0.7), transparent 70%);
+  background: radial-gradient(220px circle at var(--x) var(--y), rgb(255 224 0 / 0.65), transparent 70%);
   mask:
     linear-gradient(#000, #000) content-box,
     linear-gradient(#000, #000);
@@ -243,6 +243,48 @@ html.mu-js .mu-fade.is-in {
     filter: blur(6px);
     translate: 0 10px;
   }
+}
+
+/* Bandeau jaune incliné, comme « NIVEAU SUPÉRIEUR. » sur la bannière */
+.ru-band {
+  display: inline-block;
+  padding: 0 0.22em;
+  color: #240638;
+  background: #ffe000;
+  transform: skewX(-8deg);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Titres de campagne : gras, italiques, serrés */
+.ru-display {
+  font-family: var(--aw-font-heading);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 0.98;
+}
+
+/* Fines lignes obliques jaune et cyan dans les coins, comme la bannière */
+.ru-slashes::before,
+.ru-slashes::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  width: 38%;
+  height: 7px;
+  transform: rotate(-24deg);
+}
+.ru-slashes::before {
+  left: -8%;
+  top: 9%;
+  background: #ffe000;
+}
+.ru-slashes::after {
+  right: -10%;
+  bottom: 12%;
+  background: #28cff2;
 }
 
 @media (prefers-reduced-motion: reduce) {

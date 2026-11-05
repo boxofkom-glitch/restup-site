@@ -1,6 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import logo from '~/assets/images/brand/logo-restup.png';
 ---
 
-<span class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-extrabold tracking-tight text-white whitespace-nowrap">
-  REST<span class="text-accent">UP</span>
-</span>
+<Image src={logo} alt="RESTUP" width={96} height={91} class="h-11 w-auto" loading="eager" />

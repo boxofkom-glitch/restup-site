@@ -1,0 +1,651 @@
+{
+  "schemaVersion": 1,
+  "locale": "fr-FR",
+  "divisions": [
+    {
+      "slug": "rest-coaching",
+      "name": "REST’COACHING",
+      "path": "/expertises/rest-coaching",
+      "contentStatus": "pending",
+      "h1": "Piloter la rentabilité de votre restaurant",
+      "summary": "Reliez vos ventes, vos coûts et votre organisation pour identifier vos priorités.",
+      "scope": "Nous examinons avec vous les données disponibles et les postes qui pèsent sur votre activité. L’analyse peut porter sur la carte, les achats, les heures de travail ou les écarts entre prévisions et résultats.",
+      "deliverable": "Une synthèse des constats, un tableau de suivi et un plan d’action classé par priorité.",
+      "cta": "Demander un diagnostic de pilotage",
+      "relatedSlugs": [
+        "rest-supply",
+        "rest-tech"
+      ],
+      "services": [
+        {
+          "id": "rest-coaching-1",
+          "name": "Audit de pilotage",
+          "scope": "Analyse des ventes, coûts et indicateurs disponibles. Restitution écrite et trois priorités de travail.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 390,
+            "max": 690,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-coaching&prestation=rest-coaching-1"
+        },
+        {
+          "id": "rest-coaching-2",
+          "name": "Sprint rentabilité",
+          "scope": "Analyse des écarts, revue du coût matière et des postes retenus, tableau de bord et plan d’action.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1500,
+            "max": 3500,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par mission"
+          },
+          "quotePath": "/diagnostic?expertise=rest-coaching&prestation=rest-coaching-2"
+        },
+        {
+          "id": "rest-coaching-3",
+          "name": "Suivi mensuel",
+          "scope": "Revue des indicateurs, point de suivi mensuel et actualisation des actions convenues.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 750,
+            "max": 1800,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par mois et par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-coaching&prestation=rest-coaching-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-eat",
+      "name": "REST’EAT",
+      "path": "/expertises/rest-eat",
+      "contentStatus": "pending",
+      "h1": "Structurer votre offre en livraison et à emporter",
+      "summary": "Examinez la carte, les prix et la préparation de vos commandes hors salle.",
+      "scope": "Nous étudions les plats adaptés au transport, le coût des emballages et l’effet des frais de plateforme sur la marge. Le travail peut inclure l’organisation des commandes lors des heures de pointe.",
+      "deliverable": "Une revue de la carte, une grille de calcul par canal et une liste d’ajustements à tester.",
+      "cta": "Examiner mon offre de livraison",
+      "relatedSlugs": [
+        "rest-coaching",
+        "rest-studio"
+      ],
+      "services": [
+        {
+          "id": "rest-eat-1",
+          "name": "Audit livraison",
+          "scope": "Revue d’un canal, de la carte, des frais et des emballages. Grille de marge et restitution.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 450,
+            "max": 850,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-eat&prestation=rest-eat-1"
+        },
+        {
+          "id": "rest-eat-2",
+          "name": "Refonte de la carte à emporter",
+          "scope": "Sélection des références adaptées au transport, scénarios de prix et recommandations d’emballage.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1200,
+            "max": 2800,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par carte et par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-eat&prestation=rest-eat-2"
+        },
+        {
+          "id": "rest-eat-3",
+          "name": "Lancement ou réorganisation du canal",
+          "scope": "Paramétrage accompagné selon l’accès accordé, procédure de préparation et contrôle du parcours de commande. Commissions, emballages et prises de vue en supplément.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 2500,
+            "max": 5000,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par projet"
+          },
+          "quotePath": "/diagnostic?expertise=rest-eat&prestation=rest-eat-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-people",
+      "name": "REST’PEOPLE",
+      "path": "/expertises/rest-people",
+      "contentStatus": "pending",
+      "h1": "Organiser l’équipe de votre restaurant",
+      "summary": "Clarifiez les responsabilités et les routines du service.",
+      "scope": "Nous examinons les rôles en salle et en cuisine, les passages de relais et l’accueil des nouvelles recrues. Nous ciblons les situations qui demandent des consignes communes.",
+      "deliverable": "Une répartition des rôles, un parcours d’intégration et des supports de briefing adaptés au service.",
+      "cta": "Parler de mon organisation",
+      "relatedSlugs": [
+        "rest-academy",
+        "rest-coaching"
+      ],
+      "services": [
+        {
+          "id": "rest-people-1",
+          "name": "Diagnostic d’organisation",
+          "scope": "Entretiens de cadrage, répartition des rôles et synthèse des points de friction.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 450,
+            "max": 850,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-people&prestation=rest-people-1"
+        },
+        {
+          "id": "rest-people-2",
+          "name": "Kit d’intégration",
+          "scope": "Parcours d’accueil, fiches de rôle et listes de vérification pour la prise de poste.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 900,
+            "max": 2000,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-people&prestation=rest-people-2"
+        },
+        {
+          "id": "rest-people-3",
+          "name": "Organisation du service",
+          "scope": "Observation selon le périmètre retenu, routines de briefing, passages de relais et restitution au responsable.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1800,
+            "max": 3800,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par mission"
+          },
+          "quotePath": "/diagnostic?expertise=rest-people&prestation=rest-people-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-studio",
+      "name": "REST’STUDIO",
+      "path": "/expertises/rest-studio",
+      "contentStatus": "pending",
+      "h1": "Créer l’identité et les supports de votre restaurant",
+      "summary": "Donnez à votre concept une identité reconnaissable, de la carte à l’emballage.",
+      "scope": "Nous définissons la direction visuelle avec vous et sélectionnons les supports prioritaires selon votre mode de vente.",
+      "deliverable": "Une direction graphique et les fichiers convenus, par exemple un menu, une déclinaison d’emballage ou des modèles pour les réseaux.",
+      "cta": "Présenter mon projet de marque",
+      "relatedSlugs": [
+        "rest-media",
+        "rest-eat"
+      ],
+      "services": [
+        {
+          "id": "rest-studio-1",
+          "name": "Direction visuelle",
+          "scope": "Atelier de cadrage, planche d’inspiration, palette et recommandations typographiques.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 650,
+            "max": 1300,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par concept"
+          },
+          "quotePath": "/diagnostic?expertise=rest-studio&prestation=rest-studio-1"
+        },
+        {
+          "id": "rest-studio-2",
+          "name": "Identité et mini-charte",
+          "scope": "Identité visuelle, fichiers sources et règles d’usage convenues.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1500,
+            "max": 3500,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par concept"
+          },
+          "quotePath": "/diagnostic?expertise=rest-studio&prestation=rest-studio-2"
+        },
+        {
+          "id": "rest-studio-3",
+          "name": "Supports de vente",
+          "scope": "Maquettes de carte, affichage ou emballage selon le lot retenu. Impression, production et licences tierces séparées.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 800,
+            "max": 2500,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par lot"
+          },
+          "quotePath": "/diagnostic?expertise=rest-studio&prestation=rest-studio-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-media",
+      "name": "REST’MEDIA",
+      "path": "/expertises/rest-media",
+      "contentStatus": "pending",
+      "h1": "Structurer la communication de votre restaurant",
+      "summary": "Planifiez vos contenus et faites connaître votre offre auprès du public que vous souhaitez toucher.",
+      "scope": "Nous précisons les messages, les canaux et les temps forts selon votre établissement. Les formats peuvent inclure des publications, des vidéos courtes et des contenus d’ouverture.",
+      "deliverable": "Un calendrier éditorial, des exemples de textes et un plan de diffusion.",
+      "cta": "Parler de ma communication",
+      "relatedSlugs": [
+        "rest-studio",
+        "rest-eat"
+      ],
+      "services": [
+        {
+          "id": "rest-media-1",
+          "name": "Audit de visibilité",
+          "scope": "Revue des profils et contenus, priorités et recommandations par canal.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 350,
+            "max": 750,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-media&prestation=rest-media-1"
+        },
+        {
+          "id": "rest-media-2",
+          "name": "Plan éditorial de lancement",
+          "scope": "Calendrier sur quatre semaines, sujets, exemples de légendes et briefs de formats courts.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 750,
+            "max": 1600,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par campagne"
+          },
+          "quotePath": "/diagnostic?expertise=rest-media&prestation=rest-media-2"
+        },
+        {
+          "id": "rest-media-3",
+          "name": "Accompagnement éditorial",
+          "scope": "Programmation et préparation des contenus selon le volume convenu. Tournage, modération et budget publicitaire chiffrés séparément.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 900,
+            "max": 2200,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par mois"
+          },
+          "quotePath": "/diagnostic?expertise=rest-media&prestation=rest-media-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-tech",
+      "name": "REST’TECH",
+      "path": "/expertises/rest-tech",
+      "contentStatus": "pending",
+      "h1": "Choisir des outils utiles au pilotage de votre restaurant",
+      "summary": "Reliez les outils de caisse, de commande et de reporting à vos besoins réels.",
+      "scope": "Nous recensons vos outils et les tâches qui créent des doubles saisies. Nous définissons les données à suivre et les échanges nécessaires entre les systèmes.",
+      "deliverable": "Une cartographie de l’existant, une liste d’exigences et un plan de mise en place.",
+      "cta": "Faire le point sur mes outils",
+      "relatedSlugs": [
+        "rest-coaching",
+        "rest-eat"
+      ],
+      "services": [
+        {
+          "id": "rest-tech-1",
+          "name": "Audit des outils",
+          "scope": "Cartographie caisse, commandes et reporting, doublons et priorités.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 500,
+            "max": 950,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-tech&prestation=rest-tech-1"
+        },
+        {
+          "id": "rest-tech-2",
+          "name": "Cadrage et choix d’outils",
+          "scope": "Cahier des besoins, grille de comparaison et plan de déploiement.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1200,
+            "max": 2600,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par projet"
+          },
+          "quotePath": "/diagnostic?expertise=rest-tech&prestation=rest-tech-2"
+        },
+        {
+          "id": "rest-tech-3",
+          "name": "Accompagnement au déploiement",
+          "scope": "Recette d’un périmètre convenu, configuration accompagnée et guide de prise en main. Licences, matériel et développement spécifique séparés.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 2000,
+            "max": 5000,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par projet"
+          },
+          "quotePath": "/diagnostic?expertise=rest-tech&prestation=rest-tech-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-academy",
+      "name": "REST’ACADEMY",
+      "path": "/expertises/rest-academy",
+      "contentStatus": "pending",
+      "h1": "Former vos équipes aux méthodes du restaurant",
+      "summary": "Transformez vos procédures en exercices applicables pendant le service.",
+      "scope": "Nous partons d’une situation de travail, comme l’accueil d’un équipier ou le briefing avant service. Nous définissons avec vous le public, les objectifs et le format de l’atelier.",
+      "deliverable": "Un déroulé, des supports et une grille de mise en pratique.",
+      "cta": "Définir mon besoin de formation",
+      "relatedSlugs": [
+        "rest-people",
+        "rest-franchise"
+      ],
+      "services": [
+        {
+          "id": "rest-academy-1",
+          "name": "Atelier court",
+          "scope": "Exercice guidé sur une situation de service, support et grille de mise en pratique.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 450,
+            "max": 850,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par demi-journée et par groupe"
+          },
+          "quotePath": "/diagnostic?expertise=rest-academy&prestation=rest-academy-1"
+        },
+        {
+          "id": "rest-academy-2",
+          "name": "Journée d’équipe",
+          "scope": "Séquences de pratique, mises en situation et restitution au responsable.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 850,
+            "max": 1650,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par jour et par groupe"
+          },
+          "quotePath": "/diagnostic?expertise=rest-academy&prestation=rest-academy-2"
+        },
+        {
+          "id": "rest-academy-3",
+          "name": "Parcours sur mesure",
+          "scope": "Conception de plusieurs séances, supports et évaluation des acquis selon le périmètre. Déplacements et location éventuelle séparés.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 2000,
+            "max": 5000,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par parcours"
+          },
+          "quotePath": "/diagnostic?expertise=rest-academy&prestation=rest-academy-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-franchise",
+      "name": "REST’FRANCHISE",
+      "path": "/expertises/rest-franchise",
+      "contentStatus": "pending",
+      "h1": "Préparer le développement de votre concept en réseau",
+      "summary": "Identifiez ce qui doit être documenté et testé avant de reproduire votre modèle.",
+      "scope": "Nous examinons les méthodes d’exploitation, la transmission du savoir-faire et les conditions de déploiement. Les questions juridiques sont confiées à un professionnel habilité.",
+      "deliverable": "Un état des lieux de la préparation du concept, les éléments à formaliser et une feuille de route de développement.",
+      "cta": "Présenter mon projet de réseau",
+      "relatedSlugs": [
+        "rest-academy",
+        "rest-coaching"
+      ],
+      "services": [
+        {
+          "id": "rest-franchise-1",
+          "name": "Diagnostic de préparation",
+          "scope": "Revue des procédures, du savoir-faire et des conditions de reproductibilité. Priorités documentées.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 900,
+            "max": 1800,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par concept"
+          },
+          "quotePath": "/diagnostic?expertise=rest-franchise&prestation=rest-franchise-1"
+        },
+        {
+          "id": "rest-franchise-2",
+          "name": "Formalisation opérationnelle",
+          "scope": "Structure du manuel, rédaction des procédures convenues et grille de contrôle.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 3000,
+            "max": 7500,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par concept"
+          },
+          "quotePath": "/diagnostic?expertise=rest-franchise&prestation=rest-franchise-2"
+        },
+        {
+          "id": "rest-franchise-3",
+          "name": "Feuille de route réseau",
+          "scope": "Plan de test du modèle, jalons et rôles des intervenants. Prestations juridiques confiées à un professionnel habilité.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "quote"
+          },
+          "quotePath": "/diagnostic?expertise=rest-franchise&prestation=rest-franchise-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-space",
+      "name": "REST’SPACE",
+      "path": "/expertises/rest-space",
+      "contentStatus": "pending",
+      "h1": "Cadrer l’implantation et l’aménagement de votre restaurant",
+      "summary": "Définissez les besoins du lieu, de la circulation des équipes à l’accueil des clients.",
+      "scope": "Nous traduisons le concept et le mode de service en besoins d’usage. Les études techniques, réglementaires et immobilières relèvent des professionnels habilités selon le projet.",
+      "deliverable": "Un cahier des besoins, une grille de comparaison et les questions à soumettre aux intervenants techniques.",
+      "cta": "Décrire mon projet d’implantation",
+      "relatedSlugs": [
+        "rest-studio",
+        "rest-coaching"
+      ],
+      "services": [
+        {
+          "id": "rest-space-1",
+          "name": "Cadrage du lieu",
+          "scope": "Besoins d’usage, contraintes connues et critères de recherche ou de comparaison.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 600,
+            "max": 1200,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par projet"
+          },
+          "quotePath": "/diagnostic?expertise=rest-space&prestation=rest-space-1"
+        },
+        {
+          "id": "rest-space-2",
+          "name": "Revue d’un local",
+          "scope": "Analyse fonctionnelle des flux, du service et de l’implantation envisagée. Liste de points à faire vérifier.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 900,
+            "max": 2000,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par local"
+          },
+          "quotePath": "/diagnostic?expertise=rest-space&prestation=rest-space-2"
+        },
+        {
+          "id": "rest-space-3",
+          "name": "Cahier des besoins d’aménagement",
+          "scope": "Programme d’usage et brief de coordination à transmettre aux intervenants techniques. Études réglementaires, plans d’exécution et travaux séparés.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1500,
+            "max": 3500,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par projet"
+          },
+          "quotePath": "/diagnostic?expertise=rest-space&prestation=rest-space-3"
+        }
+      ]
+    },
+    {
+      "slug": "rest-supply",
+      "name": "REST’SUPPLY",
+      "path": "/expertises/rest-supply",
+      "contentStatus": "pending",
+      "h1": "Organiser les achats et l’approvisionnement de votre restaurant",
+      "summary": "Comparez vos conditions d’achat et clarifiez vos règles de commande.",
+      "scope": "Nous étudions les familles de produits, la fréquence de commande, les seuils de stock et les conditions fournisseurs.",
+      "deliverable": "Une grille de comparaison, des seuils de suivi et des actions pour mieux anticiper les commandes.",
+      "cta": "Examiner mes achats",
+      "relatedSlugs": [
+        "rest-coaching",
+        "rest-eat"
+      ],
+      "services": [
+        {
+          "id": "rest-supply-1",
+          "name": "Audit des achats",
+          "scope": "Analyse des familles retenues, fréquences d’achat et écarts de conditions.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 450,
+            "max": 850,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-supply&prestation=rest-supply-1"
+        },
+        {
+          "id": "rest-supply-2",
+          "name": "Plan fournisseurs et stocks",
+          "scope": "Grille de comparaison, seuils de commande et routine de contrôle des stocks.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 1000,
+            "max": 2400,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-supply&prestation=rest-supply-2"
+        },
+        {
+          "id": "rest-supply-3",
+          "name": "Suivi des approvisionnements",
+          "scope": "Revue mensuelle des indicateurs convenus, des écarts et des actions. Achats et frais de livraison séparés.",
+          "serviceStatus": "pending",
+          "priceStatus": "pending",
+          "internalPrice": {
+            "mode": "range",
+            "min": 450,
+            "max": 1100,
+            "currency": "EUR",
+            "tax": "HT",
+            "unitLabel": "par mois et par établissement"
+          },
+          "quotePath": "/diagnostic?expertise=rest-supply&prestation=rest-supply-3"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Faq from '~/components/restup/Faq.astro';
+import { OFFERS } from '~/data/site';
+
+const metadata = {
+  title: 'Diagnostic et accompagnement restaurant · RESTUP',
+  ignoreTitleTemplate: true,
+  description:
+    'Découvrez les formats d’intervention RESTUP et demandez une proposition adaptée au stade et aux priorités de votre restaurant.',
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-14 pb-12 md:pt-20">
+      <h1 class="ru-display ru-h1">Des formats adaptés à votre projet</h1>
+      <p class="ru-lead mt-5">
+        Choisissez le format qui correspond à votre besoin. Le périmètre, les livrables et le tarif sont précisés dans
+        une proposition avant le début de la mission.
+      </p>
+    </div>
+  </section>
+  <section class="ru-section ru-deep" aria-label="Formats d’intervention">
+    <div class="ru-container">
+      <ul class="grid md:grid-cols-2 gap-4">
+        {
+          OFFERS.map((o) => (
+            <li class="ru-card flex flex-col">
+              <h2 class="ru-h3 text-white">{o.name}</h2>
+              <p class="mt-2 ru-soft flex-1">{o.text}</p>
+              <p class="ru-price mt-5">Sur devis</p>
+              <a href={o.href} class="ru-btn ru-btn-primary mt-5 self-start">
+                {o.cta}
+                <span class="sr-only"> : {o.name}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/expertises" class="ru-link mt-8 inline-block">Voir les prestations par division</a>
+    </div>
+  </section>
+  <Faq
+    items={[
+      {
+        q: 'La demande vaut-elle engagement ?',
+        a: 'La demande sert à présenter votre besoin. Le démarrage dépend de votre accord sur la proposition.',
+      },
+      {
+        q: 'Que dois-je préparer ?',
+        a: 'Votre objectif, votre échéance et un résumé de votre situation suffisent pour le premier échange.',
+      },
+    ]}
+  />
+</Layout>

@@ -26,3 +26,6 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 
 .astro
+# demandes locales (base SQLite, collecteur d’e-mails)
+.data/
+.test-dist/

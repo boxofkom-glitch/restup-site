@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon/components';
+import Logo from '~/components/Logo.astro';
+import { divisions } from '~/lib/catalogue';
+import { DIVISION_ORDER, SIGNATURE, LEGAL } from '~/data/site';
+
+const ordered = DIVISION_ORDER.map((slug) => divisions.find((d) => d.slug === slug)!);
+const year = new Date().getFullYear();
+---
+
+<footer class="ru-deep border-t border-white/10">
+  <div class="ru-container py-14 grid gap-10 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <a href="/" aria-label="RESTUP, accueil" class="inline-block"><Logo /></a>
+      <p class="mt-5 ru-signature">{SIGNATURE}</p>
+      <p class="mt-4 ru-soft max-w-sm">Le partenaire des restaurateurs qui passent au niveau supérieur.</p>
+    </div>
+    <nav aria-label="Divisions" class="md:col-span-5">
+      <p class="font-bold text-white">Expertises</p>
+      <ul class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 ru-soft">
+        {
+          ordered.map((d) => (
+            <li>
+              <a href={d.path} class="hover:text-white hover:underline">
+                {d.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/expertises" class="ru-link mt-3 inline-block">Toutes les expertises</a>
+    </nav>
+    <nav aria-label="Informations" class="md:col-span-3">
+      <p class="font-bold text-white">RESTUP</p>
+      <ul class="mt-3 space-y-2 ru-soft">
+        <li><a href="/offres" class="hover:text-white hover:underline">Offres</a></li>
+        <li><a href="/a-propos" class="hover:text-white hover:underline">À propos</a></li>
+        <li><a href="/diagnostic" class="hover:text-white hover:underline">Demander un diagnostic</a></li>
+        <li><a href="/contact" class="hover:text-white hover:underline">Contact</a></li>
+        <li><a href="/mentions-legales" class="hover:text-white hover:underline">Mentions légales</a></li>
+        <li><a href="/confidentialite" class="hover:text-white hover:underline">Confidentialité</a></li>
+        <li><a href="/cookies" class="hover:text-white hover:underline">Cookies</a></li>
+        <li><a href="/portail/login.html" class="hover:text-white hover:underline">Espace client</a></li>
+      </ul>
+      {
+        LEGAL.socialLinks.length > 0 && (
+          <ul class="mt-5 flex gap-2">
+            {LEGAL.socialLinks.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class="grid place-items-center w-11 h-11 rounded-lg border border-white/20 hover:bg-white/10"
+                >
+                  <Icon name={s.icon} class="w-5 h-5" aria-hidden="true" />
+                  <span class="sr-only">{s.name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </nav>
+  </div>
+  <div class="border-t border-white/10">
+    <p class="ru-container py-5 text-sm ru-soft">© RESTUP {year}</p>
+  </div>
+</footer>

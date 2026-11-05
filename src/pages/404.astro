@@ -1,23 +1,23 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import { getHomePermalink } from '~/utils/permalinks';
+import Layout from '~/layouts/PageLayout.astro';
 
-const title = `Page introuvable`;
+const metadata = {
+  title: 'Page introuvable · RESTUP',
+  ignoreTitleTemplate: true,
+  robots: { index: false, follow: true },
+};
 ---
 
-<Layout metadata={{ title }}>
-  <section class="flex items-center h-full p-16">
-    <div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
-      <div class="max-w-md text-center">
-        <h2 class="mb-8 font-bold text-9xl">
-          <span class="sr-only">Erreur</span>
-          <span class="text-primary">404</span>
-        </h2>
-        <p class="text-3xl font-semibold md:text-3xl">Cette page n'existe pas.</p>
-        <p class="mt-4 mb-8 text-lg text-muted dark:text-slate-400">
-          Elle a peut-être été déplacée. Tout est sur la page d'accueil.
-        </p>
-        <a rel="noopener noreferrer" href={getHomePermalink()} class="btn ml-4">Retour à l’accueil</a>
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container py-24 md:py-32 max-w-3xl">
+      <h1 class="ru-display ru-h1">Cette page est introuvable</h1>
+      <p class="ru-lead mt-5">
+        L’adresse a peut-être changé. Retrouvez nos services dans le répertoire des expertises.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <a href="/expertises" class="ru-btn ru-btn-primary">Explorer les expertises</a>
+        <a href="/" class="ru-btn ru-btn-ghost">Revenir à l’accueil</a>
       </div>
     </div>
   </section>

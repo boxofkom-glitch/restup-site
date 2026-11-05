@@ -1,0 +1,38 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { LEGAL } from '~/data/site';
+
+const metadata = {
+  title: 'Cookies et traceurs · RESTUP',
+  ignoreTitleTemplate: true,
+  description: 'Informations sur les traceurs utilisés par le site RESTUP.',
+  robots: { index: false, follow: true },
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-section ru-light">
+    <div class="ru-container max-w-3xl ru-prose space-y-6">
+      <h1 class="ru-display ru-h1">Cookies et traceurs</h1>
+      {
+        LEGAL.optionalTrackers ? (
+          <p>Inventaire des traceurs à documenter avant activation.</p>
+        ) : (
+          <>
+            <p>
+              Ce site n’utilise aucun cookie de mesure d’audience, de publicité ou de réseau social. Aucun traceur
+              soumis à consentement n’est déposé : aucun bandeau de choix n’est donc affiché.
+            </p>
+            <p>
+              Les polices et les images sont servies depuis le site lui-même. Le formulaire n’enregistre rien dans votre
+              navigateur. L’espace client, accessible séparément, utilise les éléments nécessaires à la connexion.
+            </p>
+            <p>
+              Si un outil de mesure est ajouté, cette page et un module de choix seront mis à jour avant son activation.
+            </p>
+          </>
+        )
+      }
+    </div>
+  </section>
+</Layout>

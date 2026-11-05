@@ -1,0 +1,22 @@
+---
+export interface Props {
+  title: string;
+  text?: string;
+  cta: string;
+  href: string;
+}
+const { title, text, cta, href } = Astro.props;
+---
+
+<section class="ru-section ru-deep">
+  <div class="ru-container">
+    <div
+      class="ru-corners ru-corners-sm relative rounded-[20px] border border-white/15 bg-[var(--ru-brand-900)] px-6 pt-20 pb-16 md:px-14 text-center"
+    >
+      <div class="ru-glow left-1/2 -translate-x-1/2 -top-1/2" aria-hidden="true"></div>
+      <h2 class="ru-display ru-h2">{title}</h2>
+      {text && <p class="ru-lead mx-auto mt-4">{text}</p>}
+      <a href={href} class="ru-btn ru-btn-primary mt-8">{cta}</a>
+    </div>
+  </div>
+</section>

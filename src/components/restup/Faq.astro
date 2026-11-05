@@ -1,0 +1,27 @@
+---
+export interface Props {
+  items: Array<{ q: string; a: string }>;
+  title?: string;
+  light?: boolean;
+}
+const { items, title = 'Questions fréquentes', light = false } = Astro.props;
+const id = `faq-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<section class:list={['ru-section', light ? 'ru-light' : 'ru-dark']} aria-labelledby={id}>
+  <div class="ru-container max-w-3xl">
+    <h2 id={id} class="ru-display ru-h2">{title}</h2>
+    <div class="ru-faq mt-6">
+      {
+        items.map((i) => (
+          <details>
+            <summary>{i.q}</summary>
+            <div class:list={[light ? 'text-[var(--ru-muted-light)]' : 'ru-soft']}>
+              <p>{i.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

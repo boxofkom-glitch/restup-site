@@ -19,7 +19,12 @@
     "check:prettier": "prettier --check .",
     "fix": "npm run fix:eslint && npm run fix:prettier",
     "fix:eslint": "eslint --fix .",
-    "fix:prettier": "prettier -w ."
+    "fix:prettier": "prettier -w .",
+    "build:preview": "RESTUP_MODE=preview astro build",
+    "build:production": "RESTUP_MODE=production astro build",
+    "leads:server": "node --disable-warning=ExperimentalWarning scripts/leads-server.ts",
+    "leads:admin": "node --disable-warning=ExperimentalWarning scripts/leads-admin.ts",
+    "test": "node --disable-warning=ExperimentalWarning --test \"tests/*.test.ts\""
   },
   "dependencies": {
     "@astro-community/astro-embed-twitter": "^0.5.11",

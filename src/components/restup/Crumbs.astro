@@ -1,0 +1,26 @@
+---
+// Fil d'Ariane avec données structurées BreadcrumbList.
+import { SITE } from 'astrowind:config';
+
+export interface Props {
+  items: Array<{ text: string; href?: string }>;
+}
+const { items } = Astro.props;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map(({ text, href }, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: text,
+    ...(href ? { item: new URL(href, SITE?.site).toString() } : {}),
+  })),
+};
+---
+
+<nav aria-label="Fil d’Ariane" class="ru-crumbs">
+  <ol>
+    {items.map((i) => <li>{i.href ? <a href={i.href}>{i.text}</a> : <span aria-current="page">{i.text}</span>}</li>)}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

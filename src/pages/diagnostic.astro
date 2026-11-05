@@ -1,0 +1,29 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import LeadForm from '~/components/restup/LeadForm.astro';
+import { SITE } from 'astrowind:config';
+
+const metadata = {
+  title: 'Demander un diagnostic restaurant · RESTUP',
+  ignoreTitleTemplate: true,
+  description: 'Présentez votre établissement et le sujet à traiter pour préparer un échange avec RESTUP.',
+  canonical: `${SITE?.site}/diagnostic`,
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-14 pb-12 md:pt-20">
+      <h1 class="ru-display ru-h1 max-w-4xl">Demander un diagnostic pour votre restaurant</h1>
+      <p class="ru-lead mt-5">
+        Décrivez votre établissement, votre projet et la priorité que vous souhaitez traiter. Nous utiliserons ces
+        éléments pour préparer la suite de l’échange.
+      </p>
+    </div>
+  </section>
+  <section class="ru-section ru-light">
+    <div class="ru-container max-w-3xl">
+      <LeadForm type="diagnostic" />
+    </div>
+  </section>
+</Layout>

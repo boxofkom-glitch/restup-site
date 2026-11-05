@@ -1,4 +1,5 @@
 import path from 'path';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 import { defineConfig, fontProviders } from 'astro/config';
@@ -17,6 +18,21 @@ import astrowind from './vendor/integration';
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Sitemap : seulement les pages publiques indexables. Les fiches de division restent hors
+// sitemap tant que leur contenu commercial n'est pas validé (et toujours en prévisualisation).
+const isProduction = process.env.RESTUP_MODE === 'production';
+const catalogue = JSON.parse(readFileSync(path.join(__dirname, 'src/data/catalogue.json'), 'utf8')) as {
+  divisions: Array<{ path: string; contentStatus: string }>;
+};
+const notInSitemap = [
+  '/merci',
+  '/mentions-legales',
+  '/confidentialite',
+  '/cookies',
+  '/404',
+  ...catalogue.divisions.filter((d) => !isProduction || d.contentStatus !== 'approved').map((d) => d.path),
+];
 
 const hasExternalScripts = false;
 const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroIntegration)[] = []) =>
@@ -37,19 +53,36 @@ export default defineConfig({
   // metric-adjusted fallbacks. Injected via <Font /> in Layout.astro and
   // consumed through the `--font-inter` CSS variable in CustomStyles.astro.
   fonts: [
+    // Polices hébergées dans le dépôt (licence SIL OFL, voir src/assets/fonts) : aucun appel externe au build.
     {
-      provider: fontProviders.fontsource(),
+      provider: fontProviders.local(),
       name: 'Inter',
       cssVariable: '--font-inter',
-      weights: ['100 900'],
-      styles: ['normal'],
-      subsets: ['latin'],
       fallbacks: ['sans-serif'],
+      options: {
+        variants: [{ src: ['./src/assets/fonts/inter-latin-wght-normal.woff2'], weight: '100 900', style: 'normal' }],
+      },
+    },
+    {
+      provider: fontProviders.local(),
+      name: 'Archivo',
+      cssVariable: '--font-archivo',
+      fallbacks: ['sans-serif'],
+      options: {
+        variants: [
+          { src: ['./src/assets/fonts/archivo-latin-700-normal.woff2'], weight: '700', style: 'normal' },
+          { src: ['./src/assets/fonts/archivo-latin-700-italic.woff2'], weight: '700', style: 'italic' },
+          { src: ['./src/assets/fonts/archivo-latin-800-normal.woff2'], weight: '800', style: 'normal' },
+          { src: ['./src/assets/fonts/archivo-latin-800-italic.woff2'], weight: '800', style: 'italic' },
+          { src: ['./src/assets/fonts/archivo-latin-900-normal.woff2'], weight: '900', style: 'normal' },
+          { src: ['./src/assets/fonts/archivo-latin-900-italic.woff2'], weight: '900', style: 'italic' },
+        ],
+      },
     },
   ],
 
   integrations: [
-    sitemap(),
+    sitemap({ filter: (page) => !notInSitemap.includes(new URL(page).pathname.replace(/\.html$/, '')) }),
     mdx(),
     icon({
       // Local SVG icons (used as <Icon name="file-name" />) live next to the other assets.
@@ -75,7 +108,6 @@ export default defineConfig({
         config: { forward: ['dataLayer.push'] },
       })
     ),
-
 
     astrowind({
       config: './src/config.yaml',

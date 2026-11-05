@@ -1,0 +1,45 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { SIGNATURE } from '~/data/site';
+
+const metadata = {
+  title: 'Le groupe RESTUP et sa méthode',
+  ignoreTitleTemplate: true,
+  description: 'Découvrez comment RESTUP organise ses expertises et cadre les interventions auprès des restaurateurs.',
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="ru-corners ru-dark">
+    <div class="ru-container pt-14 pb-12 md:pt-20">
+      <h1 class="ru-display ru-h1 max-w-4xl">RESTUP, un groupe de services pour la restauration</h1>
+      <p class="ru-signature mt-6">{SIGNATURE}</p>
+      <p class="ru-lead mt-5">
+        RESTUP réunit des expertises autour des décisions qui rythment la vie d’un restaurant, de la préparation d’une
+        ouverture au développement de plusieurs établissements.
+      </p>
+    </div>
+  </section>
+  <section class="ru-section ru-light">
+    <div class="ru-container grid md:grid-cols-2 gap-10">
+      <div>
+        <h2 class="ru-display ru-h2">Un point d’entrée pour votre projet</h2>
+        <p class="ru-lead mt-4">
+          Un besoin de rentabilité peut toucher à la carte, aux achats et à l’organisation. Nous commençons par situer
+          votre priorité, puis nous définissons avec vous le périmètre de l’intervention.
+        </p>
+      </div>
+      <div>
+        <h2 class="ru-display ru-h2">Ce que nous cadrons avec vous</h2>
+        <p class="ru-lead mt-4">
+          Avant de démarrer, nous précisons les informations utiles, les personnes impliquées et les livrables attendus.
+        </p>
+      </div>
+    </div>
+    <!-- « Vos interlocuteurs » : section masquée tant que bios et photos ne sont pas approuvées. -->
+    <div class="ru-container mt-12 flex flex-col sm:flex-row gap-3">
+      <a href="/expertises" class="ru-btn ru-btn-primary">Explorer les expertises</a>
+      <a href="/diagnostic" class="ru-btn ru-btn-ghost">Parler de mon projet</a>
+    </div>
+  </section>
+</Layout>
