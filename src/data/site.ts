@@ -217,23 +217,27 @@ export const OFFERS = [
  * Tant qu'un champ obligatoire est vide, la compilation de production échoue (voir `assertPublishable`).
  */
 export const LEGAL = {
-  editorName: '', // raison sociale de l'entité éditrice
-  legalForm: '', // forme juridique et capital le cas échéant
-  address: '',
-  registration: '', // RCS / SIREN
+  // Entrepreneur individuel : prénom et NOM suivis de « EI » (mention obligatoire), puis le nom commercial.
+  editorName: '', // ex. « Prénom NOM EI · RESTUP »
+  legalForm: 'Entrepreneur individuel (EI), régime micro-entreprise',
+  address: '', // adresse de l'établissement ou de domiciliation
+  registration:
+    'SIREN 105 615 702 · SIRET 105 615 702 00013 · Inscrit au Registre national des entreprises (RNE) depuis le 28 mai 2026',
   vatNumber: '', // le cas échéant
-  publicationDirector: '',
-  contactEmail: '', // contact vérifié affiché en secours et pour l'exercice des droits
+  publicationDirector: '', // prénom et NOM de l'entrepreneur
+  contactEmail: 'h.bouhiza@yahoo.fr',
+  phone: '07 67 73 39 70',
   host: {
-    name: '', // ex. GitHub Inc. si l'hébergement GitHub Pages est confirmé
-    address: '',
-    contact: '',
+    name: 'GitHub, Inc. (GitHub Pages)',
+    address: '88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis',
+    contact: 'https://support.github.com',
   },
   privacy: {
-    controller: '',
-    rightsContact: '',
-    retentionLeads: '', // durée de conservation des demandes
-    processors: '', // sous-traitants (hébergement, base de données, e-mail)
+    rightsContact: 'h.bouhiza@yahoo.fr',
+    retentionLeads:
+      'Les demandes sont conservées 3 ans à compter du dernier échange, puis supprimées. Si une mission est signée, les données utiles sont conservées pendant la relation contractuelle et les durées légales qui s’appliquent ensuite.',
+    processors:
+      'GitHub, Inc. (hébergement du site) et Supabase, Inc. (base de données des demandes). Ces prestataires peuvent traiter des données hors de l’Union européenne, avec les garanties prévues par le RGPD (clauses contractuelles types ou cadre de protection des données UE–États-Unis).',
   },
   /** Traceurs : aucun traceur optionnel n'est installé. Changer seulement après inventaire. */
   optionalTrackers: false,
@@ -241,16 +245,15 @@ export const LEGAL = {
 };
 
 export const MISSING_LEGAL = [
-  ['Raison sociale de l’éditeur', LEGAL.editorName],
+  ['Prénom et nom de l’entrepreneur (suivis de « EI »)', LEGAL.editorName],
   ['Forme juridique et capital', LEGAL.legalForm],
-  ['Adresse de l’éditeur', LEGAL.address],
+  ['Adresse de l’établissement ou de domiciliation', LEGAL.address],
   ['Immatriculation', LEGAL.registration],
   ['Directeur de la publication', LEGAL.publicationDirector],
   ['Contact vérifié', LEGAL.contactEmail],
   ['Nom de l’hébergeur', LEGAL.host.name],
   ['Adresse de l’hébergeur', LEGAL.host.address],
   ['Contact de l’hébergeur', LEGAL.host.contact],
-  ['Responsable du traitement', LEGAL.privacy.controller],
   ['Contact pour l’exercice des droits', LEGAL.privacy.rightsContact],
   ['Durée de conservation des demandes', LEGAL.privacy.retentionLeads],
   ['Sous-traitants', LEGAL.privacy.processors],

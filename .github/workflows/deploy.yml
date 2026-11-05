@@ -26,6 +26,11 @@ jobs:
       - run: npm ci
       # Production : tarifs internes masqués ; échoue tant que les mentions légales manquent.
       - run: npm run build:production
+        env:
+          # Formulaire relié à la fonction submit_lead du projet Supabase (clé publique, protégée par RLS).
+          PUBLIC_LEADS_ADAPTER: supabase
+          PUBLIC_LEADS_ENDPOINT: https://etsxerdfshbkmqzfzzbi.supabase.co/rest/v1/rpc/submit_lead
+          PUBLIC_SUPABASE_ANON_KEY: sb_publishable_ulclSqYXAZvDITZzx8RC7A_DpwSjY27
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

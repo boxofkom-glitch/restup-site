@@ -9,6 +9,22 @@ const metadata = {
   description: 'Informations sur l’éditeur et l’hébergeur du site RESTUP.',
   robots: { index: false, follow: true },
 };
+
+const editorRows = [
+  ['Éditeur', LEGAL.editorName],
+  ['Statut', LEGAL.legalForm],
+  ['Adresse', LEGAL.address],
+  ['Immatriculation', LEGAL.registration],
+  ...(LEGAL.vatNumber ? [['TVA intracommunautaire', LEGAL.vatNumber]] : []),
+  ['Directeur de la publication', LEGAL.publicationDirector],
+  ['E-mail', LEGAL.contactEmail],
+  ['Téléphone', LEGAL.phone],
+];
+const hostRows = [
+  ['Hébergeur', LEGAL.host.name],
+  ['Adresse', LEGAL.host.address],
+  ['Contact', LEGAL.host.contact],
+];
 ---
 
 <Layout metadata={metadata}>
@@ -18,42 +34,31 @@ const metadata = {
       <section>
         <h2 class="ru-h3">Éditeur du site</h2>
         <dl class="mt-3 space-y-2">
-          <div>
-            <dt class="inline font-bold">Raison sociale :</dt><dd class="inline"><F value={LEGAL.editorName} /></dd>
-          </div>
-          <div>
-            <dt class="inline font-bold">Forme juridique et capital :</dt><dd class="inline">
-              <F value={LEGAL.legalForm} />
-            </dd>
-          </div>
-          <div><dt class="inline font-bold">Adresse :</dt><dd class="inline"><F value={LEGAL.address} /></dd></div>
-          <div>
-            <dt class="inline font-bold">Immatriculation :</dt><dd class="inline"><F value={LEGAL.registration} /></dd>
-          </div>
           {
-            LEGAL.vatNumber && (
+            editorRows.map(([label, value]) => (
               <div>
-                <>
-                  <dt class="inline font-bold">TVA intracommunautaire : </dt>
-                  <dd class="inline">{LEGAL.vatNumber}</dd>
-                </>
+                <dt class="inline font-bold">{label} : </dt>
+                <dd class="inline">
+                  <F value={value} />
+                </dd>
               </div>
-            )
+            ))
           }
-          <div>
-            <dt class="inline font-bold">Directeur de la publication :</dt><dd class="inline">
-              <F value={LEGAL.publicationDirector} />
-            </dd>
-          </div>
-          <div><dt class="inline font-bold">Contact :</dt><dd class="inline"><F value={LEGAL.contactEmail} /></dd></div>
         </dl>
       </section>
       <section>
         <h2 class="ru-h3">Hébergeur</h2>
         <dl class="mt-3 space-y-2">
-          <div><dt class="inline font-bold">Nom :</dt><dd class="inline"><F value={LEGAL.host.name} /></dd></div>
-          <div><dt class="inline font-bold">Adresse :</dt><dd class="inline"><F value={LEGAL.host.address} /></dd></div>
-          <div><dt class="inline font-bold">Contact :</dt><dd class="inline"><F value={LEGAL.host.contact} /></dd></div>
+          {
+            hostRows.map(([label, value]) => (
+              <div>
+                <dt class="inline font-bold">{label} : </dt>
+                <dd class="inline">
+                  <F value={value} />
+                </dd>
+              </div>
+            ))
+          }
         </dl>
       </section>
       <section>

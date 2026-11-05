@@ -9,7 +9,9 @@ create table if not exists public.restup_lead_settings (
   rate_max int not null default 5,
   rate_window interval not null default interval '10 minutes'
 );
-insert into public.restup_lead_settings (id) values (true) on conflict do nothing;
+insert into public.restup_lead_settings (id, mode, allowed_origins)
+values (true, 'production', array['https://restup.solutions', 'https://www.restup.solutions', 'http://localhost:4321'])
+on conflict do nothing;
 
 -- Liste blanche commune au formulaire : divisions (service null) et prestations publiées.
 create table if not exists public.restup_lead_allowlist (

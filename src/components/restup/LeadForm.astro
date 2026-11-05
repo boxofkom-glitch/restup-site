@@ -396,11 +396,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: supabase
-            ? {
-                'Content-Type': 'application/json',
-                apikey: form.dataset.anon!,
-                Authorization: `Bearer ${form.dataset.anon}`,
-              }
+            ? { 'Content-Type': 'application/json', apikey: form.dataset.anon! }
             : { 'Content-Type': 'application/json', 'Idempotency-Key': key },
           body: supabase ? JSON.stringify({ payload: lead, idempotency_key: key }) : body,
         });
