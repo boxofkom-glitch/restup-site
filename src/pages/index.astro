@@ -6,7 +6,7 @@ import Faq from '~/components/restup/Faq.astro';
 import CtaBlock from '~/components/restup/CtaBlock.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE } from 'astrowind:config';
-import { DOMAINS, SIGNATURE } from '~/data/site';
+import { DOMAINS, DIVISION_LABELS, SIGNATURE } from '~/data/site';
 import { divisionBySlug } from '~/lib/catalogue';
 import ambiance from '~/assets/images/brand/illustration.jpg';
 import logo from '~/assets/images/brand/logo-restup.png';
@@ -124,9 +124,9 @@ const faq = [
                     <li>
                       <a
                         href={d.path}
-                        class="inline-block rounded-lg border border-white/25 px-2.5 py-1.5 text-sm font-bold italic hover:border-[var(--ru-yellow)] hover:text-[var(--ru-yellow)]"
+                        class="inline-block rounded-lg border border-white/25 px-2.5 py-1.5 text-sm font-semibold hover:border-[var(--ru-yellow)] hover:text-[var(--ru-yellow)]"
                       >
-                        {d.name}
+                        {DIVISION_LABELS[d.slug].label}
                       </a>
                     </li>
                   );

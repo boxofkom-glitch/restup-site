@@ -16,6 +16,20 @@ export const DIVISION_ORDER = [
   'rest-supply',
 ];
 
+/** Libellés courts du menu (le nom officiel REST'… reste affiché sur les pages). */
+export const DIVISION_LABELS: Record<string, { label: string; hint: string }> = {
+  'rest-coaching': { label: 'Pilotage & rentabilité', hint: 'Coûts, marges, indicateurs' },
+  'rest-eat': { label: 'Livraison & vente à emporter', hint: 'Carte, prix, plateformes' },
+  'rest-people': { label: 'Équipe & organisation', hint: 'Rôles, intégration, service' },
+  'rest-studio': { label: 'Identité & supports', hint: 'Marque, carte, emballages' },
+  'rest-media': { label: 'Communication', hint: 'Réseaux, contenus, lancement' },
+  'rest-tech': { label: 'Outils & données', hint: 'Caisse, commandes, reporting' },
+  'rest-academy': { label: 'Formation', hint: 'Ateliers pour vos équipes' },
+  'rest-franchise': { label: 'Franchise & réseau', hint: 'Dupliquer votre concept' },
+  'rest-space': { label: 'Implantation & local', hint: 'Lieu, flux, aménagement' },
+  'rest-supply': { label: 'Achats & stocks', hint: 'Fournisseurs, commandes' },
+};
+
 /** Les six domaines de la direction artistique, sous le héros de l'accueil. */
 export const DOMAINS = [
   {

@@ -2,7 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import Logo from '~/components/Logo.astro';
 import { divisions } from '~/lib/catalogue';
-import { DIVISION_ORDER, SIGNATURE, LEGAL } from '~/data/site';
+import { DIVISION_ORDER, DIVISION_LABELS, SIGNATURE, LEGAL } from '~/data/site';
 
 const ordered = DIVISION_ORDER.map((slug) => divisions.find((d) => d.slug === slug)!);
 const year = new Date().getFullYear();

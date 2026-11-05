@@ -1,43 +1,46 @@
 ---
-// En-tête RESTUP : ligne institutionnelle + ligne des dix divisions sur grand écran,
-// panneau « Divisions » sur largeur intermédiaire, menu complet sur mobile.
+// En-tête RESTUP sur une seule ligne : les dix divisions sont regroupées sous « Expertises »
+// (panneau sur ordinateur, liste dans le menu mobile), avec des libellés courts.
 import { Icon } from 'astro-icon/components';
 import Logo from '~/components/Logo.astro';
 import { divisions } from '~/lib/catalogue';
-import { DIVISION_ORDER } from '~/data/site';
+import { DIVISION_ORDER, DIVISION_LABELS } from '~/data/site';
 
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-const ordered = DIVISION_ORDER.map((slug) => divisions.find((d) => d.slug === slug)!);
+const ordered = DIVISION_ORDER.map((slug) => ({
+  ...divisions.find((d) => d.slug === slug)!,
+  ...DIVISION_LABELS[slug],
+}));
 const links = [
   { text: 'Offres', href: '/offres' },
   { text: 'À propos', href: '/a-propos' },
   { text: 'Contact', href: '/contact' },
 ];
 const current = (href: string) => (path === href ? 'page' : undefined);
-const inDivisions = path.startsWith('/expertises');
+const inExpertises = path.startsWith('/expertises');
 ---
 
 <header class="sticky top-0 z-40 border-b border-white/10 bg-[rgb(24_5_37/0.96)] backdrop-blur">
-  <div class="ru-container flex items-center justify-between gap-4 h-[72px]">
+  <div class="ru-container flex items-center justify-between gap-4 h-[76px]">
     <a href="/" class="shrink-0" aria-label="RESTUP, accueil"><Logo /></a>
 
     <nav aria-label="Navigation principale" class="hidden lg:flex items-center gap-1">
-      <div class="relative xl:hidden" data-disclosure>
+      <div class="relative" data-disclosure>
         <button
           type="button"
           class:list={[
             'flex items-center gap-1 px-3 py-2 rounded-lg font-semibold hover:bg-white/10',
-            inDivisions && 'text-[var(--ru-yellow)]',
+            inExpertises && 'text-[var(--ru-yellow)]',
           ]}
           aria-expanded="false"
-          aria-controls="ru-divisions-panel"
+          aria-controls="ru-expertises-panel"
         >
-          Divisions <Icon name="tabler:chevron-down" class="w-4 h-4" aria-hidden="true" />
+          Expertises <Icon name="tabler:chevron-down" class="w-4 h-4" aria-hidden="true" />
         </button>
         <div
-          id="ru-divisions-panel"
+          id="ru-expertises-panel"
           hidden
-          class="absolute left-0 top-full mt-2 w-[460px] rounded-2xl border border-white/15 bg-[var(--ru-brand-900)] p-4 shadow-2xl"
+          class="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[620px] rounded-2xl border border-white/15 bg-[var(--ru-brand-900)] p-3 shadow-2xl"
         >
           <ul class="grid grid-cols-2 gap-1">
             {
@@ -46,23 +49,23 @@ const inDivisions = path.startsWith('/expertises');
                   <a
                     href={d.path}
                     aria-current={current(d.path)}
-                    class="block rounded-lg px-3 py-2 font-semibold hover:bg-white/10 aria-[current=page]:bg-[var(--ru-yellow)] aria-[current=page]:text-[var(--ru-ink)]"
+                    class="block rounded-xl px-3 py-2.5 hover:bg-white/10 aria-[current=page]:bg-white/10"
                   >
-                    {d.name}
+                    <span class="block font-bold text-white">{d.label}</span>
+                    <span class="block text-sm ru-soft">{d.hint}</span>
                   </a>
                 </li>
               ))
             }
           </ul>
-          <a href="/expertises" class="ru-link mt-3 inline-block px-3">Toutes les expertises</a>
+          <a
+            href="/expertises"
+            class="mt-2 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 font-bold text-[var(--ru-yellow)] hover:bg-white/10"
+          >
+            Toutes les expertises <Icon name="tabler:arrow-right" class="w-5 h-5" aria-hidden="true" />
+          </a>
         </div>
       </div>
-      <a
-        href="/expertises"
-        aria-current={current('/expertises')}
-        class="hidden xl:block px-3 py-2 rounded-lg font-semibold hover:bg-white/10 aria-[current=page]:text-[var(--ru-yellow)]"
-        >Expertises</a
-      >
       {
         links.map((l) => (
           <a
@@ -92,36 +95,14 @@ const inDivisions = path.startsWith('/expertises');
     </div>
   </div>
 
-  <!-- Ligne des dix divisions, toujours visible sur grand écran -->
-  <nav aria-label="Divisions RESTUP" class="hidden xl:block border-t border-white/10">
-    <ul class="ru-container flex flex-wrap items-center gap-x-1 gap-y-1 py-2 text-[0.9375rem]">
-      {
-        ordered.map((d) => (
-          <li>
-            <a
-              href={d.path}
-              aria-current={current(d.path)}
-              class="block rounded-lg px-2.5 py-1.5 font-bold italic tracking-wide hover:bg-white/10 aria-[current=page]:bg-[var(--ru-yellow)] aria-[current=page]:text-[var(--ru-ink)]"
-            >
-              {d.name}
-            </a>
-          </li>
-        ))
-      }
-      <li class="ml-auto">
-        <a href="/expertises" class="ru-link text-sm">Toutes les expertises</a>
-      </li>
-    </ul>
-  </nav>
-
   <!-- Menu mobile et tablette -->
   <div
     id="ru-mobile-menu"
     hidden
-    class="lg:hidden border-t border-white/10 bg-[var(--ru-brand-900)] max-h-[calc(100dvh-72px)] overflow-y-auto"
+    class="lg:hidden border-t border-white/10 bg-[var(--ru-brand-900)] max-h-[calc(100dvh-76px)] overflow-y-auto"
   >
     <nav aria-label="Menu" class="ru-container py-4">
-      <p class="ru-eyebrow mb-2">Divisions</p>
+      <p class="ru-eyebrow mb-2">Expertises</p>
       <ul class="grid sm:grid-cols-2 gap-1">
         {
           ordered.map((d) => (
@@ -129,9 +110,9 @@ const inDivisions = path.startsWith('/expertises');
               <a
                 href={d.path}
                 aria-current={current(d.path)}
-                class="block rounded-lg px-3 py-3 font-bold italic hover:bg-white/10 aria-[current=page]:bg-[var(--ru-yellow)] aria-[current=page]:text-[var(--ru-ink)]"
+                class="block rounded-lg px-3 py-3 font-semibold hover:bg-white/10 aria-[current=page]:text-[var(--ru-yellow)]"
               >
-                {d.name}
+                {d.label}
               </a>
             </li>
           ))
@@ -180,7 +161,7 @@ const inDivisions = path.startsWith('/expertises');
 
   const disclosure = document.querySelector<HTMLElement>('[data-disclosure]');
   if (disclosure) {
-    wire(disclosure.querySelector('button')!, disclosure.querySelector<HTMLElement>('#ru-divisions-panel')!);
+    wire(disclosure.querySelector('button')!, disclosure.querySelector<HTMLElement>('#ru-expertises-panel')!);
   }
 
   const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-toggle]');

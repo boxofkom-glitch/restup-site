@@ -7,7 +7,7 @@ import DivisionCard from '~/components/restup/DivisionCard.astro';
 import Faq from '~/components/restup/Faq.astro';
 import CtaBlock from '~/components/restup/CtaBlock.astro';
 import { divisions, divisionBySlug, type PublicDivision } from '~/lib/catalogue';
-import { DIVISION_META, DIVISION_FAQ, QUOTE_NOTE } from '~/data/site';
+import { DIVISION_META, DIVISION_FAQ, DIVISION_LABELS, QUOTE_NOTE } from '~/data/site';
 
 export function getStaticPaths() {
   return divisions.map((d) => ({ params: { slug: d.slug }, props: { division: d } }));
@@ -27,9 +27,15 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
 ---
 
 <Layout metadata={metadata}>
-  <section class="ru-corners ru-dark">
-    <div class="ru-container pt-8 pb-14 md:pb-20">
-      <Crumbs items={[{ text: 'Accueil', href: '/' }, { text: 'Expertises', href: '/expertises' }, { text: d.name }]} />
+  <section class="ru-corners ru-corners-sm ru-dark">
+    <div class="ru-container pt-20 pb-14 md:pb-20">
+      <Crumbs
+        items={[
+          { text: 'Accueil', href: '/' },
+          { text: 'Expertises', href: '/expertises' },
+          { text: DIVISION_LABELS[d.slug].label },
+        ]}
+      />
       <p class="mt-10 text-lg font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</p>
       <h1 class="ru-display ru-h1 mt-3 max-w-4xl">{d.h1}</h1>
       <p class="ru-lead mt-5">{d.summary}</p>
