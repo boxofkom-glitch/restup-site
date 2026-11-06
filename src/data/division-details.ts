@@ -558,8 +558,7 @@ export const DIVISION_DETAILS: Record<string, DivisionDetail> = {
   'rest-supply': {
     photo: supply,
     photoAlt: 'Étal de fruits et légumes frais',
-    promise:
-      'Des achats maîtrisés : de meilleures conditions, moins de pertes et des commandes passées au bon moment.',
+    promise: 'Des achats maîtrisés : de meilleures conditions, moins de pertes et des commandes passées au bon moment.',
     signs: [
       'Vos prix d’achat augmentent et vous ne savez pas si vous pouvez obtenir mieux.',
       'Vous êtes régulièrement en rupture sur certains produits, en surstock sur d’autres.',

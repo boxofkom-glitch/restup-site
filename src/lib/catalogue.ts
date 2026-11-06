@@ -57,6 +57,8 @@ export interface PublicService {
   /** Libellé de prix prêt à afficher (« 390 – 690 € HT » ou « Sur devis »). */
   price: string;
   unit?: string;
+  /** Montant plancher HT (bas de fourchette), seulement quand le prix est affiché. */
+  minAmount?: number;
   /** Mention de statut affichée en prévisualisation uniquement. */
   internalNote?: string;
   quotePath: string;
@@ -87,6 +89,13 @@ function formatPrice(p: InternalPrice) {
   return `${euro(p.amount!)} € ${p.tax ?? 'HT'}`;
 }
 
+function floor(p: InternalPrice) {
+  return p.mode === 'range' ? p.min : p.mode === 'fixed' ? p.amount : undefined;
+}
+
+/** Montant formaté, ex. « 1 890 € ». */
+export const formatEuro = (n: number) => `${euro(n)} €`;
+
 function project(s: RawService): PublicService | null {
   if (isPreview) {
     const pending = s.serviceStatus !== 'approved' || s.priceStatus !== 'approved';
@@ -96,6 +105,7 @@ function project(s: RawService): PublicService | null {
       scope: s.scope,
       price: formatPrice(s.internalPrice),
       unit: s.internalPrice.mode === 'quote' ? undefined : s.internalPrice.unitLabel,
+      minAmount: floor(s.internalPrice),
       internalNote: pending ? 'Tarif indicatif interne' : undefined,
       quotePath: s.quotePath,
     };
@@ -108,6 +118,7 @@ function project(s: RawService): PublicService | null {
     scope: s.scope,
     price: priced ? formatPrice(s.internalPrice) : 'Sur devis',
     unit: priced ? s.internalPrice.unitLabel : undefined,
+    minAmount: priced ? floor(s.internalPrice) : undefined,
     quotePath: s.quotePath,
   };
 }
@@ -141,3 +152,15 @@ export const formChoices = divisions.map((d) => ({
 
 /** Fiches exclues du sitemap (noindex). */
 export const noindexPaths = divisions.filter((d) => !d.indexable).map((d) => d.path);
+
+/**
+ * Prix « à partir de » d'une formule : somme des k premières prestations (entrée, plat, dessert)
+ * de la division la moins chère, calculée sur les seuls prix affichés.
+ */
+export function formulaFrom(k: number): number | undefined {
+  const sums = divisions
+    .map((d) => d.services.slice(0, k))
+    .filter((list) => list.length === k && list.every((s) => typeof s.minAmount === 'number'))
+    .map((list) => list.reduce((t, s) => t + (s.minAmount ?? 0), 0));
+  return sums.length ? Math.min(...sums) : undefined;
+}

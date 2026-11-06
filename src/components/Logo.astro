@@ -1,6 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '~/assets/images/brand/logo-restup.png';
+// Le logo est blanc et jaune : il est toujours posé sur une pastille violette pour rester lisible sur fond clair.
 ---
 
-<Image src={logo} alt="RESTUP" width={96} height={91} class="h-11 w-auto" loading="eager" />
+<span
+  class="inline-grid place-items-center rounded-[14px] bg-gradient-to-br from-[#5b21b6] to-[#2e0a5c] p-1.5 shadow-[0_10px_22px_-12px_rgb(46_10_92/0.9)]"
+>
+  <Image src={logo} alt="RESTUP" width={96} height={91} class="h-10 w-auto" loading="eager" />
+</span>
