@@ -1,6 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components';
 import type { PublicDivision } from '~/lib/catalogue';
+import { Image } from 'astro:assets';
+import { DIVISION_DETAILS } from '~/data/division-details';
 
 export interface Props {
   division: PublicDivision;
@@ -8,9 +10,21 @@ export interface Props {
 }
 const { division: d, headingLevel: H = 'h3' } = Astro.props;
 const label = d.available ? `Découvrir ${d.name}` : 'Voir la division';
+const x = DIVISION_DETAILS[d.slug];
 ---
 
 <a href={d.path} class="ru-card ru-card-link group flex flex-col">
+  {
+    x && (
+      <Image
+        src={x.photo}
+        alt=""
+        widths={[400, 640]}
+        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+        class="mb-5 w-full aspect-[16/9] object-cover rounded-2xl"
+      />
+    )
+  }
   <span class="text-sm font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</span>
   <H class="ru-h3 mt-2 text-white">{d.h1}</H>
   <p class="mt-2 ru-soft flex-1">{d.summary}</p>

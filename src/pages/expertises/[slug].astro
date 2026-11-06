@@ -8,6 +8,8 @@ import Faq from '~/components/restup/Faq.astro';
 import CtaBlock from '~/components/restup/CtaBlock.astro';
 import { divisions, divisionBySlug, type PublicDivision } from '~/lib/catalogue';
 import { DIVISION_META, DIVISION_FAQ, DIVISION_LABELS, QUOTE_NOTE } from '~/data/site';
+import { DIVISION_DETAILS } from '~/data/division-details';
+import { Image } from 'astro:assets';
 
 export function getStaticPaths() {
   return divisions.map((d) => ({ params: { slug: d.slug }, props: { division: d } }));
@@ -23,12 +25,16 @@ const metadata = {
 };
 const related = d.relatedSlugs.map((s) => divisionBySlug(s)!);
 const ctaHref = `/diagnostic?expertise=${d.slug}`;
+const x = DIVISION_DETAILS[d.slug];
+const faqItems = [DIVISION_FAQ[d.slug], ...(x?.faq ?? [])];
 const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
 ---
 
 <Layout metadata={metadata}>
   <section class="ru-corners ru-corners-sm ru-dark">
     <div class="ru-container pt-20 pb-14 md:pb-20">
+      <div class="grid lg:grid-cols-[1.15fr_1fr] gap-10 items-end">
+      <div>
       <Crumbs
         items={[
           { text: 'Accueil', href: '/' },
@@ -39,6 +45,7 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
       <p class="mt-10 text-lg font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</p>
       <h1 class="ru-display ru-h1 mt-3 max-w-4xl">{d.h1}</h1>
       <p class="ru-lead mt-5">{d.summary}</p>
+      {x && <p class="mt-4 max-w-2xl text-lg font-semibold text-white">{x.promise}</p>}
       {!d.available && <p class="ru-tag ru-tag-warn mt-5">Disponibilité à confirmer</p>}
       <div class="mt-8 flex flex-col sm:flex-row gap-3">
         <a href={ctaHref} class="ru-btn ru-btn-primary">{d.available ? d.cta : 'Se renseigner'}</a>
@@ -50,8 +57,43 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
           )
         }
       </div>
+      </div>
+      {
+        x && (
+          <div class="relative">
+            <div class="absolute -inset-2 rounded-[1.75rem] bg-[var(--ru-yellow)] rotate-2" aria-hidden="true" />
+            <Image
+              src={x.photo}
+              alt={x.photoAlt}
+              widths={[480, 720, 960]}
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              class="relative w-full aspect-[4/3] object-cover rounded-3xl"
+              loading="eager"
+            />
+          </div>
+        )
+      }
+      </div>
     </div>
   </section>
+
+  {
+    x && (
+      <section class="ru-section ru-deep" aria-labelledby="signes">
+        <div class="ru-container">
+          <h2 id="signes" class="ru-display ru-h2">Vous vous reconnaissez ?</h2>
+          <ul class="mt-8 grid sm:grid-cols-2 gap-4">
+            {x.signs.map((t) => (
+              <li class="ru-card flex gap-3">
+                <Icon name="tabler:alert-circle" class="w-6 h-6 shrink-0 text-[var(--ru-yellow)]" aria-hidden="true" />
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <section class="ru-section ru-light" aria-labelledby="perimetre">
     <div class="ru-container grid md:grid-cols-2 gap-10">
@@ -68,6 +110,49 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
       </div>
     </div>
   </section>
+
+  {
+    x && (
+      <section class="ru-section ru-dark" aria-labelledby="apports">
+        <div class="ru-container">
+          <h2 id="apports" class="ru-display ru-h2">Ce que ça peut vous apporter</h2>
+          <ul class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {x.benefits.map((b) => (
+              <li class="ru-card">
+                <span class="ru-icon bg-[var(--ru-yellow)] text-[var(--ru-ink)]" aria-hidden="true">
+                  <Icon name={b.icon} class="w-7 h-7" />
+                </span>
+                <h3 class="ru-h3 mt-4 text-white">{b.title}</h3>
+                <p class="mt-2 ru-soft">{b.text}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-6 ru-soft text-sm max-w-3xl">
+            Aucun résultat n’est garanti : les effets dépendent du diagnostic et de la mise en œuvre des actions.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    x && (
+      <section class="ru-section ru-light" aria-labelledby="deroule">
+        <div class="ru-container">
+          <h2 id="deroule" class="ru-display ru-h2">Comment ça se passe</h2>
+          <ol class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {x.steps.map((st, i) => (
+              <li class="ru-card">
+                <span class="ru-display text-4xl text-[var(--ru-brand-800)]">0{i + 1}</span>
+                <h3 class="ru-h3 mt-3">{st.title}</h3>
+                <p class="mt-2 text-[var(--ru-muted-light)]">{st.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
 
   {
     d.available && (
@@ -89,7 +174,7 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
     )
   }
 
-  <Faq items={[DIVISION_FAQ[d.slug]]} title="Question fréquente" />
+  <Faq items={faqItems} title={faqItems.length > 1 ? 'Questions fréquentes' : 'Question fréquente'} />
 
   <section class="ru-section ru-deep" aria-labelledby="associees">
     <div class="ru-container">
