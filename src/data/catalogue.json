@@ -22,8 +22,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 390,
-            "max": 690,
+            "min": 190,
+            "max": 340,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -38,8 +38,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1500,
-            "max": 3500,
+            "min": 730,
+            "max": 1700,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par mission"
@@ -54,8 +54,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 750,
-            "max": 1800,
+            "min": 370,
+            "max": 880,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par mois et par établissement"
@@ -84,8 +84,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 450,
-            "max": 850,
+            "min": 220,
+            "max": 420,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -100,8 +100,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1200,
-            "max": 2800,
+            "min": 590,
+            "max": 1350,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par carte et par établissement"
@@ -116,8 +116,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 2500,
-            "max": 5000,
+            "min": 1220,
+            "max": 2450,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par projet"
@@ -146,8 +146,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 450,
-            "max": 850,
+            "min": 220,
+            "max": 420,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -162,8 +162,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 900,
-            "max": 2000,
+            "min": 440,
+            "max": 980,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -178,8 +178,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1800,
-            "max": 3800,
+            "min": 880,
+            "max": 1850,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par mission"
@@ -208,8 +208,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 650,
-            "max": 1300,
+            "min": 320,
+            "max": 640,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par concept"
@@ -224,8 +224,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1500,
-            "max": 3500,
+            "min": 730,
+            "max": 1700,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par concept"
@@ -240,8 +240,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 800,
-            "max": 2500,
+            "min": 390,
+            "max": 1200,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par lot"
@@ -270,8 +270,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 350,
-            "max": 750,
+            "min": 170,
+            "max": 370,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -286,8 +286,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 750,
-            "max": 1600,
+            "min": 370,
+            "max": 780,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par campagne"
@@ -302,8 +302,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 900,
-            "max": 2200,
+            "min": 440,
+            "max": 1100,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par mois"
@@ -332,8 +332,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 500,
-            "max": 950,
+            "min": 240,
+            "max": 460,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -348,8 +348,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1200,
-            "max": 2600,
+            "min": 590,
+            "max": 1250,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par projet"
@@ -364,8 +364,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 2000,
-            "max": 5000,
+            "min": 980,
+            "max": 2450,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par projet"
@@ -394,8 +394,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 450,
-            "max": 850,
+            "min": 220,
+            "max": 420,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par demi-journée et par groupe"
@@ -410,8 +410,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 850,
-            "max": 1650,
+            "min": 420,
+            "max": 810,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par jour et par groupe"
@@ -426,8 +426,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 2000,
-            "max": 5000,
+            "min": 980,
+            "max": 2450,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par parcours"
@@ -456,8 +456,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 900,
-            "max": 1800,
+            "min": 440,
+            "max": 880,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par concept"
@@ -472,8 +472,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 3000,
-            "max": 7500,
+            "min": 1460,
+            "max": 3650,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par concept"
@@ -513,8 +513,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 600,
-            "max": 1200,
+            "min": 290,
+            "max": 590,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par projet"
@@ -529,8 +529,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 900,
-            "max": 2000,
+            "min": 440,
+            "max": 980,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par local"
@@ -545,8 +545,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1500,
-            "max": 3500,
+            "min": 730,
+            "max": 1700,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par projet"
@@ -575,8 +575,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 450,
-            "max": 850,
+            "min": 220,
+            "max": 420,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -591,8 +591,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 1000,
-            "max": 2400,
+            "min": 490,
+            "max": 1150,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par établissement"
@@ -607,8 +607,8 @@
           "priceStatus": "approved",
           "internalPrice": {
             "mode": "range",
-            "min": 450,
-            "max": 1100,
+            "min": 220,
+            "max": 540,
             "currency": "EUR",
             "tax": "HT",
             "unitLabel": "par mois et par établissement"
