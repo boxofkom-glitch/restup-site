@@ -1,0 +1,708 @@
+/*
+ * Thème clair « premium » : fond jaune, sections bleu ciel, encarts violets, animations discrètes.
+ * Placé dans la couche « components » après restup.css : les utilitaires Tailwind gardent la priorité.
+ * Tout mouvement s'arrête si le visiteur a demandé moins d'animations.
+ */
+
+@layer components {
+  body {
+    background: var(--ru-paper);
+    color: var(--ru-text);
+  }
+
+  /* ---------- Sections ---------- */
+  .ru-dark {
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgb(143 214 255 / 0.35), transparent 60%),
+      linear-gradient(180deg, #fff3b8 0%, var(--ru-paper) 100%);
+    color: var(--ru-text);
+  }
+  .ru-deep {
+    background:
+      radial-gradient(900px 420px at 10% 0%, rgb(255 255 255 / 0.7), transparent 60%),
+      linear-gradient(180deg, var(--ru-sky) 0%, #cdeaff 100%);
+    color: var(--ru-text);
+  }
+  .ru-light {
+    background: #fffdf4;
+    color: var(--ru-text);
+  }
+  .ru-night {
+    background: radial-gradient(800px 400px at 90% 0%, rgb(91 33 182 / 0.55), transparent 65%), var(--ru-night);
+    color: #efe7fb;
+  }
+
+  /* ---------- Textes hors encarts ---------- */
+  .ru-display,
+  .ru-light .ru-display,
+  .ru-light h1,
+  .ru-light h2,
+  .ru-light h3 {
+    color: var(--ru-text);
+  }
+  .ru-lead,
+  .ru-light .ru-lead {
+    color: var(--ru-text-muted);
+  }
+  .ru-soft,
+  .ru-light .ru-soft {
+    color: var(--ru-text-muted);
+  }
+  .ru-eyebrow,
+  .ru-light .ru-eyebrow {
+    color: var(--ru-violet);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ru-eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--ru-violet), var(--ru-sky-strong));
+  }
+  .ru-signature {
+    color: var(--ru-text);
+  }
+  .ru-signature::before,
+  .ru-signature::after {
+    background: var(--ru-violet);
+  }
+  .ru-prose a,
+  a.ru-link,
+  .ru-light .ru-prose a,
+  .ru-light a.ru-link {
+    color: var(--ru-violet);
+  }
+  .ru-crumbs ol {
+    color: var(--ru-text-muted);
+  }
+
+  /* Titre éditorial (serif) pour les pages haut de gamme */
+  .ru-serif {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Boutons ---------- */
+  .ru-btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    padding-inline: 26px;
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.25s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .ru-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+    translate: -120% 0;
+    transition: translate 0.7s ease;
+    pointer-events: none;
+  }
+  .ru-btn:hover::after {
+    translate: 120% 0;
+  }
+  .ru-btn:hover {
+    transform: translateY(-2px);
+  }
+  .ru-btn-primary,
+  .ru-light .ru-btn-primary {
+    background: linear-gradient(135deg, #6d28d9, var(--ru-violet) 55%, #3b0f80);
+    color: #fff;
+    box-shadow: 0 10px 24px -10px rgb(91 33 182 / 0.7);
+  }
+  .ru-btn-primary:hover,
+  .ru-light .ru-btn-primary:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9 55%, #4c1d95);
+    box-shadow: 0 16px 32px -12px rgb(91 33 182 / 0.75);
+  }
+  .ru-btn-ghost,
+  .ru-light .ru-btn-ghost {
+    border-color: rgb(34 17 61 / 0.75);
+    color: var(--ru-text);
+    background: rgb(255 255 255 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  .ru-btn-ghost:hover,
+  .ru-light .ru-btn-ghost:hover {
+    background: #fff;
+    border-color: var(--ru-text);
+  }
+  .ru-btn-sun {
+    background: var(--ru-sun);
+    color: var(--ru-text);
+    box-shadow: 0 10px 24px -12px rgb(255 200 0 / 0.9);
+  }
+  .ru-btn-sun:hover {
+    background: #fff07a;
+  }
+
+  /* ---------- Encarts violets ---------- */
+  .ru-card,
+  .ru-light .ru-card {
+    --x: -400px;
+    --y: -400px;
+    border-radius: 24px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background:
+      radial-gradient(320px circle at var(--x) var(--y), rgb(255 228 94 / 0.16), transparent 70%),
+      linear-gradient(155deg, #5b21b6 0%, #3b0f80 55%, var(--ru-violet-deep) 100%);
+    color: #fff;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.15) inset,
+      0 22px 44px -26px rgb(46 10 92 / 0.65);
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.35s ease,
+      border-color 0.2s ease;
+  }
+  .ru-card-link:hover,
+  .ru-card.ru-lift:hover {
+    transform: translateY(-6px);
+    border-color: rgb(255 228 94 / 0.8);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.15) inset,
+      0 34px 60px -28px rgb(46 10 92 / 0.75);
+  }
+  .ru-card,
+  .ru-on-violet {
+    --ru-on: 1;
+  }
+  .ru-card :is(h2, h3, h4, .ru-display, .ru-h3),
+  .ru-on-violet :is(h2, h3, h4, .ru-display, .ru-h3) {
+    color: #fff;
+  }
+  .ru-card :is(.ru-soft, .ru-lead),
+  .ru-on-violet :is(.ru-soft, .ru-lead) {
+    color: #e6dafb;
+  }
+  .ru-card .ru-eyebrow,
+  .ru-on-violet .ru-eyebrow {
+    color: var(--ru-sun);
+  }
+  .ru-card .ru-btn-primary,
+  .ru-on-violet .ru-btn-primary {
+    background: var(--ru-sun);
+    color: var(--ru-text);
+    box-shadow: 0 10px 24px -12px rgb(255 200 0 / 0.8);
+  }
+  .ru-card .ru-btn-primary:hover,
+  .ru-on-violet .ru-btn-primary:hover {
+    background: #fff07a;
+  }
+  .ru-card .ru-btn-ghost,
+  .ru-on-violet .ru-btn-ghost {
+    border-color: rgb(255 255 255 / 0.6);
+    color: #fff;
+    background: transparent;
+  }
+  .ru-card a.ru-link,
+  .ru-on-violet a.ru-link {
+    color: var(--ru-sun);
+  }
+  .ru-card .ru-icon,
+  .ru-on-violet .ru-icon {
+    background: var(--ru-sun);
+    color: var(--ru-text);
+  }
+  .ru-icon {
+    background: linear-gradient(135deg, var(--ru-violet), #3b0f80);
+    color: var(--ru-sun);
+    border-radius: 16px;
+  }
+  .ru-price {
+    color: var(--ru-sun);
+  }
+
+  /* Carte blanche « papier », pour les contenus de lecture sur fond coloré */
+  .ru-paper-card {
+    border-radius: 24px;
+    background: rgb(255 255 255 / 0.78);
+    border: 1px solid rgb(34 17 61 / 0.08);
+    box-shadow: 0 18px 40px -30px rgb(46 10 92 / 0.45);
+    backdrop-filter: blur(8px);
+    padding: clamp(20px, 2.5vw, 28px);
+  }
+
+  /* Étiquettes */
+  .ru-tag {
+    background: rgb(143 214 255 / 0.35);
+    color: #0b4a63;
+    border-color: rgb(14 116 144 / 0.35);
+  }
+  .ru-tag-warn {
+    background: #fff3b0;
+    color: #5c4a00;
+    border-color: #e6c800;
+  }
+  .ru-card .ru-tag {
+    background: rgb(143 214 255 / 0.18);
+    color: #d6f1ff;
+    border-color: rgb(143 214 255 / 0.45);
+  }
+
+  /* ---------- Décors ---------- */
+  .ru-corners::before {
+    background: linear-gradient(135deg, var(--ru-violet), #7c3aed);
+    opacity: 1;
+  }
+  .ru-corners::after {
+    background: linear-gradient(
+      115deg,
+      transparent 0 46%,
+      var(--ru-sky-strong) 46% 52%,
+      transparent 52% 60%,
+      var(--ru-violet) 60%
+    );
+  }
+  .ru-glow {
+    background: radial-gradient(closest-side, rgb(143 214 255 / 0.55), transparent 72%);
+  }
+
+  /* Aurore animée derrière les héros */
+  .ru-aurora {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ru-aurora span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.6;
+    animation: ru-float 18s ease-in-out infinite alternate;
+  }
+  .ru-aurora span:nth-child(1) {
+    width: 46vw;
+    height: 46vw;
+    max-width: 640px;
+    max-height: 640px;
+    left: -10%;
+    top: -20%;
+    background: #ffe45e;
+  }
+  .ru-aurora span:nth-child(2) {
+    width: 40vw;
+    height: 40vw;
+    max-width: 560px;
+    max-height: 560px;
+    right: -8%;
+    top: -10%;
+    background: #8fd6ff;
+    animation-duration: 22s;
+    animation-delay: -6s;
+  }
+  .ru-aurora span:nth-child(3) {
+    width: 30vw;
+    height: 30vw;
+    max-width: 420px;
+    max-height: 420px;
+    right: 22%;
+    bottom: -25%;
+    background: #b794f4;
+    opacity: 0.45;
+    animation-duration: 26s;
+    animation-delay: -12s;
+  }
+  @keyframes ru-float {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(6%, 8%, 0) scale(1.08);
+    }
+    100% {
+      transform: translate3d(-4%, 4%, 0) scale(0.96);
+    }
+  }
+
+  /* Grain très léger pour un rendu « papier » */
+  .ru-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.18;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.13 0 0 0 0 0.07 0 0 0 0 0.24 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Image flottante */
+  .ru-floaty {
+    animation: ru-bob 7s ease-in-out infinite;
+  }
+  .ru-floaty-slow {
+    animation: ru-bob 9s ease-in-out infinite;
+    animation-delay: -3s;
+  }
+  @keyframes ru-bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(var(--rot, 0deg));
+    }
+    50% {
+      transform: translateY(-12px) rotate(var(--rot, 0deg));
+    }
+  }
+
+  /* Bandeau défilant violet */
+  .ru-ribbon {
+    background: linear-gradient(90deg, var(--ru-violet-deep), var(--ru-violet), var(--ru-violet-deep));
+    color: #fff;
+    transform: rotate(-1.2deg);
+    margin-block: -6px;
+    box-shadow: 0 20px 40px -25px rgb(46 10 92 / 0.8);
+  }
+  .ru-ribbon .ru-ribbon-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    white-space: nowrap;
+    font-family: var(--aw-font-heading);
+    font-style: italic;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+  }
+  .ru-ribbon .ru-ribbon-item::after {
+    content: '✦';
+    color: var(--ru-sun);
+    font-style: normal;
+  }
+
+  /* Texte en dégradé violet → bleu */
+  .ru-gradient-text {
+    background: linear-gradient(100deg, var(--ru-violet) 10%, #7c3aed 45%, #0ea5e9 90%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: ru-pan 8s ease-in-out infinite alternate;
+  }
+  @keyframes ru-pan {
+    to {
+      background-position: 100% 0;
+    }
+  }
+
+  /* FAQ */
+  .ru-faq details,
+  .ru-light .ru-faq details {
+    border-color: rgb(34 17 61 / 0.14);
+  }
+  .ru-faq summary::after,
+  .ru-light .ru-faq summary::after {
+    color: var(--ru-violet);
+  }
+  .ru-faq details > div {
+    color: var(--ru-text-muted);
+  }
+
+  /* Pastilles de navigation (ancres) */
+  .ru-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: rgb(255 255 255 / 0.7);
+    border: 1px solid rgb(34 17 61 / 0.12);
+    color: var(--ru-text);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .ru-chip:hover,
+  .ru-chip[aria-current='true'] {
+    background: var(--ru-violet);
+    border-color: var(--ru-violet);
+    color: #fff;
+  }
+
+  /* ---------- La Carte (menu de restaurant) ---------- */
+  .ru-menu {
+    position: relative;
+    border-radius: 28px;
+    background: radial-gradient(600px 300px at 100% 0%, rgb(255 228 94 / 0.25), transparent 60%), #fffdf6;
+    border: 1px solid rgb(91 33 182 / 0.18);
+    box-shadow:
+      0 0 0 8px #fffdf6,
+      0 0 0 9px rgb(91 33 182 / 0.25),
+      0 40px 80px -50px rgb(46 10 92 / 0.6);
+    padding: clamp(24px, 4vw, 56px);
+  }
+  .ru-menu-title {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--ru-violet);
+  }
+  .ru-menu-course {
+    font-family: var(--aw-font-heading);
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #0e7490;
+  }
+  .ru-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-inline: -16px;
+    width: calc(100% + 32px);
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+    cursor: pointer;
+  }
+  .ru-menu-item:hover {
+    background: rgb(91 33 182 / 0.06);
+  }
+  .ru-menu-line {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .ru-menu-name {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+    color: var(--ru-text);
+  }
+  .ru-menu-dots {
+    flex: 1;
+    min-width: 24px;
+    border-bottom: 2px dotted rgb(34 17 61 / 0.3);
+    translate: 0 -5px;
+  }
+  .ru-menu-price {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 700;
+    color: var(--ru-violet);
+    white-space: nowrap;
+  }
+  .ru-menu-desc {
+    margin-top: 4px;
+    color: var(--ru-text-muted);
+    font-size: 0.95rem;
+  }
+  .ru-menu-more {
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ru-violet);
+  }
+  .ru-menu-item:hover .ru-menu-more {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .ru-ornament {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--ru-violet);
+  }
+  .ru-ornament::before,
+  .ru-ornament::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(91 33 182 / 0.45), transparent);
+  }
+
+  /* Fiche détaillée (boîte de dialogue) */
+  dialog.ru-dialog {
+    width: min(640px, calc(100vw - 32px));
+    max-height: calc(100dvh - 48px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 28px;
+    background: #fffdf6;
+    color: var(--ru-text);
+    box-shadow: 0 50px 120px -40px rgb(26 8 51 / 0.8);
+    overflow: auto;
+  }
+  dialog.ru-dialog::backdrop {
+    background: rgb(26 8 51 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  dialog.ru-dialog[open] {
+    animation: ru-pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  dialog.ru-dialog[open]::backdrop {
+    animation: ru-fade 0.3s ease;
+  }
+  @keyframes ru-pop {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.97);
+    }
+  }
+  @keyframes ru-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .ru-dialog-head {
+    position: relative;
+    padding: 28px 28px 24px;
+    background: linear-gradient(155deg, #5b21b6, #3b0f80 60%, var(--ru-violet-deep));
+    color: #fff;
+  }
+  .ru-dialog-body {
+    padding: 24px 28px 28px;
+  }
+  .ru-fact {
+    border-radius: 16px;
+    background: var(--ru-sky);
+    padding: 12px 14px;
+  }
+  .ru-fact dt {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0e7490;
+  }
+  .ru-fact dd {
+    margin-top: 2px;
+    font-weight: 700;
+  }
+  .ru-check li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .ru-check li::before {
+    content: '';
+    flex: 0 0 20px;
+    height: 20px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322113d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E")
+        center / 12px no-repeat,
+      var(--ru-sun);
+  }
+
+  /* Formulaire : champs sur fond clair */
+  .ru-form input,
+  .ru-form select,
+  .ru-form textarea {
+    border-radius: 14px;
+    border-color: rgb(34 17 61 / 0.35);
+  }
+}
+
+/* --- Surcharges des styles non classés en couche (magic.css) --- */
+.ru-band {
+  color: var(--ru-sun);
+  background: linear-gradient(135deg, var(--ru-violet), #3b0f80);
+  box-shadow: 0 12px 24px -14px rgb(91 33 182 / 0.9);
+}
+.ru-card .ru-band,
+.ru-on-violet .ru-band {
+  color: var(--ru-text);
+  background: var(--ru-sun);
+}
+.mu-dots {
+  background-image: radial-gradient(rgb(34 17 61 / 0.12) 1px, transparent 1px);
+}
+.mu-gradient-text {
+  background: linear-gradient(100deg, var(--ru-violet), #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ru-aurora span,
+  .ru-floaty,
+  .ru-floaty-slow,
+  .ru-gradient-text,
+  dialog.ru-dialog[open],
+  dialog.ru-dialog[open]::backdrop {
+    animation: none !important;
+  }
+  .ru-btn:hover,
+  .ru-card-link:hover,
+  .ru-card.ru-lift:hover {
+    transform: none;
+  }
+}
+
+/* Garder l'élévation fluide des encarts animés à l'apparition */
+html.mu-js .ru-card.mu-fade {
+  transition:
+    opacity 0.7s ease,
+    filter 0.7s ease,
+    translate 0.7s ease,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s ease,
+    border-color 0.2s ease;
+  transition-delay: var(--delay, 0s), var(--delay, 0s), var(--delay, 0s), 0s, 0s, 0s;
+}
+
+/* Pied de page violet nuit */
+.ru-night .ru-soft {
+  color: #cfc2e6;
+}
+.ru-night .ru-signature {
+  color: #fff;
+}
+.ru-night .ru-signature::before,
+.ru-night .ru-signature::after {
+  background: var(--ru-sun);
+}
+.ru-night a.ru-link {
+  color: var(--ru-sun);
+}
+
+/* Fiches ouvertes depuis un encart violet : on revient aux couleurs de lecture */
+dialog.ru-dialog .ru-dialog-body,
+dialog.ru-dialog .ru-dialog-body :is(h2, h3, h4) {
+  color: var(--ru-text);
+}
+dialog.ru-dialog .ru-dialog-body .ru-btn-primary {
+  background: linear-gradient(135deg, #6d28d9, var(--ru-violet) 55%, #3b0f80);
+  color: #fff;
+}
+dialog.ru-dialog .ru-dialog-body .ru-btn-ghost {
+  border-color: rgb(34 17 61 / 0.75);
+  color: var(--ru-text);
+  background: #fff;
+}
+
+/* Formulaire posé dans un encart violet */
+.ru-card .ru-form .ru-help,
+.ru-card.ru-form .ru-help {
+  color: #d9ccf2;
+}
+.ru-card .ru-form .ru-req,
+.ru-card.ru-form .ru-req {
+  color: var(--ru-sun);
+}
+.ru-card .ru-form .ru-error,
+.ru-card.ru-form .ru-error {
+  color: var(--ru-error-dark);
+}

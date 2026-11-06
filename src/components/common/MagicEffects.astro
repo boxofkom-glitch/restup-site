@@ -9,6 +9,18 @@
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Apparition automatique des encarts et titres de section (hors premier écran), en cascade
+  document.querySelectorAll<HTMLElement>('main section:not(:first-child)').forEach((sec) => {
+    sec
+      .querySelectorAll<HTMLElement>('.ru-card, .ru-paper-card, .ru-menu, h2.ru-display, [data-reveal]')
+      .forEach((el) => {
+        if (el.classList.contains('mu-fade')) return;
+        const i = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+        el.classList.add('mu-fade');
+        el.style.setProperty('--delay', Math.min(i, 6) * 0.07 + 's');
+      });
+  });
+
   // Apparition douce (BlurFade)
   const fades = document.querySelectorAll<HTMLElement>('.mu-fade');
   if (reduce || !('IntersectionObserver' in window)) {
@@ -21,7 +33,7 @@
           e.target.classList.add('is-in');
           io.unobserve(e.target);
         }),
-      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+      { threshold: 0, rootMargin: '0px 0px -8% 0px' }
     );
     fades.forEach((el) => io.observe(el));
   }
@@ -47,7 +59,7 @@
 
   // Projecteur qui suit la souris (MagicCard)
   if (matchMedia('(pointer: fine)').matches) {
-    document.querySelectorAll<HTMLElement>('.mu-card').forEach((card) => {
+    document.querySelectorAll<HTMLElement>('.mu-card, .ru-card').forEach((card) => {
       card.addEventListener('pointermove', (e) => {
         const r = card.getBoundingClientRect();
         card.style.setProperty('--x', `${e.clientX - r.left}px`);

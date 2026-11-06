@@ -12,6 +12,7 @@ const ordered = DIVISION_ORDER.map((slug) => ({
   ...DIVISION_LABELS[slug],
 }));
 const links = [
+  { text: 'La Carte', href: '/tarifs' },
   { text: 'Offres', href: '/offres' },
   { text: 'À propos', href: '/a-propos' },
   { text: 'Contact', href: '/contact' },
@@ -20,7 +21,9 @@ const current = (href: string) => (path === href ? 'page' : undefined);
 const inExpertises = path.startsWith('/expertises');
 ---
 
-<header class="sticky top-0 z-40 border-b border-white/10 bg-[rgb(24_5_37/0.96)] backdrop-blur">
+<header
+  class="sticky top-0 z-40 border-b border-[rgb(34_17_61/0.08)] bg-[rgb(255_248_220/0.82)] backdrop-blur-xl backdrop-saturate-150"
+>
   <div class="ru-container flex items-center justify-between gap-4 h-[76px]">
     <a href="/" class="shrink-0" aria-label="RESTUP, accueil"><Logo /></a>
 
@@ -29,8 +32,8 @@ const inExpertises = path.startsWith('/expertises');
         <button
           type="button"
           class:list={[
-            'flex items-center gap-1 px-3 py-2 rounded-lg font-semibold hover:bg-white/10',
-            inExpertises && 'text-[var(--ru-yellow)]',
+            'flex items-center gap-1 px-3 py-2 rounded-lg font-semibold hover:bg-[rgb(91_33_182/0.08)]',
+            inExpertises && 'text-[var(--ru-violet)]',
           ]}
           aria-expanded="false"
           aria-controls="ru-expertises-panel"
@@ -40,7 +43,7 @@ const inExpertises = path.startsWith('/expertises');
         <div
           id="ru-expertises-panel"
           hidden
-          class="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[620px] rounded-2xl border border-white/15 bg-[var(--ru-brand-900)] p-3 shadow-2xl"
+          class="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[620px] rounded-2xl border border-[rgb(34_17_61/0.1)] bg-[#fffdf6] p-3 shadow-[0_40px_80px_-40px_rgb(46_10_92/0.55)]"
         >
           <ul class="grid grid-cols-2 gap-1">
             {
@@ -49,9 +52,9 @@ const inExpertises = path.startsWith('/expertises');
                   <a
                     href={d.path}
                     aria-current={current(d.path)}
-                    class="block rounded-xl px-3 py-2.5 hover:bg-white/10 aria-[current=page]:bg-white/10"
+                    class="block rounded-xl px-3 py-2.5 hover:bg-[rgb(91_33_182/0.08)] aria-[current=page]:bg-[rgb(91_33_182/0.08)]"
                   >
-                    <span class="block font-bold text-white">{d.label}</span>
+                    <span class="block font-bold text-[var(--ru-text)]">{d.label}</span>
                     <span class="block text-sm ru-soft">{d.hint}</span>
                   </a>
                 </li>
@@ -60,7 +63,7 @@ const inExpertises = path.startsWith('/expertises');
           </ul>
           <a
             href="/expertises"
-            class="mt-2 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 font-bold text-[var(--ru-yellow)] hover:bg-white/10"
+            class="mt-2 flex items-center justify-between rounded-xl bg-[var(--ru-violet)] px-4 py-3 font-bold text-white hover:bg-[var(--ru-violet-deep)]"
           >
             Toutes les expertises <Icon name="tabler:arrow-right" class="w-5 h-5" aria-hidden="true" />
           </a>
@@ -71,7 +74,7 @@ const inExpertises = path.startsWith('/expertises');
           <a
             href={l.href}
             aria-current={current(l.href)}
-            class="px-3 py-2 rounded-lg font-semibold hover:bg-white/10 aria-[current=page]:text-[var(--ru-yellow)]"
+            class="px-3 py-2 rounded-lg font-semibold hover:bg-[rgb(91_33_182/0.08)] aria-[current=page]:text-[var(--ru-violet)]"
           >
             {l.text}
           </a>
@@ -83,7 +86,7 @@ const inExpertises = path.startsWith('/expertises');
       <a href="/diagnostic" class="ru-btn ru-btn-primary hidden sm:inline-flex">Demander un diagnostic</a>
       <button
         type="button"
-        class="lg:hidden grid place-items-center w-12 h-12 rounded-xl border border-white/25"
+        class="lg:hidden grid place-items-center w-12 h-12 rounded-xl border border-[rgb(34_17_61/0.25)]"
         aria-expanded="false"
         aria-controls="ru-mobile-menu"
         data-mobile-toggle
@@ -99,7 +102,7 @@ const inExpertises = path.startsWith('/expertises');
   <div
     id="ru-mobile-menu"
     hidden
-    class="lg:hidden border-t border-white/10 bg-[var(--ru-brand-900)] max-h-[calc(100dvh-76px)] overflow-y-auto"
+    class="lg:hidden border-t border-[rgb(34_17_61/0.08)] bg-[#fffdf6] max-h-[calc(100dvh-76px)] overflow-y-auto"
   >
     <nav aria-label="Menu" class="ru-container py-4">
       <p class="ru-eyebrow mb-2">Expertises</p>
@@ -110,7 +113,7 @@ const inExpertises = path.startsWith('/expertises');
               <a
                 href={d.path}
                 aria-current={current(d.path)}
-                class="block rounded-lg px-3 py-3 font-semibold hover:bg-white/10 aria-[current=page]:text-[var(--ru-yellow)]"
+                class="block rounded-lg px-3 py-3 font-semibold hover:bg-[rgb(91_33_182/0.08)] aria-[current=page]:text-[var(--ru-violet)]"
               >
                 {d.label}
               </a>
@@ -119,14 +122,14 @@ const inExpertises = path.startsWith('/expertises');
         }
       </ul>
       <a href="/expertises" class="ru-link mt-2 inline-block px-3 py-2">Toutes les expertises</a>
-      <ul class="mt-4 border-t border-white/10 pt-4 space-y-1">
+      <ul class="mt-4 border-t border-[rgb(34_17_61/0.1)] pt-4 space-y-1">
         {
           links.map((l) => (
             <li>
               <a
                 href={l.href}
                 aria-current={current(l.href)}
-                class="block rounded-lg px-3 py-3 font-semibold hover:bg-white/10"
+                class="block rounded-lg px-3 py-3 font-semibold hover:bg-[rgb(91_33_182/0.08)]"
               >
                 {l.text}
               </a>

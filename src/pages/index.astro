@@ -4,10 +4,12 @@ import { Image } from 'astro:assets';
 import Layout from '~/layouts/PageLayout.astro';
 import Faq from '~/components/restup/Faq.astro';
 import CtaBlock from '~/components/restup/CtaBlock.astro';
+import DivisionCard from '~/components/restup/DivisionCard.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE } from 'astrowind:config';
-import { DOMAINS, DIVISION_LABELS, SIGNATURE } from '~/data/site';
-import { divisionBySlug } from '~/lib/catalogue';
+import { DOMAINS, DIVISION_LABELS, DIVISION_ORDER, SIGNATURE } from '~/data/site';
+import { DIVISION_DETAILS } from '~/data/division-details';
+import { divisionBySlug, divisions, formatEuro, formulaFrom } from '~/lib/catalogue';
 import ambiance from '~/assets/images/brand/illustration.jpg';
 import logo from '~/assets/images/brand/logo-restup.png';
 
@@ -15,7 +17,7 @@ const metadata = {
   title: 'Accompagnement des restaurateurs en France · RESTUP',
   ignoreTitleTemplate: true,
   description:
-    'RESTUP réunit des expertises pour piloter votre restaurant, préparer une ouverture et structurer votre développement. Présentez votre projet.',
+    'RESTUP réunit dix expertises pour piloter votre restaurant, préparer une ouverture et structurer votre développement. Découvrez la carte des prestations et présentez votre projet.',
 };
 
 // Organisation limitée aux faits connus : nom, site, logo et signature.
@@ -31,15 +33,38 @@ const structuredData = [
   },
 ];
 
+const ordered = DIVISION_ORDER.map((slug) => divisionBySlug(slug)!);
+const serviceCount = divisions.reduce((t, d) => t + d.services.length, 0);
+const fromDecouverte = formulaFrom(1);
+const fromSignature = formulaFrom(2);
+
+const stats = [
+  { value: ordered.length, label: 'expertises spécialisées' },
+  { value: serviceCount, label: 'prestations à la carte' },
+  { value: 3, label: 'formules, de l’entrée au dessert' },
+  { value: 1, label: 'interlocuteur pour tout votre projet' },
+];
+
 const steps = [
   {
-    title: 'Votre situation',
-    text: 'Décrivez votre établissement, vos contraintes et la décision que vous devez prendre.',
+    icon: 'tabler:message-circle',
+    title: 'Vous présentez votre situation',
+    text: 'Votre établissement, vos contraintes et la décision à prendre. Quelques lignes suffisent pour démarrer.',
   },
-  { title: 'Vos priorités', text: 'Nous définissons avec vous le périmètre de travail et les éléments à examiner.' },
   {
-    title: 'Votre plan d’action',
-    text: 'À l’issue de la mission, vous disposez des livrables convenus pour décider de la suite.',
+    icon: 'tabler:target-arrow',
+    title: 'Nous ciblons la priorité',
+    text: 'Nous identifions le sujet à traiter en premier et l’expertise à mobiliser, avec un périmètre clair.',
+  },
+  {
+    icon: 'tabler:file-certificate',
+    title: 'Vous recevez un devis précis',
+    text: 'Livrables, délai, calendrier et prix : tout est écrit avant de commencer. Rien n’est dû sans votre accord.',
+  },
+  {
+    icon: 'tabler:rocket',
+    title: 'On passe à l’action',
+    text: 'Le travail démarre, avec des points réguliers et des livrables prêts à l’emploi pour décider de la suite.',
   },
 ];
 
@@ -56,75 +81,234 @@ const faq = [
     q: 'Faut-il transmettre mes chiffres dès le premier message ?',
     a: 'Indiquez votre objectif et le stade de votre projet. Les documents utiles seront précisés si une mission se dessine.',
   },
+  {
+    q: 'Combien coûte un accompagnement ?',
+    a: 'Chaque prestation a sa fourchette de prix sur La Carte, avec son délai et ses livrables. Le montant exact est fixé dans le devis, avant tout démarrage.',
+  },
 ];
 ---
 
 <Layout metadata={metadata}>
   <StructuredData slot="head" schema={structuredData} />
 
-  <!-- Héros : texte à gauche, ambiance à droite ; sur mobile le texte passe avant l'image -->
-  <section class="ru-corners ru-dark">
-    <div class="ru-glow -left-1/4 top-0" aria-hidden="true"></div>
+  <!-- Héros -->
+  <section class="ru-dark relative isolate overflow-hidden ru-grain">
+    <div class="ru-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="mu-dots" aria-hidden="true"></div>
     <div
-      class="ru-container grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-12 items-center pt-16 pb-14 md:pt-24 md:pb-20"
+      class="ru-container relative grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center pt-14 pb-20 md:pt-20 md:pb-28"
     >
       <div>
-        <h1 class="ru-display ru-h1">
-          Le partenaire des restaurateurs qui passent au <span class="ru-band">niveau supérieur.</span>
+        <p class="ru-eyebrow mu-rise">Le partenaire des restaurateurs</p>
+        <h1 class="ru-display ru-h1 mu-rise mt-5 !text-[clamp(2.4rem,1.4rem+4.4vw,4.75rem)]" style="--delay:.06s">
+          Passez au <span class="ru-band">niveau supérieur.</span>
         </h1>
-        <p class="ru-signature mt-7">{SIGNATURE}</p>
-        <p class="ru-lead mt-6">
-          Rentabilité, organisation, équipe, concept, visibilité et développement. Retrouvez les expertises RESTUP pour
-          structurer votre projet et définir vos prochaines actions.
+        <p class="ru-signature mu-rise mt-7" style="--delay:.12s">{SIGNATURE}</p>
+        <p class="ru-lead mu-rise mt-6 !text-xl" style="--delay:.18s">
+          Rentabilité, livraison, équipe, marque, achats, ouverture : dix expertises réunies sous une même enseigne, et
+          une carte claire pour choisir exactement ce dont votre restaurant a besoin.
         </p>
-        <div class="mt-8 flex flex-col sm:flex-row gap-3">
-          <a href="/diagnostic" class="ru-btn ru-btn-primary">Demander un diagnostic</a>
-          <a href="/expertises" class="ru-btn ru-btn-ghost">Découvrir les expertises</a>
+        <div class="mu-rise mt-9 flex flex-col sm:flex-row gap-3" style="--delay:.24s">
+          <a href="/diagnostic" class="ru-btn ru-btn-primary !min-h-[56px] !px-8 text-lg">
+            Demander un diagnostic <Icon name="tabler:arrow-right" class="w-5 h-5" aria-hidden="true" />
+          </a>
+          <a href="/tarifs" class="ru-btn ru-btn-ghost !min-h-[56px] !px-8 text-lg">
+            <Icon name="tabler:tools-kitchen-2" class="w-5 h-5" aria-hidden="true" /> Voir la carte
+          </a>
         </div>
+        <ul
+          class="mu-rise mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-[var(--ru-text-muted)]"
+          style="--delay:.3s"
+        >
+          <li class="flex items-center gap-2">
+            <Icon name="tabler:circle-check-filled" class="w-5 h-5 text-[var(--ru-violet)]" aria-hidden="true" />Devis
+            précis avant tout démarrage
+          </li>
+          <li class="flex items-center gap-2">
+            <Icon name="tabler:circle-check-filled" class="w-5 h-5 text-[var(--ru-violet)]" aria-hidden="true" />Délais
+            et livrables annoncés
+          </li>
+          <li class="flex items-center gap-2">
+            <Icon name="tabler:circle-check-filled" class="w-5 h-5 text-[var(--ru-violet)]" aria-hidden="true" />Basé à
+            Bordeaux, partout en France
+          </li>
+        </ul>
       </div>
-      <div class="relative mx-auto w-full max-w-[460px] lg:max-w-none">
-        <div class="relative overflow-hidden rounded-[20px] border border-white/15 aspect-[4/5]">
+
+      <!-- Composition visuelle -->
+      <div class="relative mx-auto w-full max-w-[520px] mu-rise" style="--delay:.2s">
+        <div
+          class="absolute -inset-3 rounded-[36px] bg-gradient-to-br from-[var(--ru-violet)] to-[#0ea5e9] rotate-3 opacity-90"
+          aria-hidden="true"
+        >
+        </div>
+        <div class="relative overflow-hidden rounded-[30px] aspect-[4/5] shadow-[0_50px_100px_-40px_rgb(46_10_92/0.8)]">
           <Image
             src={ambiance}
             alt=""
-            widths={[400, 640, 920]}
+            widths={[420, 640, 900]}
             sizes="(min-width: 1024px) 40vw, 90vw"
             class="absolute inset-0 w-full h-full object-cover object-[50%_45%]"
             loading="eager"
             fetchpriority="high"
           />
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-[var(--ru-brand-900)] via-transparent to-[rgb(43_7_70/0.35)]"
-            aria-hidden="true"
-          >
+        </div>
+        <div
+          class="ru-floaty absolute left-2 sm:-left-6 md:-left-14 top-8 w-56 sm:w-60 rounded-2xl bg-white/90 backdrop-blur p-4 shadow-[0_30px_60px_-30px_rgb(46_10_92/0.7)]"
+          style="--rot:-3deg"
+        >
+          <p class="ru-menu-course">La Carte · Formule Signature</p>
+          <p class="ru-serif mt-1 text-xl font-semibold italic text-[var(--ru-text)]">Entrée + Plat</p>
+          <p class="mt-1 text-sm text-[var(--ru-text-muted)]">
+            à partir de <b class="text-[var(--ru-violet)]"
+              >{fromSignature ? `${formatEuro(fromSignature)} HT` : 'sur devis'}</b
+            >
+          </p>
+        </div>
+        <div
+          class="ru-floaty-slow absolute right-2 sm:-right-4 md:-right-10 bottom-10 w-56 sm:w-64 rounded-2xl bg-[var(--ru-violet-deep)] text-white p-4 shadow-[0_30px_60px_-30px_rgb(46_10_92/0.9)]"
+          style="--rot:2deg"
+        >
+          <p class="text-xs font-black uppercase tracking-widest text-[var(--ru-sun)]">REST’EAT · Audit livraison</p>
+          <p class="mt-2 text-sm text-[#e6dafb]">Délai indicatif</p>
+          <p class="font-bold">1 à 2 semaines</p>
+          <div class="mt-3 h-2 rounded-full bg-white/15">
+            <div class="h-2 w-3/4 rounded-full bg-[var(--ru-sun)]"></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Les six domaines -->
-  <section class="ru-section ru-deep" aria-labelledby="domaines">
+  <!-- Bandeau défilant -->
+  <div class="ru-ribbon py-4 relative z-10" aria-hidden="true">
+    <div class="mu-marquee" style="--duration:38s">
+      {
+        [0, 1].map(() => (
+          <div class="mu-marquee__track">
+            {ordered.map((d) => (
+              <span class="ru-ribbon-item">{d.name}</span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Chiffres -->
+  <section class="ru-light pt-20 pb-6" aria-label="RESTUP en chiffres">
     <div class="ru-container">
-      <p class="ru-eyebrow">Nos domaines</p>
+      <ul class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {
+          stats.map((s, i) => (
+            <li class="ru-paper-card text-center mu-fade" style={`--delay:${i * 0.08}s`}>
+              <p class="ru-serif text-5xl md:text-6xl font-bold text-[var(--ru-violet)]">
+                <span data-ticker={s.value}>{s.value}</span>
+              </p>
+              <p class="mt-2 font-semibold text-[var(--ru-text-muted)]">{s.label}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Les expertises -->
+  <section class="ru-section ru-light" aria-labelledby="expertises">
+    <div class="ru-container">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="max-w-2xl">
+          <p class="ru-eyebrow">Les expertises</p>
+          <h2 id="expertises" class="ru-display ru-h2 mt-3">Dix métiers, une seule exigence</h2>
+          <p class="ru-lead mt-4">
+            Chaque division traite un sujet précis du restaurant, avec ses méthodes, ses livrables et ses tarifs.
+          </p>
+        </div>
+        <a href="/expertises" class="ru-btn ru-btn-ghost">Toutes les expertises</a>
+      </div>
+      <ul class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {
+          ordered.map((d) => (
+            <li>
+              <DivisionCard division={d} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- La Carte -->
+  <section class="ru-section ru-deep relative isolate overflow-hidden" aria-labelledby="carte">
+    <div class="ru-container grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <p class="ru-eyebrow">La Carte</p>
+        <h2 id="carte" class="ru-serif mt-3 text-4xl md:text-6xl font-semibold italic">
+          Commandez comme <span class="ru-gradient-text">au restaurant.</span>
+        </h2>
+        <p class="ru-lead mt-5">
+          Une entrée pour cerner le sujet, un plat pour mener le chantier, un dessert pour ancrer les résultats. Chaque
+          prestation affiche son prix, son délai, son contenu et son livrable. Pas de surprise, pas de jargon.
+        </p>
+        <a href="/tarifs" class="ru-btn ru-btn-primary mt-8">Ouvrir la carte</a>
+      </div>
+      <div class="ru-menu" data-reveal>
+        <p class="ru-menu-course text-center">Les formules</p>
+        <p class="ru-menu-title text-center text-4xl mt-1">Menu du moment</p>
+        <ul class="mt-6 space-y-5">
+          <li>
+            <div class="ru-menu-line">
+              <span class="ru-menu-name">Formule Découverte</span><span class="ru-menu-dots" aria-hidden="true"
+              ></span><span class="ru-menu-price"
+                >{fromDecouverte ? `dès ${formatEuro(fromDecouverte)}` : 'Sur devis'}</span
+              >
+            </div>
+            <p class="ru-menu-desc">Entrée · un audit ciblé et vos priorités</p>
+          </li>
+          <li>
+            <div class="ru-menu-line">
+              <span class="ru-menu-name">Formule Signature</span><span class="ru-menu-dots" aria-hidden="true"
+              ></span><span class="ru-menu-price"
+                >{fromSignature ? `dès ${formatEuro(fromSignature)}` : 'Sur devis'}</span
+              >
+            </div>
+            <p class="ru-menu-desc">Entrée + Plat · le choix du chef</p>
+          </li>
+          <li>
+            <div class="ru-menu-line">
+              <span class="ru-menu-name">Formule Grand Chef</span><span class="ru-menu-dots" aria-hidden="true"
+              ></span><span class="ru-menu-price">Entrée · Plat · Dessert</span>
+            </div>
+            <p class="ru-menu-desc">L’expérience complète, avec suivi</p>
+          </li>
+        </ul>
+        <p class="mt-6 text-center text-xs text-[var(--ru-text-muted)]">Prix hors taxes, ajustés au devis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Domaines -->
+  <section class="ru-section ru-dark" aria-labelledby="domaines">
+    <div class="ru-container">
+      <p class="ru-eyebrow">Par où commencer</p>
       <h2 id="domaines" class="ru-display ru-h2 mt-3">Quel sujet voulez-vous traiter en premier ?</h2>
-      <ul class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
+      <ul class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {
           DOMAINS.map((dom) => (
-            <li class="ru-card flex flex-col">
+            <li class="ru-card ru-lift flex flex-col">
               <span class="ru-icon" aria-hidden="true">
                 <Icon name={dom.icon} class="w-7 h-7" />
               </span>
-              <h3 class="ru-h3 mt-4 text-white">{dom.title}</h3>
+              <h3 class="ru-h3 mt-4">{dom.title}</h3>
               <p class="mt-2 ru-soft flex-1">{dom.text}</p>
-              <ul class="mt-4 flex flex-wrap gap-2" aria-label={`Divisions pour ${dom.title}`}>
+              <ul class="mt-5 flex flex-wrap gap-2" aria-label={`Divisions pour ${dom.title}`}>
                 {dom.divisions.map((slug) => {
                   const d = divisionBySlug(slug)!;
                   return (
                     <li>
                       <a
                         href={d.path}
-                        class="inline-block rounded-lg border border-white/25 px-2.5 py-1.5 text-sm font-semibold hover:border-[var(--ru-yellow)] hover:text-[var(--ru-yellow)]"
+                        class="inline-block rounded-full border border-white/30 px-3 py-1.5 text-sm font-semibold hover:bg-[var(--ru-sun)] hover:text-[var(--ru-text)] hover:border-[var(--ru-sun)] transition"
                       >
                         {DIVISION_LABELS[d.slug].label}
                       </a>
@@ -139,16 +323,41 @@ const faq = [
     </div>
   </section>
 
-  <!-- Expérience interactive -->
-  <section class="ru-section ru-dark" aria-labelledby="experience">
+  <!-- Méthode -->
+  <section class="ru-section ru-light" aria-labelledby="methode">
     <div class="ru-container">
+      <div class="text-center max-w-2xl mx-auto">
+        <p class="ru-eyebrow">Méthode</p>
+        <h2 id="methode" class="ru-display ru-h2 mt-3">Un service à la hauteur de votre exigence</h2>
+        <p class="ru-lead mx-auto mt-4">Quatre temps, et tout est écrit avant de commencer.</p>
+      </div>
+      <ol class="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {
+          steps.map((s, i) => (
+            <li class="ru-paper-card relative" data-reveal>
+              <span
+                class="absolute right-5 top-4 ru-serif text-5xl font-bold text-[rgb(91_33_182/0.12)]"
+                aria-hidden="true"
+              >
+                0{i + 1}
+              </span>
+              <span class="ru-icon" aria-hidden="true">
+                <Icon name={s.icon} class="w-7 h-7" />
+              </span>
+              <h3 class="ru-h3 mt-4">{s.title}</h3>
+              <p class="mt-2 text-[var(--ru-text-muted)]">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+
       <a
         href="/experience/index.html"
-        class="ru-card ru-card-link group grid md:grid-cols-[1fr_auto] gap-6 items-center !p-8 md:!p-12"
+        class="ru-card ru-card-link group mt-12 grid md:grid-cols-[1fr_auto] gap-6 items-center !p-8 md:!p-12"
       >
         <div>
           <p class="ru-eyebrow">Expérience interactive</p>
-          <h2 id="experience" class="ru-display ru-h2 mt-3">Du chaos à la croissance, en 4 étapes</h2>
+          <h3 class="ru-display ru-h2 mt-3">Du chaos à la croissance, en 4 étapes</h3>
           <p class="ru-lead mt-3">
             Faites défiler et regardez vos chiffres reprendre forme : la démonstration animée de la méthode RESTUP.
           </p>
@@ -158,33 +367,37 @@ const faq = [
     </div>
   </section>
 
-  <!-- Méthode -->
-  <section class="ru-section ru-dark" aria-labelledby="methode">
-    <div class="ru-container">
-      <p class="ru-eyebrow">Méthode</p>
-      <h2 id="methode" class="ru-display ru-h2 mt-3">Comment se déroule l’accompagnement ?</h2>
-      <ol class="mt-10 grid md:grid-cols-3 gap-4">
-        {
-          steps.map((s, i) => (
-            <li class="ru-card">
-              <span class="font-black italic text-4xl text-[var(--ru-yellow)]" aria-hidden="true">
-                0{i + 1}
-              </span>
-              <h3 class="ru-h3 mt-3 text-white">{s.title}</h3>
-              <p class="mt-2 ru-soft">{s.text}</p>
-            </li>
-          ))
-        }
-      </ol>
-      <a href="/offres" class="ru-link mt-8 inline-block">Voir les formats d’intervention</a>
+  <!-- Aperçu photo des expertises -->
+  <section class="ru-deep py-16 overflow-hidden" aria-hidden="true">
+    <div class="mu-marquee mu-marquee--reverse" style="--duration:60s">
+      {
+        [0, 1].map(() => (
+          <div class="mu-marquee__track">
+            {ordered.map((d) => (
+              <div class="relative w-72 shrink-0 overflow-hidden rounded-3xl">
+                <Image
+                  src={DIVISION_DETAILS[d.slug].photo}
+                  alt=""
+                  widths={[300, 600]}
+                  sizes="288px"
+                  class="w-full aspect-[4/3] object-cover"
+                />
+                <span class="absolute left-3 bottom-3 rounded-full bg-white/90 px-3 py-1 text-xs font-black italic text-[var(--ru-violet)]">
+                  {d.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))
+      }
     </div>
   </section>
 
-  <Faq items={faq} />
+  <Faq items={faq} light />
 
   <CtaBlock
     title="Parlez-nous de votre établissement"
-    text="Dites-nous où vous en êtes et quelle décision vous souhaitez prendre."
+    text="Dites-nous où vous en êtes et quelle décision vous souhaitez prendre. Réponse personnalisée, sans engagement."
     cta="Demander un diagnostic"
     href="/diagnostic"
   />

@@ -1,0 +1,308 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import MenuItem from '~/components/restup/MenuItem.astro';
+import Faq from '~/components/restup/Faq.astro';
+import CtaBlock from '~/components/restup/CtaBlock.astro';
+import { divisions, formatEuro, formulaFrom } from '~/lib/catalogue';
+import { DIVISION_ORDER, DIVISION_LABELS, QUOTE_NOTE } from '~/data/site';
+import { COURSES } from '~/data/service-details';
+
+const metadata = {
+  title: 'La Carte : tarifs et formules · RESTUP',
+  ignoreTitleTemplate: true,
+  description:
+    'Les prestations RESTUP servies comme une carte de restaurant : entrées, plats, desserts et formules. Délais, contenu et livrables pour chaque prestation.',
+};
+
+const ordered = DIVISION_ORDER.map((slug) => divisions.find((d) => d.slug === slug)!).filter((d) => d.available);
+
+const minOf = formulaFrom;
+
+const formulas = [
+  {
+    id: 'decouverte',
+    name: 'Formule Découverte',
+    tagline: 'Pour faire le point, vite et bien.',
+    courses: [0],
+    from: minOf(1),
+    delay: '1 à 2 semaines',
+    text: 'Une entrée dans la division de votre choix : un audit ciblé, une restitution commentée et vos priorités classées.',
+    perks: ['Échange de cadrage', 'Analyse de vos éléments', 'Restitution et priorités écrites'],
+  },
+  {
+    id: 'signature',
+    name: 'Formule Signature',
+    tagline: 'L’équilibre parfait.',
+    courses: [0, 1],
+    from: minOf(2),
+    delay: '5 à 8 semaines',
+    featured: true,
+    text: 'L’entrée pour cerner le sujet, puis le plat pour mener le chantier principal jusqu’au bout, avec des points réguliers.',
+    perks: ['Tout le contenu de la Découverte', 'Le chantier principal mené avec vous', 'Livrables prêts à l’emploi'],
+  },
+  {
+    id: 'grand-chef',
+    name: 'Formule Grand Chef',
+    tagline: 'L’expérience complète.',
+    courses: [0, 1, 2],
+    from: minOf(3),
+    delay: '2 à 3 mois, puis suivi',
+    text: 'Entrée, plat et dessert : le diagnostic, le chantier, puis un suivi ou un déploiement pour ancrer les résultats dans la durée.',
+    perks: ['Tout le contenu de la Signature', 'Suivi ou déploiement accompagné', 'Bilan et ajustements'],
+  },
+];
+---
+
+<Layout metadata={metadata}>
+  <!-- Héros -->
+  <section class="ru-dark relative isolate overflow-hidden ru-grain">
+    <div class="ru-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="ru-container pt-16 pb-14 md:pt-24 md:pb-20 text-center">
+      <p class="ru-eyebrow mu-rise">La Carte RESTUP</p>
+      <h1
+        class="ru-serif mu-rise mt-5 text-5xl md:text-7xl font-semibold italic text-[var(--ru-text)]"
+        style="--delay:.08s"
+      >
+        Composez votre <span class="ru-gradient-text">menu.</span>
+      </h1>
+      <p class="ru-lead mu-rise mx-auto mt-6" style="--delay:.16s">
+        Nos dix expertises servies comme une carte de restaurant. Une entrée pour cerner le sujet, un plat pour mener le
+        chantier, un dessert pour ancrer les résultats. Touchez un plat pour découvrir son délai, son contenu et son
+        livrable.
+      </p>
+      <nav
+        aria-label="Divisions de la carte"
+        class="mu-rise mt-10 flex flex-wrap justify-center gap-2"
+        style="--delay:.24s"
+      >
+        <a href="#formules" class="ru-chip"
+          ><Icon name="tabler:sparkles" class="w-4 h-4" aria-hidden="true" />Formules</a
+        >
+        {
+          ordered.map((d) => (
+            <a href={`#carte-${d.slug}`} class="ru-chip">
+              {DIVISION_LABELS[d.slug].label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <!-- Formules -->
+  <section id="formules" class="ru-section ru-deep scroll-mt-28" aria-labelledby="formules-t">
+    <div class="ru-container">
+      <div class="text-center">
+        <p class="ru-eyebrow">Les formules</p>
+        <h2 id="formules-t" class="ru-serif mt-3 text-4xl md:text-5xl font-semibold italic">Entrée, plat, dessert</h2>
+        <p class="ru-lead mx-auto mt-4">
+          Choisissez la division qui vous concerne, puis la formule. Les prix indiqués sont les tarifs d’entrée les plus
+          bas de la carte ; le devis s’ajuste à votre établissement.
+        </p>
+      </div>
+      <ul class="mt-12 grid lg:grid-cols-3 gap-6 items-stretch">
+        {
+          formulas.map((f) => (
+            <li
+              class:list={[
+                'ru-card ru-lift flex flex-col !p-8',
+                f.featured && 'lg:-translate-y-4 !border-[var(--ru-sun)] ring-2 ring-[var(--ru-sun)]/60',
+              ]}
+            >
+              {f.featured && (
+                <span class="absolute -top-3 left-8 rounded-full bg-[var(--ru-sun)] px-3 py-1 text-xs font-black uppercase tracking-widest text-[var(--ru-text)]">
+                  Le choix du chef
+                </span>
+              )}
+              <p class="ru-menu-course !text-[#bde8ff]">{f.tagline}</p>
+              <h3 class="ru-serif mt-2 text-3xl font-semibold italic">{f.name}</h3>
+              <ul class="mt-5 space-y-2">
+                {COURSES.map((c, i) => (
+                  <li class:list={['flex items-center gap-3', !f.courses.includes(i) && 'opacity-40 line-through']}>
+                    <Icon
+                      name={f.courses.includes(i) ? 'tabler:circle-check-filled' : 'tabler:circle'}
+                      class="w-5 h-5 text-[var(--ru-sun)]"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      <b>{c.label}</b> <span class="ru-soft text-sm">· {c.hint}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p class="mt-6 ru-soft flex-1">{f.text}</p>
+              <p class="mt-6">
+                <span class="block text-sm ru-soft">À partir de</span>
+                <span class="ru-serif text-4xl font-bold text-[var(--ru-sun)]">
+                  {f.from ? `${formatEuro(f.from)} HT` : 'Sur devis'}
+                </span>
+                <span class="block text-sm ru-soft mt-1">Délai indicatif : {f.delay}</span>
+              </p>
+              <button type="button" class="ru-btn ru-btn-primary mt-6" data-open-dialog={`formule-${f.id}`}>
+                Découvrir la formule
+              </button>
+
+              <dialog id={`formule-${f.id}`} class="ru-dialog" aria-labelledby={`formule-${f.id}-t`}>
+                <div class="ru-dialog-head">
+                  <p class="ru-menu-course !text-[var(--ru-sun)]">{f.tagline}</p>
+                  <h2 id={`formule-${f.id}-t`} class="ru-serif mt-2 text-3xl font-semibold italic text-white">
+                    {f.name}
+                  </h2>
+                  <p class="mt-3 text-[#e6dafb]">{f.text}</p>
+                  <button
+                    type="button"
+                    class="absolute right-4 top-4 grid place-items-center w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                    data-close-dialog
+                  >
+                    <Icon name="tabler:x" class="w-5 h-5" aria-hidden="true" />
+                    <span class="sr-only">Fermer la fiche</span>
+                  </button>
+                </div>
+                <div class="ru-dialog-body text-[var(--ru-text)]">
+                  <dl class="grid sm:grid-cols-2 gap-3">
+                    <div class="ru-fact">
+                      <dt>À partir de</dt>
+                      <dd>{f.from ? `${formatEuro(f.from)} HT` : 'Sur devis'}</dd>
+                    </div>
+                    <div class="ru-fact">
+                      <dt>Délai indicatif</dt>
+                      <dd>{f.delay}</dd>
+                    </div>
+                  </dl>
+                  <h3 class="mt-6 font-bold text-lg">Ce qui est inclus</h3>
+                  <ul class="ru-check mt-3 space-y-2">
+                    {f.perks.map((p) => (
+                      <li>{p}</li>
+                    ))}
+                  </ul>
+                  <h3 class="mt-6 font-bold text-lg">Comment la composer</h3>
+                  <p class="mt-2 text-[var(--ru-text-muted)]">
+                    Choisissez une division ci-dessous : la formule reprend
+                    {f.courses.length === 1
+                      ? ' son entrée'
+                      : f.courses.length === 2
+                        ? ' son entrée et son plat'
+                        : ' son entrée, son plat et son dessert'}
+                    . Le prix final est la somme des prestations retenues, ajustée à votre périmètre dans le devis.
+                  </p>
+                  {f.courses.includes(2) && (
+                    <p class="mt-3 text-sm text-[var(--ru-text-muted)]">
+                      Quand le dessert est un suivi mensuel, le prix « à partir de » inclut le premier mois.
+                    </p>
+                  )}
+                  <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <a href={`/diagnostic?offre=${f.id}`} class="ru-btn ru-btn-primary">
+                      Réserver cette formule
+                    </a>
+                    <a href="#carte" class="ru-btn ru-btn-ghost" data-close-dialog-link>
+                      Voir la carte
+                    </a>
+                  </div>
+                </div>
+              </dialog>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- À la carte -->
+  <section id="carte" class="ru-section ru-light scroll-mt-28" aria-labelledby="carte-t">
+    <div class="ru-container max-w-5xl">
+      <div class="ru-menu">
+        <div class="text-center">
+          <p class="ru-menu-course">Servie toute l’année</p>
+          <h2 id="carte-t" class="ru-menu-title mt-2 text-5xl md:text-6xl">À la carte</h2>
+          <p class="ru-ornament mt-5 mx-auto max-w-md">
+            <Icon name="tabler:chef-hat" class="w-6 h-6" aria-hidden="true" />
+          </p>
+        </div>
+
+        <div class="mt-10 space-y-14">
+          {
+            ordered.map((d) => (
+              <article id={`carte-${d.slug}`} class="scroll-mt-28" aria-labelledby={`carte-${d.slug}-t`}>
+                <header class="flex flex-wrap items-end justify-between gap-3 border-b-2 border-[var(--ru-violet)] pb-3">
+                  <div>
+                    <p class="text-sm font-black italic tracking-wide text-[var(--ru-violet)]">{d.name}</p>
+                    <h3 id={`carte-${d.slug}-t`} class="ru-serif text-2xl md:text-3xl font-semibold">
+                      {DIVISION_LABELS[d.slug].label}
+                    </h3>
+                  </div>
+                  <a href={d.path} class="ru-link text-sm">
+                    Découvrir l’expertise
+                  </a>
+                </header>
+                <ul class="mt-4 space-y-1">
+                  {d.services.map((s, i) => (
+                    <li>
+                      <p class="ru-menu-course mt-4">{COURSES[i]?.label ?? 'À la carte'}</p>
+                      <MenuItem service={s} course={i} divisionName={d.name} divisionPath={d.path} />
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+
+        <p class="ru-ornament mt-14 mx-auto max-w-md">
+          <Icon name="tabler:sparkles" class="w-5 h-5" aria-hidden="true" />
+        </p>
+        <p class="mt-6 text-center text-sm text-[var(--ru-text-muted)] max-w-2xl mx-auto">
+          Tarifs hors taxes. {QUOTE_NOTE} Les délais sont indicatifs et démarrent à réception des éléments demandés.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Faq
+    light
+    items={[
+      {
+        q: 'Puis-je commander plusieurs plats dans des divisions différentes ?',
+        a: 'Oui. Beaucoup de projets croisent plusieurs sujets, par exemple la livraison et les achats. Le devis regroupe les prestations retenues dans un calendrier cohérent.',
+      },
+      {
+        q: 'Les prix sont-ils définitifs ?',
+        a: 'Les fourchettes donnent un ordre de grandeur. Le montant exact dépend de la taille de l’établissement, du périmètre retenu et des éléments disponibles. Il est fixé dans le devis, avant tout démarrage.',
+      },
+      {
+        q: 'Comment se passe le paiement ?',
+        a: 'Les modalités de règlement sont précisées dans le devis. Rien n’est dû avant votre accord écrit.',
+      },
+      {
+        q: 'Par où commencer si j’hésite ?',
+        a: 'Commencez par une Formule Découverte : l’entrée vous donne une vision claire de votre situation et des priorités, sans vous engager sur la suite.',
+      },
+    ]}
+  />
+
+  <CtaBlock
+    title="Une table vous attend"
+    text="Décrivez votre établissement et votre sujet : nous vous conseillons le menu le plus adapté."
+    cta="Réserver mon diagnostic"
+    href="/diagnostic"
+  />
+</Layout>
+
+<script>
+  // Le lien « Voir la carte » d'une formule ferme la fiche avant de défiler.
+  document
+    .querySelectorAll<HTMLAnchorElement>('[data-close-dialog-link]')
+    .forEach((a) => a.addEventListener('click', () => a.closest('dialog')?.close()));
+  // Fiches des formules (les plats de la carte ont leur propre script dans MenuItem).
+  document.querySelectorAll<HTMLButtonElement>('[data-open-dialog^="formule-"]').forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const dialog = document.getElementById(btn.dataset.openDialog!) as HTMLDialogElement | null;
+    if (!dialog) return;
+    btn.addEventListener('click', () => dialog.showModal());
+    dialog.querySelector('[data-close-dialog]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>

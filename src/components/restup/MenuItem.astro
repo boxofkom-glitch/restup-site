@@ -1,0 +1,120 @@
+---
+// Une prestation présentée comme un plat de la carte : nom, pointillés, prix.
+// Au clic, une fiche s'ouvre avec le délai, ce qui est inclus et le livrable.
+import { Icon } from 'astro-icon/components';
+import type { PublicService } from '~/lib/catalogue';
+import { COURSES, SERVICE_DETAILS } from '~/data/service-details';
+
+export interface Props {
+  service: PublicService;
+  course: number;
+  divisionName: string;
+  divisionPath?: string;
+}
+const { service: s, course, divisionName, divisionPath } = Astro.props;
+const c = COURSES[course] ?? COURSES[0];
+const x = SERVICE_DETAILS[s.id];
+const dlg = `fiche-${s.id}`;
+---
+
+<button type="button" class="ru-menu-item" data-open-dialog={dlg} aria-haspopup="dialog">
+  <span class="ru-menu-line">
+    <span class="ru-menu-name">{s.name}</span>
+    <span class="ru-menu-dots" aria-hidden="true"></span>
+    <span class="ru-menu-price">{s.price}</span>
+  </span>
+  <span class="ru-menu-desc block">{s.scope}</span>
+  <span class="ru-menu-more">
+    {x ? `${x.delay} · voir la fiche` : 'Voir la fiche'}
+    <Icon name="tabler:arrow-up-right" class="w-4 h-4" aria-hidden="true" />
+  </span>
+</button>
+
+<dialog id={dlg} class="ru-dialog" aria-labelledby={`${dlg}-t`}>
+  <div class="ru-dialog-head">
+    <p class="ru-menu-course !text-[var(--ru-sun)]">{divisionName} · {c.label}</p>
+    <h2 id={`${dlg}-t`} class="ru-serif mt-2 text-3xl font-semibold italic text-white">{s.name}</h2>
+    <p class="mt-3 text-[#e6dafb]">{s.scope}</p>
+    <button
+      type="button"
+      class="absolute right-4 top-4 grid place-items-center w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white"
+      data-close-dialog
+    >
+      <Icon name="tabler:x" class="w-5 h-5" aria-hidden="true" />
+      <span class="sr-only">Fermer la fiche</span>
+    </button>
+  </div>
+  <div class="ru-dialog-body">
+    <dl class="grid sm:grid-cols-2 gap-3">
+      <div class="ru-fact">
+        <dt>Tarif</dt>
+        <dd>
+          {s.price}{s.unit && <span class="block text-sm font-medium text-[var(--ru-text-muted)]">{s.unit}</span>}
+        </dd>
+      </div>
+      {
+        x && (
+          <div class="ru-fact">
+            <dt>Délai indicatif</dt>
+            <dd>{x.delay}</dd>
+          </div>
+        )
+      }
+      {
+        x && (
+          <div class="ru-fact sm:col-span-2 !bg-[#fff3b8]">
+            <dt class="!text-[#7a5d00]">Format</dt>
+            <dd>{x.format}</dd>
+          </div>
+        )
+      }
+    </dl>
+    {
+      x && (
+        <>
+          <h3 class="mt-6 font-bold text-lg">Ce qui est inclus</h3>
+          <ul class="ru-check mt-3 space-y-2">
+            {x.includes.map((i) => (
+              <li>{i}</li>
+            ))}
+          </ul>
+          <h3 class="mt-6 font-bold text-lg">Ce que vous recevez</h3>
+          <p class="mt-2 text-[var(--ru-text-muted)]">{x.deliverable}</p>
+          <p class="mt-5 rounded-2xl border border-[rgb(91_33_182/0.2)] bg-[rgb(91_33_182/0.05)] p-4">
+            <span class="font-bold text-[var(--ru-violet)]">Idéal si… </span>
+            {x.idealFor}
+          </p>
+        </>
+      )
+    }
+    <p class="mt-5 text-sm text-[var(--ru-text-muted)]">
+      Le délai démarre à réception des éléments demandés. Le devis précise le périmètre, le calendrier et les modalités.
+    </p>
+    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+      <a href={s.quotePath} class="ru-btn ru-btn-primary">Commander cette prestation</a>
+      {
+        divisionPath && (
+          <a href={divisionPath} class="ru-btn ru-btn-ghost">
+            Voir l’expertise
+          </a>
+        )
+      }
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Ouverture et fermeture des fiches (Échap est géré nativement par <dialog>).
+  document.querySelectorAll<HTMLButtonElement>('[data-open-dialog]').forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const dialog = document.getElementById(btn.dataset.openDialog!) as HTMLDialogElement | null;
+    if (!dialog) return;
+    btn.addEventListener('click', () => dialog.showModal());
+    dialog.querySelector('[data-close-dialog]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => btn.focus());
+  });
+</script>

@@ -1,15 +1,17 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
 import Layout from '~/layouts/PageLayout.astro';
 import Crumbs from '~/components/restup/Crumbs.astro';
-import ServiceCard from '~/components/restup/ServiceCard.astro';
+import MenuItem from '~/components/restup/MenuItem.astro';
 import DivisionCard from '~/components/restup/DivisionCard.astro';
 import Faq from '~/components/restup/Faq.astro';
 import CtaBlock from '~/components/restup/CtaBlock.astro';
-import { divisions, divisionBySlug, type PublicDivision } from '~/lib/catalogue';
+import { divisions, divisionBySlug, formatEuro, type PublicDivision } from '~/lib/catalogue';
+import { casesFor } from '~/lib/livre';
 import { DIVISION_META, DIVISION_FAQ, DIVISION_LABELS, QUOTE_NOTE } from '~/data/site';
 import { DIVISION_DETAILS } from '~/data/division-details';
-import { Image } from 'astro:assets';
+import { COURSES, SERVICE_DETAILS } from '~/data/service-details';
 
 export function getStaticPaths() {
   return divisions.map((d) => ({ params: { slug: d.slug }, props: { division: d } }));
@@ -27,14 +29,16 @@ const related = d.relatedSlugs.map((s) => divisionBySlug(s)!);
 const ctaHref = `/diagnostic?expertise=${d.slug}`;
 const x = DIVISION_DETAILS[d.slug];
 const faqItems = [DIVISION_FAQ[d.slug], ...(x?.faq ?? [])];
-const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
+const cases = casesFor(d.slug);
+const entree = d.services[0];
+const entreeDelay = entree ? SERVICE_DETAILS[entree.id]?.delay : undefined;
 ---
 
 <Layout metadata={metadata}>
-  <section class="ru-corners ru-corners-sm ru-dark">
-    <div class="ru-container pt-20 pb-14 md:pb-20">
-      <div class="grid lg:grid-cols-[1.15fr_1fr] gap-10 items-end">
-      <div>
+  <!-- Héros -->
+  <section class="ru-dark relative isolate overflow-hidden ru-grain">
+    <div class="ru-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="ru-container pt-12 pb-16 md:pt-16 md:pb-24">
       <Crumbs
         items={[
           { text: 'Accueil', href: '/' },
@@ -42,37 +46,85 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
           { text: DIVISION_LABELS[d.slug].label },
         ]}
       />
-      <p class="mt-10 text-lg font-black italic tracking-wide text-[var(--ru-yellow)]">{d.name}</p>
-      <h1 class="ru-display ru-h1 mt-3 max-w-4xl">{d.h1}</h1>
-      <p class="ru-lead mt-5">{d.summary}</p>
-      {x && <p class="mt-4 max-w-2xl text-lg font-semibold text-white">{x.promise}</p>}
-      {!d.available && <p class="ru-tag ru-tag-warn mt-5">Disponibilité à confirmer</p>}
-      <div class="mt-8 flex flex-col sm:flex-row gap-3">
-        <a href={ctaHref} class="ru-btn ru-btn-primary">{d.available ? d.cta : 'Se renseigner'}</a>
-        {
-          d.available && (
-            <a href="#prestations" class="ru-btn ru-btn-ghost">
-              Voir les prestations
+      <div class="mt-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+        <div>
+          <p
+            class="mu-rise inline-flex rounded-full bg-[var(--ru-violet)] px-4 py-1.5 text-sm font-black italic tracking-wide text-[var(--ru-sun)]"
+          >
+            {d.name}
+          </p>
+          <h1 class="ru-display ru-h1 mu-rise mt-5 max-w-4xl" style="--delay:.06s">{d.h1}</h1>
+          <p class="ru-lead mu-rise mt-5 !text-xl" style="--delay:.12s">{d.summary}</p>
+          {
+            x && (
+              <p class="mu-rise mt-4 max-w-2xl text-lg font-semibold text-[var(--ru-text)]" style="--delay:.18s">
+                {x.promise}
+              </p>
+            )
+          }
+          {!d.available && <p class="ru-tag ru-tag-warn mt-5">Disponibilité à confirmer</p>}
+          <div class="mu-rise mt-8 flex flex-col sm:flex-row gap-3" style="--delay:.24s">
+            <a href={ctaHref} class="ru-btn ru-btn-primary !min-h-[56px] !px-8">
+              {d.available ? d.cta : 'Se renseigner'}
             </a>
+            {
+              d.available && (
+                <a href="#prestations" class="ru-btn ru-btn-ghost !min-h-[56px] !px-8">
+                  Voir la carte
+                </a>
+              )
+            }
+          </div>
+          {
+            d.available && (
+              <dl class="mu-rise mt-8 grid grid-cols-3 gap-3 max-w-lg" style="--delay:.3s">
+                <div class="ru-paper-card !p-4">
+                  <dt class="text-xs font-bold uppercase tracking-wider text-[var(--ru-text-muted)]">Prestations</dt>
+                  <dd class="ru-serif text-2xl font-bold text-[var(--ru-violet)]">{d.services.length}</dd>
+                </div>
+                <div class="ru-paper-card !p-4">
+                  <dt class="text-xs font-bold uppercase tracking-wider text-[var(--ru-text-muted)]">Entrée dès</dt>
+                  <dd class="ru-serif text-2xl font-bold text-[var(--ru-violet)]">
+                    {entree?.minAmount ? formatEuro(entree.minAmount) : 'Devis'}
+                  </dd>
+                </div>
+                <div class="ru-paper-card !p-4">
+                  <dt class="text-xs font-bold uppercase tracking-wider text-[var(--ru-text-muted)]">
+                    Premier livrable
+                  </dt>
+                  <dd class="font-bold text-[var(--ru-text)] leading-tight mt-1">{entreeDelay ?? 'Au devis'}</dd>
+                </div>
+              </dl>
+            )
+          }
+        </div>
+        {
+          x && (
+            <div class="relative mu-rise" style="--delay:.15s">
+              <div
+                class="absolute -inset-3 rounded-[36px] bg-gradient-to-br from-[var(--ru-violet)] to-[#0ea5e9] rotate-2"
+                aria-hidden="true"
+              />
+              <Image
+                src={x.photo}
+                alt={x.photoAlt}
+                widths={[480, 720, 960]}
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                class="relative w-full aspect-[4/3] object-cover rounded-[30px] shadow-[0_50px_100px_-40px_rgb(46_10_92/0.8)]"
+                loading="eager"
+              />
+              {x.benefits[0] && (
+                <div
+                  class="ru-floaty absolute -bottom-6 left-4 md:-left-8 max-w-[260px] rounded-2xl bg-white/92 backdrop-blur p-4 shadow-[0_30px_60px_-30px_rgb(46_10_92/0.7)]"
+                  style="--rot:-2deg"
+                >
+                  <p class="ru-menu-course">Ce que ça change</p>
+                  <p class="mt-1 font-bold text-[var(--ru-text)]">{x.benefits[0].title}</p>
+                </div>
+              )}
+            </div>
           )
         }
-      </div>
-      </div>
-      {
-        x && (
-          <div class="relative">
-            <div class="absolute -inset-2 rounded-[1.75rem] bg-[var(--ru-yellow)] rotate-2" aria-hidden="true" />
-            <Image
-              src={x.photo}
-              alt={x.photoAlt}
-              widths={[480, 720, 960]}
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              class="relative w-full aspect-[4/3] object-cover rounded-3xl"
-              loading="eager"
-            />
-          </div>
-        )
-      }
       </div>
     </div>
   </section>
@@ -81,12 +133,17 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
     x && (
       <section class="ru-section ru-deep" aria-labelledby="signes">
         <div class="ru-container">
-          <h2 id="signes" class="ru-display ru-h2">Vous vous reconnaissez ?</h2>
-          <ul class="mt-8 grid sm:grid-cols-2 gap-4">
+          <p class="ru-eyebrow">Le constat</p>
+          <h2 id="signes" class="ru-display ru-h2 mt-3">
+            Vous vous reconnaissez ?
+          </h2>
+          <ul class="mt-10 grid sm:grid-cols-2 gap-5">
             {x.signs.map((t) => (
-              <li class="ru-card flex gap-3">
-                <Icon name="tabler:alert-circle" class="w-6 h-6 shrink-0 text-[var(--ru-yellow)]" aria-hidden="true" />
-                <span>{t}</span>
+              <li class="ru-card ru-lift flex gap-4 items-start">
+                <span class="grid place-items-center shrink-0 w-10 h-10 rounded-full bg-[var(--ru-sun)] text-[var(--ru-text)]">
+                  <Icon name="tabler:alert-triangle" class="w-5 h-5" aria-hidden="true" />
+                </span>
+                <span class="text-lg">{t}</span>
               </li>
             ))}
           </ul>
@@ -96,17 +153,19 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
   }
 
   <section class="ru-section ru-light" aria-labelledby="perimetre">
-    <div class="ru-container grid md:grid-cols-2 gap-10">
+    <div class="ru-container grid lg:grid-cols-2 gap-10 items-center">
       <div>
-        <h2 id="perimetre" class="ru-display ru-h2">Ce que nous examinons</h2>
-        <p class="ru-lead mt-4">{d.scope}</p>
+        <p class="ru-eyebrow">La prestation</p>
+        <h2 id="perimetre" class="ru-display ru-h2 mt-3">Ce que nous examinons</h2>
+        <p class="ru-lead mt-5 !text-xl">{d.scope}</p>
       </div>
-      <div class="ru-card">
-        <span class="ru-icon bg-[#fff8cc] text-[var(--ru-ink)]" aria-hidden="true"
-          ><Icon name="tabler:file-description" class="w-7 h-7" /></span
+      <div class="ru-card !p-8 md:!p-10">
+        <span class="ru-icon" aria-hidden="true"><Icon name="tabler:file-description" class="w-7 h-7" /></span>
+        <h2 class="ru-h3 mt-5">Ce que vous recevez</h2>
+        <p class="mt-3 ru-soft text-lg">{d.deliverable}</p>
+        <a href="#prestations" class="ru-link mt-6 inline-flex items-center gap-2"
+          >Voir le détail de chaque livrable <Icon name="tabler:arrow-down" class="w-4 h-4" aria-hidden="true" /></a
         >
-        <h2 class="ru-h3 mt-4">Ce que vous recevez</h2>
-        <p class="mt-2 text-[var(--ru-muted-light)]">{d.deliverable}</p>
       </div>
     </div>
   </section>
@@ -115,21 +174,62 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
     x && (
       <section class="ru-section ru-dark" aria-labelledby="apports">
         <div class="ru-container">
-          <h2 id="apports" class="ru-display ru-h2">Ce que ça peut vous apporter</h2>
-          <ul class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <p class="ru-eyebrow">Les bénéfices</p>
+          <h2 id="apports" class="ru-display ru-h2 mt-3">
+            Ce que ça peut vous apporter
+          </h2>
+          <ul class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {x.benefits.map((b) => (
-              <li class="ru-card">
-                <span class="ru-icon bg-[var(--ru-yellow)] text-[var(--ru-ink)]" aria-hidden="true">
+              <li class="ru-card ru-lift">
+                <span class="ru-icon" aria-hidden="true">
                   <Icon name={b.icon} class="w-7 h-7" />
                 </span>
-                <h3 class="ru-h3 mt-4 text-white">{b.title}</h3>
+                <h3 class="ru-h3 mt-4">{b.title}</h3>
                 <p class="mt-2 ru-soft">{b.text}</p>
               </li>
             ))}
           </ul>
-          <p class="mt-6 ru-soft text-sm max-w-3xl">
+          <p class="mt-6 text-sm text-[var(--ru-text-muted)] max-w-3xl">
             Aucun résultat n’est garanti : les effets dépendent du diagnostic et de la mise en œuvre des actions.
           </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    cases.length > 0 && (
+      <section class="ru-section ru-deep" aria-labelledby="cas">
+        <div class="ru-container">
+          <p class="ru-eyebrow">Sur le terrain</p>
+          <h2 id="cas" class="ru-display ru-h2 mt-3">
+            Des situations que nous connaissons bien
+          </h2>
+          <p class="ru-lead mt-4">
+            Extraites du Livre du Restaurateur RESTUP : pour chaque situation, ce que l’on regarde et ce que l’on fait.
+          </p>
+          <ul class="mt-10 grid lg:grid-cols-3 gap-5">
+            {cases.map((c) => (
+              <li class="ru-paper-card flex flex-col">
+                <p class="ru-menu-course">{c.chapter}</p>
+                <h3 class="ru-serif mt-2 text-2xl font-semibold leading-snug">{c.title}</h3>
+                <dl class="mt-5 space-y-4 text-[0.97rem]">
+                  <div>
+                    <dt class="font-bold text-[var(--ru-text)]">La situation</dt>
+                    <dd class="mt-1 text-[var(--ru-text-muted)]">{c.situation}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-bold text-[var(--ru-text)]">Ce que l’on regarde</dt>
+                    <dd class="mt-1 text-[var(--ru-text-muted)]">{c.diagnostic}</dd>
+                  </div>
+                  <div class="rounded-2xl bg-[rgb(91_33_182/0.07)] p-4">
+                    <dt class="font-bold text-[var(--ru-violet)]">Ce que l’on fait</dt>
+                    <dd class="mt-1 text-[var(--ru-text)]">{c.action}</dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     )
@@ -139,13 +239,16 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
     x && (
       <section class="ru-section ru-light" aria-labelledby="deroule">
         <div class="ru-container">
-          <h2 id="deroule" class="ru-display ru-h2">Comment ça se passe</h2>
-          <ol class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <p class="ru-eyebrow">Le déroulé</p>
+          <h2 id="deroule" class="ru-display ru-h2 mt-3">
+            Comment ça se passe
+          </h2>
+          <ol class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {x.steps.map((st, i) => (
-              <li class="ru-card">
-                <span class="ru-display text-4xl text-[var(--ru-brand-800)]">0{i + 1}</span>
+              <li class="ru-paper-card relative">
+                <span class="ru-serif text-5xl font-bold text-[var(--ru-violet)]">0{i + 1}</span>
                 <h3 class="ru-h3 mt-3">{st.title}</h3>
-                <p class="mt-2 text-[var(--ru-muted-light)]">{st.text}</p>
+                <p class="mt-2 text-[var(--ru-text-muted)]">{st.text}</p>
               </li>
             ))}
           </ol>
@@ -156,30 +259,45 @@ const hasPrices = d.services.some((s) => s.price !== 'Sur devis');
 
   {
     d.available && (
-      <section id="prestations" class="ru-section ru-deep scroll-mt-32" aria-labelledby="tarifs">
-        <div class="ru-container">
-          <h2 id="tarifs" class="ru-display ru-h2">
-            Prestations et tarifs
-          </h2>
-          <ul class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {d.services.map((s) => (
-              <li>
-                <ServiceCard service={s} divisionName={d.name} />
-              </li>
-            ))}
-          </ul>
-          {hasPrices && <p class="mt-6 ru-soft max-w-3xl text-sm">{QUOTE_NOTE}</p>}
+      <section id="prestations" class="ru-section ru-deep scroll-mt-28" aria-labelledby="tarifs">
+        <div class="ru-container max-w-4xl">
+          <div class="ru-menu">
+            <div class="text-center">
+              <p class="ru-menu-course">{d.name} · à la carte</p>
+              <h2 id="tarifs" class="ru-menu-title mt-2 text-4xl md:text-5xl">
+                Prestations et tarifs
+              </h2>
+              <p class="mt-3 text-[var(--ru-text-muted)]">
+                Touchez une prestation pour voir son délai, son contenu et son livrable.
+              </p>
+            </div>
+            <ul class="mt-8 space-y-1">
+              {d.services.map((s, i) => (
+                <li>
+                  <p class="ru-menu-course mt-5">{COURSES[i]?.label ?? 'À la carte'}</p>
+                  <MenuItem service={s} course={i} divisionName={d.name} />
+                </li>
+              ))}
+            </ul>
+            <p class="mt-8 text-center text-sm text-[var(--ru-text-muted)]">Tarifs hors taxes. {QUOTE_NOTE}</p>
+            <p class="mt-4 text-center">
+              <a href="/tarifs#formules" class="ru-link">
+                Combiner entrée, plat et dessert en formule
+              </a>
+            </p>
+          </div>
         </div>
       </section>
     )
   }
 
-  <Faq items={faqItems} title={faqItems.length > 1 ? 'Questions fréquentes' : 'Question fréquente'} />
+  <Faq items={faqItems} title={faqItems.length > 1 ? 'Questions fréquentes' : 'Question fréquente'} light />
 
-  <section class="ru-section ru-deep" aria-labelledby="associees">
+  <section class="ru-section ru-dark" aria-labelledby="associees">
     <div class="ru-container">
-      <h2 id="associees" class="ru-display ru-h2">Divisions associées</h2>
-      <ul class="mt-8 grid sm:grid-cols-2 gap-4">
+      <p class="ru-eyebrow">Pour aller plus loin</p>
+      <h2 id="associees" class="ru-display ru-h2 mt-3">Divisions associées</h2>
+      <ul class="mt-10 grid sm:grid-cols-2 gap-5">
         {
           related.map((r) => (
             <li>

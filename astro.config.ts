@@ -79,6 +79,18 @@ export default defineConfig({
         ],
       },
     },
+    {
+      provider: fontProviders.local(),
+      name: 'Fraunces',
+      cssVariable: '--font-fraunces',
+      fallbacks: ['serif'],
+      options: {
+        variants: [
+          { src: ['./src/assets/fonts/fraunces-latin-wght-normal.woff2'], weight: '100 900', style: 'normal' },
+          { src: ['./src/assets/fonts/fraunces-latin-wght-italic.woff2'], weight: '100 900', style: 'italic' },
+        ],
+      },
+    },
   ],
 
   integrations: [
