@@ -252,7 +252,7 @@ export const LEGAL = {
     retentionLeads:
       'Les demandes sont conservées 3 ans à compter du dernier échange, puis supprimées. Si une mission est signée, les données utiles sont conservées pendant la relation contractuelle et les durées légales qui s’appliquent ensuite.',
     processors:
-      'GitHub, Inc. (hébergement du site) et Supabase, Inc. (base de données des demandes). Ces prestataires peuvent traiter des données hors de l’Union européenne, avec les garanties prévues par le RGPD (clauses contractuelles types ou cadre de protection des données UE–États-Unis).',
+      'GitHub, Inc. (hébergement du site) et WhatsApp (Meta Platforms Ireland Ltd.), par lequel les demandes du formulaire sont transmises. Ces prestataires peuvent traiter des données hors de l’Union européenne, avec les garanties prévues par le RGPD (clauses contractuelles types ou cadre de protection des données UE–États-Unis).',
   },
   /** Traceurs : aucun traceur optionnel n'est installé. Changer seulement après inventaire. */
   optionalTrackers: false,

@@ -2,6 +2,9 @@
 import Layout from '~/layouts/Layout.astro';
 import SiteHeader from '~/components/restup/SiteHeader.astro';
 import SiteFooter from '~/components/restup/SiteFooter.astro';
+import { Icon } from 'astro-icon/components';
+
+const whatsapp = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
 
 import type { MetaData } from '~/types';
 
@@ -29,4 +32,15 @@ const { metadata } = Astro.props;
     <slot />
   </main>
   {Astro.slots.has('footer') ? <slot name="footer" /> : <SiteFooter />}
+  {
+    whatsapp && (
+      <a
+        href={`https://wa.me/${whatsapp}`}
+        class="fixed bottom-5 right-5 z-50 grid place-items-center w-14 h-14 rounded-full bg-[#25d366] text-white shadow-xl hover:scale-105 transition"
+        aria-label="Nous écrire sur WhatsApp"
+      >
+        <Icon name="tabler:brand-whatsapp" class="w-8 h-8" aria-hidden="true" />
+      </a>
+    )
+  }
 </Layout>

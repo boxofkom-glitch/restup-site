@@ -15,6 +15,7 @@ const editor = LEGAL.editorName || 'RESTUP';
 const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT || '';
 const adapter = import.meta.env.PUBLIC_LEADS_ADAPTER || 'http';
 const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
+const whatsapp = import.meta.env.PUBLIC_WHATSAPP_NUMBER || '';
 ---
 
 <form
@@ -25,6 +26,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
   data-endpoint={endpoint}
   data-adapter={adapter}
   data-anon={anonKey}
+  data-whatsapp={whatsapp}
   data-choices={isDiag ? JSON.stringify(formChoices) : undefined}
   data-help={HELP_ME}
 >
@@ -230,7 +232,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
   </div>
 
   <button type="submit" class="ru-btn ru-btn-primary w-full sm:w-auto" data-submit>
-    <span data-submit-label>Envoyer ma demande</span>
+    <span data-submit-label>{whatsapp ? 'Envoyer ma demande sur WhatsApp' : 'Envoyer ma demande'}</span>
   </button>
 
   {
@@ -382,6 +384,38 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
       if (Object.keys(errors).length) return showErrors(errors);
       showErrors({});
 
+      // Adaptateur WhatsApp : la demande s'ouvre dans WhatsApp, le visiteur l'envoie lui-même.
+      if (form.dataset.adapter === 'whatsapp' && form.dataset.whatsapp) {
+        const lead = normalize(data) as unknown as Record<string, string>;
+        const label = (name: string) =>
+          form.querySelector<HTMLSelectElement>(`select[name="${name}"]`)?.selectedOptions[0]?.textContent ?? '';
+        const lines = [
+          type === 'diagnostic' ? 'Demande de diagnostic RESTUP' : `Message RESTUP · ${lead.subject}`,
+          `Nom : ${lead.name}`,
+          `E-mail : ${lead.email}`,
+          lead.phone && `Téléphone : ${lead.phone}`,
+          lead.establishment && `Établissement : ${lead.establishment}`,
+          lead.city && `Ville : ${lead.city}`,
+          lead.stage && `Stade : ${lead.stage}`,
+          lead.need && `Besoin : ${label('need')}`,
+          lead.service && `Prestation : ${label('service')}`,
+          lead.offer && `Format : ${label('offer')}`,
+          lead.sites && `Nombre de sites : ${lead.sites}`,
+          lead.deadline && `Échéance : ${lead.deadline}`,
+          '',
+          lead.message,
+        ].filter((l) => typeof l === 'string');
+        window.open(
+          `https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`,
+          '_blank',
+          'noopener'
+        );
+        summary.className = 'ru-alert ru-alert-info';
+        return showSummary(
+          'WhatsApp s’ouvre avec votre demande déjà rédigée : appuyez sur « Envoyer » pour nous la transmettre.'
+        );
+      }
+
       const endpoint = form.dataset.endpoint;
       if (!endpoint) return showSummary(UNAVAILABLE);
 
@@ -424,7 +458,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
       } finally {
         sending = false;
         button.disabled = false;
-        label.textContent = 'Envoyer ma demande';
+        label.textContent = form.dataset.whatsapp ? 'Envoyer ma demande sur WhatsApp' : 'Envoyer ma demande';
       }
     });
   }
